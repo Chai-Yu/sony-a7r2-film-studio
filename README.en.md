@@ -42,7 +42,9 @@ adb connect CAMERA_IP:5555
 adb -s CAMERA_IP:5555 install -r output/FujiStyle-0.1.3-alpha-movie.apk
 ```
 
-Replace `CAMERA_IP` with the camera's actual address. First-time users also need the preparation steps in the guide.
+**IP address and privacy:** `CAMERA_IP` is a placeholder. Replace it with the current IP shown on your own camera in Tweak → Developer; do not type the placeholder literally or copy someone else's address. Keep the `:5555` port. Public instructions use a placeholder; hide or remove actual IP addresses before sharing screenshots or logs.
+
+First-time users also need the preparation steps in the guide.
 
 ### Does the APK recipient need to compile anything?
 

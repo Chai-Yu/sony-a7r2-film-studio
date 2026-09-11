@@ -14,6 +14,8 @@
 
 假设终端当前目录就是 APK 所在的下载文件夹，安装命令是：
 
+**IP 与隐私：** `CAMERA_IP` 只是占位符，必须替换为你自己的相机在 Tweak → Developer 中当前显示的 IP；不要原样输入，也不要照抄他人的地址。保留后面的 `:5555` 端口。公开教程使用占位符；分享截图或日志时，请遮住或删除真实 IP。
+
 ```sh
 adb connect CAMERA_IP:5555
 adb -s CAMERA_IP:5555 install -r FujiStyle-0.1.3-alpha-movie.apk

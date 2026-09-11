@@ -14,6 +14,8 @@ For **0.1.3-alpha / on-camera 0.1d**. The tested device is an a5100 with firmwar
 
 If the terminal is in the folder containing the downloaded APK:
 
+**IP address and privacy:** `CAMERA_IP` is a placeholder. Replace it with the current IP shown on your own camera in Tweak → Developer; do not type the placeholder literally or copy someone else's address. Keep the `:5555` port. Public instructions use a placeholder; hide or remove actual IP addresses before sharing screenshots or logs.
+
 ```sh
 adb connect CAMERA_IP:5555
 adb -s CAMERA_IP:5555 install -r FujiStyle-0.1.3-alpha-movie.apk
