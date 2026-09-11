@@ -1,0 +1,143 @@
+# インストールと使い方：日本語
+
+[プロジェクト](../README.ja.md) · [中文](INSTALL.zh-CN.md) · [English](INSTALL.en.md)
+
+対象は **0.1.3-alpha／カメラ内表示0.1d**。実機は a5100、ファームウェア1.10、Android2.3.7です。macOS でのビルドと Wi-Fi インストールを確認しました。Windows/Linux の同等手順は、同じ実機で全工程を検証していません。
+
+## 1. 事前準備と権利の確認
+
+ソース公開のため、APK や近似カラー設定は同梱していません。[ライセンスの適用範囲](../LICENSING.md)を読み、入力資料と予定する改変について必要な許諾を得た場合、または適用法が実際に認める場合に限り先へ進んでください。富士フイルムの公開ダウンロードや本プロジェクトの非商用ライセンスは、第三者資料の改変・再配布を許諾するものではありません。ソニーの基礎 APK のミラーや権利保証は提供しません。
+
+必要なもの：
+
+- PlayMemories Camera Apps 対応の a5100。他機種は未検証です。
+- バックアップ済みカード、十分な電池残量、データ通信対応 USB ケーブル、カメラとPCが接続できる信頼できる Wi-Fi。
+- Python3.12、NumPy2.3.5、Git、Java、OpenSSL、[Apktool2.12.1](https://github.com/iBotPeaches/Apktool/releases/tag/v2.12.1)、[Android Platform-Tools / adb](https://developer.android.com/tools/releases/platform-tools)。ローカル確認では Java18 を使用しました。
+- 初回の ADB 設定に [Sony-PMCA-RE / pmca-gui](https://github.com/ma1co/Sony-PMCA-RE) と [OpenMemories: Tweak](https://github.com/ma1co/OpenMemories-Tweak)。
+
+プロジェクトページで Code → Download ZIP を選んで展開するか、表示された Git URL をクローンします。`tools/` があるルートディレクトリでターミナルを開きます。macOS/Linux：
+
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
+Windows PowerShell では `py -3.12 -m venv .venv` を実行し、以降の `python` を `.\.venv\Scripts\python.exe` に置き換えます。実行ポリシーの変更は不要です。Java、OpenSSL、adb を PATH に登録します。ビルドコマンドはシェルごとの継続行の違いを避けるため1行で記載しています。
+
+## 2. ローカル入力を用意
+
+Git 管理対象外の `inputs/` に配置します。
+
+| パス | 内容 |
+| --- | --- |
+| `inputs/base.apk` | 適法に入手し、本用途に必要な権利を確認した Ricoh v1.1.4 APK。下記 SHA-256 と完全一致するもの |
+| `inputs/apktool.jar` | Apktool2.12.1 の jar |
+| `inputs/luts/gfx-eterna-55-3d-lut-v110/33Grid/F-Log2/` | 本用途の許諾を確認した GFX ETERNA55 v1.10 LUT の展開先 |
+| `inputs/upstream/` | 下記リビジョンの上流ソース |
+
+基礎 APK の SHA-256：
+
+```text
+80cb4a541f5f3dd49e8f53ffb1905048097fec17209fc9cb595a00681e65e8ea
+```
+
+任意の「ピクチャーエフェクト+」APK に使える汎用パッチではありません。不一致なら中止します。上流ソースを固定します。
+
+```sh
+git clone https://github.com/bonyback1/sony-pmca-ricoh-mod.git inputs/upstream
+git -C inputs/upstream checkout 7c565898562c73c5073c54dfc831c8c3df9c24cf
+```
+
+参照パッケージは[富士フイルムの公式ページ](https://www.fujifilm-x.com/global/support/download/lut/)の GFX ETERNA55 v1.10 です。`FLog2_to_WDR-709_33grid_V.1.00.cube` と10種類のファイルが必要です。F-Log、F-Log2C、65Grid と取り違えないでください。配布元の版や条件が変更された場合は再確認し、ハッシュ確認を外したり不明なミラーを使用したりしないでください。
+
+ツールを確認します。
+
+```sh
+python --version
+java -version
+openssl version
+adb version
+java -jar inputs/apktool.jar --version
+```
+
+## 3. ローカルビルド
+
+```sh
+python tools/fit_luts.py inputs/luts/gfx-eterna-55-3d-lut-v110/33Grid/F-Log2 .
+python tools/check_strength.py
+python tools/build_apk.py --input inputs/base.apk --apktool inputs/apktool.jar --upstream-hook inputs/upstream/src/smali/RicohHook.smali --work build-local/decoded-013 --movie
+python tools/check_build.py
+```
+
+最初のコマンドで `profiles/`、`output/` のプレビュー LUT、`validation/` の数値評価を生成します。続いて強度の検査、APK のビルド・署名・検証を実行します。生成先：
+
+```text
+output/FujiStyle-0.1.3-alpha-movie.apk
+```
+
+作業ディレクトリは未作成か空である必要があります。再ビルドでは新しい作業先を指定します。`--movie` は本書の写真・動画機能を有効にします。省略すると写真用の版になります。
+
+**`.private/signing.pem` を非公開のまま保管・バックアップしてください。** 初回に生成され、更新時も同じ鍵が必要です。共有やアップロードはしないでください。ビルドする人ごとに鍵と APK のハッシュが異なります。検証レポートのハッシュは自分のファイル確認用で、共通配布物のハッシュではありません。
+
+## 4. 初回の Wi-Fi ADB 設定
+
+すでに ADB 接続できる場合は第5節へ進みます。
+
+1. カメラの USB 接続を **MTP** に設定してPCへつなぎます。MTP 表示だけでは ADB は有効になりません。
+2. [PMCA の App Installer 手順](https://github.com/ma1co/Sony-PMCA-RE#app-installer)に従います。pmca-gui の **Install app** で **OpenMemories: Tweak** を選択し、**Install selected app** を押します。この手順にファームウェア更新モードやサービスモードは不要です。
+3. 完了後、指示に従って USB を外し、カメラのアプリ一覧から Tweak を起動します。
+4. Wi-Fi 接続先を設定し、Tweak の **Developer** ページで **Enable Wifi** と **Enable ADB** を有効にして IP を控えます。PC も同一 LAN に接続し、カメラの省電力移行までの時間を十分に確保します。[Tweak の説明](https://github.com/ma1co/OpenMemories-Tweak#developer)も参照してください。
+5. 必要なのは ADB のみです。Telnet、保護解除、地域変更、録画制限解除、ファームウェア変更は本アプリの導入に不要です。
+
+macOS で USB が使用中になる場合は、写真、イメージキャプチャ、カメラにアクセスする同期ソフトを閉じて再接続します。ドライバーの詳細は PMCA の各OS向け説明に従います。
+
+## 5. カメラにインストール
+
+`CAMERA_IP` は現在カメラに表示されるアドレスにすべて置き換えます。
+
+```sh
+adb connect CAMERA_IP:5555
+adb devices
+adb -s CAMERA_IP:5555 install -r output/FujiStyle-0.1.3-alpha-movie.apk
+```
+
+対象が `device` と表示され、最後に `Success` が出ればインストール完了です。カメラのアプリ一覧から **富士风格** を起動します。名称と大部分のメニューは中国語です。
+
+任意でリモート起動もできます。
+
+```sh
+adb -s CAMERA_IP:5555 shell am start -W -n com.yuki.imaging.app.pictureeffectplus/.PictureEffectPlus
+```
+
+標準の撮影画面が起動要求を拒否する場合は、カメラで手動起動してください。この警告だけでインストール失敗とは判断できません。
+
+pmca-gui の **Select an apk → Open apk... → Install selected app** でローカル APK を USB インストールする方法もあります。ただし本プロジェクトで確認した更新経路は Wi-Fi ADB であり、すべての USB インストーラーと署名の組み合わせを保証しません。
+
+## 6. 操作と最初の確認
+
+1. 写真プレビュー／動画待機中に**中央ボタン**でフィルターを選びます。MENU 1ページ目の「富士风格」からも開けます。
+2. 「滤镜强度」で30/50/70/100%を選択。初期値100%、通常終了時に保存します。人物では30%と50%を比較してください。
+3. 動画は「拍照／录像模式」→ 動画 P/A/S/M を選んでから「录像文件格式」と「录像帧率／画质」を設定します。写真モードでグレーの場合は先に動画待機へ切り替えます。MOVIE で開始／停止します。
+4. ホワイトバランスは MENU 4ページ目の「白平衡」。アプリ内のクリエイティブスタイルは STD 固定ですが、ホワイトバランスは固定しません。
+5. 失っても困らない被写体で ACROS100% と30%を比較します。100%は白黒、30%は一部の色が残る想定です。PROVIA でも JPEG1枚と数秒の動画を保存します。録画中にフィルターは変更しません。
+6. **アプリ内再生は写真のみです。** 動画はアプリを終了し、標準再生で XAVC S / AVCHD / MP4 の対応する表示モードを選びます。アプリ一覧に動画が出なくても未保存とは限りません。
+
+## 7. 更新・戻し方・トラブル対応
+
+| 症状 | 対応 |
+| --- | --- |
+| offline／タイムアウト／機器なし | スリープ、IP、同一LAN、ADBを確認。`adb disconnect CAMERA_IP:5555` の後に再接続。ゲストネットワーク分離、VPN、PCのローカルネットワーク権限も確認 |
+| MTP では認識するが adb で見えない | 別の接続方式です。第4節で Wi-Fi ADB を設定 |
+| 入力ハッシュ不一致 | 入力版が異なります。確認処理を削除しないでください |
+| 署名解析／DEXOPT エラー | 指定ツールを使用。API10互換DEX035とv1署名が必要です。現代的な署名ツールの既定値で再署名しないでください |
+| INSTALL_FAILED_UPDATE_INCOMPATIBLE | 鍵が異なります。元の鍵で再ビルドするか、バックアップ後にカメラのアプリ管理で旧版を削除してから導入します。削除するとアプリ設定は失われます |
+| 動画設定がグレー | 動画 P/A/S/M の待機へ。形式、PAL/NTSC、機種条件により選択肢は異なります |
+| ACROS に色が残る | 強度100%を選択 |
+| 色がおかしい | 通常終了してカメラを再起動し、標準設定を確認。本アプリの排障にファームウェア変更や初期化は行いません |
+
+同じ鍵の更新は `adb install -r` を使用します。戻す場合は自分で保存した旧 APK と元の鍵を使います。自動削除や自動ダウングレードはしません。動画を探すためにカードのデータベースを削除しないでください。
+
+終了後は `adb disconnect CAMERA_IP:5555` を実行し、Tweak で ADB を無効にします。不要なら継続 Wi-Fi も解除します。PC の切断だけではカメラ側の ADB は停止しません。
+
+不具合報告には機種、ファームウェア、アプリ版、写真／動画状態、形式、フィルター、強度を添えます。ログは該当部分だけとし、ユーザー名、IP、シリアル番号、私的画像を除いてください。APK、LUT、秘密鍵は添付しないでください。

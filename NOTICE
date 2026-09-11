@@ -1,0 +1,24 @@
+A5100 Film Studio
+Required Notice: Copyright (c) 2026 A5100 Film Studio contributors, for their respective original contributions to the extent copyright applies.
+Required Notice: Original project contributions are available under PolyForm Noncommercial License 1.0.0. Third-party rights and licenses remain separate; see LICENSING.md.
+
+Upstream reference: bonyback1/sony-pmca-ricoh-mod
+https://github.com/bonyback1/sony-pmca-ricoh-mod
+Reviewed revision: 7c565898562c73c5073c54dfc831c8c3df9c24cf
+License: Apache License 2.0, reproduced in LICENSES/Apache-2.0.txt.
+Copyright in upstream material remains with its respective contributors.
+tools/sign_apk.py is an adapted upstream file and remains Apache-2.0.
+Modifications: explicit SHA-1 signatures for the tested API 10 runtime and JAR manifest line folding.
+The camera patch generator also references upstream hook interfaces and the existing Sony application structure.
+No separate upstream NOTICE file was found at the reviewed revision.
+
+Color reference: FUJIFILM GFX ETERNA 55 3D LUT package v1.10,
+33Grid / F-Log2, with FLog2_to_WDR-709 as the neutral fitting proxy.
+https://www.fujifilm-x.com/global/support/download/lut/
+Official LUTs and associated documentation remain the property of FUJIFILM and their respective rights holders.
+This publication contains no official LUTs, fitted LUT-derived parameter tables, or camera APKs.
+Public availability is not represented as permission to modify or redistribute third-party material.
+
+Sony, PlayMemories Camera Apps, FUJIFILM, Ricoh and the film-simulation/product names
+are used to identify compatibility or references. All trademarks belong to their respective owners.
+This project is not affiliated with, endorsed by, or certified by those companies.

@@ -1,0 +1,3 @@
+# Optional, only for tools/verify_capture.py; FFmpeg/ffprobe are installed separately.
+-r requirements.txt
+Pillow==12.3.0
