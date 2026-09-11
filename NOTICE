@@ -1,4 +1,4 @@
-A5100 Film Studio
+Film Studio / 胶片工坊 (formerly A5100 Film Studio / 富士风格)
 Required Notice: Copyright (c) 2026 A5100 Film Studio contributors, for their respective original contributions to the extent copyright applies.
 Required Notice: Original project contributions are available under PolyForm Noncommercial License 1.0.0. Third-party rights and licenses remain separate; see LICENSING.md.
 
@@ -14,6 +14,14 @@ The release modifies the upstream RicohHook and camera controllers/menu resource
 LUT-fitted profiles, adjustable strength, movie controls, standby filter selection and a separate package name.
 The APK includes these notices and license texts in assets/legal/.
 No separate upstream NOTICE file was found at the reviewed revision.
+
+From version 0.2.0-alpha, five upstream Ricoh/street-style presets are included:
+Positive Film, Negative Film, High Contrast B&W, Moriyama Daido Style and Cross Process.
+Their matrix and gamma arrays are extracted from the pinned RicohHook.smali;
+100% strength retains those arrays exactly. Lower strengths are our interpolation.
+The upstream preset material retains its Apache-2.0 license and attribution.
+These are community-created presets, not Ricoh-published LUTs or verified Ricoh-camera matches.
+tools/film_profiles.py contains our extraction/merge logic, not a bundled official Ricoh LUT.
 
 Color reference: FUJIFILM GFX ETERNA 55 3D LUT package v1.10,
 33Grid / F-Log2, with FLog2_to_WDR-709 as the neutral fitting proxy.

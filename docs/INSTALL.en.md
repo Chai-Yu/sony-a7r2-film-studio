@@ -2,12 +2,14 @@
 
 [Project](../README.en.md) · [中文](INSTALL.zh-CN.md) · [日本語](INSTALL.ja.md)
 
-For **0.1.3-alpha / on-camera 0.1d**. The tested device is an a5100 with firmware 1.10 and Android 2.3.7. Building on macOS and installing over Wi-Fi were exercised; equivalent Windows/Linux instructions have not had the same end-to-end hardware test.
+For **0.2.0-alpha / on-camera 0.2a**. The tested device is an a5100 with firmware 1.10 and Android 2.3.7. Building on macOS and installing over Wi-Fi were exercised; equivalent Windows/Linux instructions have not had the same end-to-end hardware test.
+
+**0.2.0-alpha renames the app to 胶片工坊 / Film Studio while retaining the package and certificate for `install -r` updates. Added Ricoh styles preserve upstream parameters at 100%; all fifteen styles share the four strengths and still/movie menus. The combined build installed and launched on the a5100 with selected parameter-application logs; saved media from this version remain unverified, and older evidence does not validate every new combination.**
 
 ## 0. Install the released APK directly
 
 1. Read [camera compatibility](../README.en.md#compatibility) for your model and intended features.
-2. Download **[FujiStyle-0.1.3-alpha-movie.apk](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.1.3-alpha/FujiStyle-0.1.3-alpha-movie.apk)** from [Releases → Assets](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha). The Source code ZIP is not an installer.
+2. Download **[FilmStudio-0.2.0-alpha-movie.apk](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.2.0-alpha/FilmStudio-0.2.0-alpha-movie.apk)** from [Releases → Assets](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.2.0-alpha). The Source code ZIP is not an installer.
 3. Download `SHA256SUMS.txt` too. Check the APK with `shasum -a 256` on macOS, `sha256sum` on Linux, or `Get-FileHash -Algorithm SHA256` in PowerShell. A checksum verifies file identity, not permission or compatibility.
 4. Install [Android Platform-Tools / adb](https://developer.android.com/tools/releases/platform-tools) on the computer. First-time users follow section 4 to enable Wi-Fi ADB and section 5 to install; if ADB already works, go to section 5.
 5. **Installing a released APK requires no Python, Java, Apktool or private signing key.** Sections 1–3 are for people who want to build it themselves.
@@ -18,10 +20,10 @@ If the terminal is in the folder containing the downloaded APK:
 
 ```sh
 adb connect CAMERA_IP:5555
-adb -s CAMERA_IP:5555 install -r FujiStyle-0.1.3-alpha-movie.apk
+adb -s CAMERA_IP:5555 install -r FilmStudio-0.2.0-alpha-movie.apk
 ```
 
-Replace `CAMERA_IP` with the camera's current address. Wait for `Success`, then open「富士风格」from the camera's app list. The `output/` path in section 5 refers to local build output; use your actual download path when installing a release.
+Replace `CAMERA_IP` with the camera's current address. Wait for `Success`, then open「胶片工坊」from the camera's app list. The `output/` path in section 5 refers to local build output; use your actual download path when installing a release.
 
 ## 1. Prerequisites and rights
 
@@ -84,15 +86,15 @@ java -jar inputs/apktool.jar --version
 
 ```sh
 python tools/fit_luts.py inputs/luts/gfx-eterna-55-3d-lut-v110/33Grid/F-Log2 .
+python tools/build_apk.py --input inputs/base.apk --apktool inputs/apktool.jar --upstream-hook inputs/upstream/src/smali/RicohHook.smali --work build-local/decoded-020 --movie
 python tools/check_strength.py
-python tools/build_apk.py --input inputs/base.apk --apktool inputs/apktool.jar --upstream-hook inputs/upstream/src/smali/RicohHook.smali --work build-local/decoded-013 --movie
 python tools/check_build.py
 ```
 
 The first command generates private local `profiles/`, preview LUTs in `output/`, and fitting metrics in `validation/`. The remaining commands check strengths, build/sign the APK, and verify the result:
 
 ```text
-output/FujiStyle-0.1.3-alpha-movie.apk
+output/FilmStudio-0.2.0-alpha-movie.apk
 ```
 
 The work directory must be absent or empty. Use a new work directory for another build. `--movie` enables the still/video features covered here; omitting it produces the still-only variant.
@@ -118,10 +120,10 @@ Replace every `CAMERA_IP` with the address currently shown by your camera.
 ```sh
 adb connect CAMERA_IP:5555
 adb devices
-adb -s CAMERA_IP:5555 install -r output/FujiStyle-0.1.3-alpha-movie.apk
+adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.0-alpha-movie.apk
 ```
 
-The target should appear as `device`; installation should finish with `Success`. Open **富士风格** from the camera's application list. Its name and most menu labels are Chinese.
+The target should appear as `device`; installation should finish with `Success`. Open **胶片工坊** from the camera's application list. Its name and most menu labels are Chinese.
 
 Optional remote launch:
 
@@ -135,7 +137,7 @@ pmca-gui also offers **Select an apk → Open apk... → Install selected app** 
 
 ## 6. Controls and first test
 
-1. In still preview or movie standby, press the **center button** to select a look. MENU page 1 also has the「富士风格」entry.
+1. In still preview or movie standby, press the **center button** to select a look. MENU page 1 also has the「胶片风格」entry. The fifteen choices use 富士 (Fujifilm) and 理光 (Ricoh) prefixes.
 2. MENU page 1 →「滤镜强度」sets 30/50/70/100%. Default 100%; a normal exit saves it. For portraits, compare 30% and 50%.
 3. For video, select「拍照／录像模式」→ movie P/A/S/M, then「录像文件格式」and「录像帧率／画质」. Enter movie standby first if these are gray in still mode. MOVIE starts and stops recording.
 4. White balance is「白平衡」on MENU page 4. Native Creative Style is fixed to STD in the app; white balance is not forced by the look.
@@ -154,6 +156,8 @@ pmca-gui also offers **Select an apk → Open apk... → Install selected app** 
 | Gray video settings | Select movie P/A/S/M standby; available profiles still depend on format, PAL/NTSC and camera conditions |
 | ACROS retains color | Set strength to 100% |
 | Unexpected color | Exit normally and restart the camera, then inspect native settings; firmware modifications and factory resets are not troubleshooting steps for this app |
+
+Before rolling back to 0.1.3, select Fujifilm PROVIA and exit normally so the old app does not encounter an unsupported Ricoh preset ID.
 
 Update same-key builds with `adb install -r`. For rollback, keep your own earlier APK and original key; the tools do not automatically uninstall or downgrade anything. Do not delete card databases to locate movies.
 

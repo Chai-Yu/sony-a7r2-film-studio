@@ -3,7 +3,7 @@
 """Four strengths, interpolating the custom matrix/curve toward identity.
 
 This is parameter interpolation, not a per-pixel opacity blend. Keep the 100%
-endpoint bit-identical and each matrix row normalized to preserve neutral RGB.
+endpoint bit-identical, including upstream presets with intentional neutral tint.
 """
 import copy
 import xml.etree.ElementTree as ET
@@ -21,8 +21,13 @@ def blend_profile(profile, strength):
         raise ValueError('Strength outside 0–100')
     matrix = []
     for row, values in enumerate(profile['matrix']):
-        blended = [round(value * strength / 100) for value in values]
-        blended[row] = 1024 - sum(v for column, v in enumerate(blended) if column != row)
+        blended = [round(((1024 if column == row else 0) * (100-strength)
+                          + value * strength) / 100)
+                   for column, value in enumerate(values)]
+        # Preserve the existing Fuji rounding exactly. Do not normalize tinted
+        # upstream Ricoh rows: that would change even their 100% endpoint.
+        if sum(values) == 1024:
+            blended[row] = 1024 - sum(v for column, v in enumerate(blended) if column != row)
         matrix.append(blended)
     gamma = [round((i * (100-strength) + value * strength) / 100)
              for i, value in enumerate(profile['gamma'])]

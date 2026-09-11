@@ -19,15 +19,16 @@ import zipfile
 from sign_apk import sign_apk, ensure_pem
 from movie_menu import LABELS as MOVIE_LABELS, patch_movie_menu
 from filter_strength import STRENGTHS, LABELS as STRENGTH_LABELS, blend_profile, patch_strength_menu, strength_methods
+from film_profiles import EXPECTED_HOOK, combined_profiles
 
 OLD = 'com.sony.imaging.app.pictureeffectplus'
 NEW = 'com.yuki.imaging.app.pictureeffectplus'
 HOOK = 'L'+OLD.replace('.','/')+'/shooting/camera/RicohHook;'
 CTRL = 'L'+OLD.replace('.','/')+'/shooting/camera/PictureEffectPlusController;'
 EXPECTED = '80cb4a541f5f3dd49e8f53ffb1905048097fec17209fc9cb595a00681e65e8ea'
-EXPECTED_HOOK = '2db88c8e42311c587ca8304c2c8ed7d70592ee988ee154327ed5503b107723ae'
-VERSION = '0.1.3-alpha'
-ANDROID_VERSION = '0.1d'
+VERSION = '0.2.0-alpha'
+ANDROID_VERSION = '0.2a'
+APP_NAME = '胶片工坊'
 
 def replace_method(text, signature, replacement):
     pattern = r'^\.method [^\n]*'+re.escape(signature)+r'\n[\s\S]*?^\.end method'
@@ -57,11 +58,12 @@ def lookup_method(name, profiles, kind, movie=False):
                           '    return-object v0', f'    :strength_{i}_{strength}']
             lines += [f'    sget-object v0, {HOOK}->sFuji{kind}{i}_100:{ret}']
         else:
-            value=p['name'] if kind=='name' else p['official_film']+' / 官方LUT近似；需实拍校准'
+            value=p['name'] if kind=='name' else p['guide']
             lines += [f'    const-string v0, {quote(value)}']
         lines += ['    return-object v0',f'    :next_{i}']
     if kind in ('name', 'guide'):
-        labels_map = dict(STRENGTH_LABELS)
+        labels_map = {'ApplicationTop': ('胶片风格', '富士参考与理光风格；拍照和录像待机均可切换。')}
+        labels_map.update(STRENGTH_LABELS)
         if movie:
             labels_map.update(MOVIE_LABELS)
         for i, (key, labels) in enumerate(labels_map.items()):
@@ -419,13 +421,13 @@ def rename_package(base):
         if path.suffix in ('.smali','.xml','.arsc'):
             data=path.read_bytes()
             for old,new in [(OLD,NEW),(OLD.replace('.','/'),NEW.replace('.','/')),
-                            ('理光相机','富士风格')]:
+                            ('理光相机',APP_NAME)]:
                 for encoding in ('utf-8','utf-16le'):
                     a,b=old.encode(encoding),new.encode(encoding)
                     assert len(a)==len(b)
                     data=data.replace(a,b)
             if path.suffix=='.smali':
-                data=data.replace(b'\\u7406\\u5149\\u76f8\\u673a',b'\\u5bcc\\u58eb\\u98ce\\u683c')
+                data=data.replace(b'\\u7406\\u5149\\u76f8\\u673a',APP_NAME.encode('unicode_escape'))
             if path.name=='AndroidManifest.xml' and path.parent==base:
                 for encoding in ('utf-8','utf-16le'):
                     data=data.replace('1.31'.encode(encoding),ANDROID_VERSION.encode(encoding))
@@ -454,8 +456,8 @@ def main():
         (root/folder).mkdir(parents=True, exist_ok=True)
     if not (root/'profiles/fuji_official_approx.json').exists():
         raise SystemExit('No local profiles. Follow the rights/input checks and fit_luts.py step in docs/INSTALL.en.md.')
-    profiles=json.loads((root/'profiles/fuji_official_approx.json').read_text())['presets']
-    assert len(profiles)==10
+    fuji=json.loads((root/'profiles/fuji_official_approx.json').read_text())['presets']
+    profiles=combined_profiles(fuji,args.upstream_hook)
     subprocess.run(['java','-jar',str(args.apktool),'d','-r','-f',str(args.input),'-o',str(args.work)],check=True)
     patch_hook(args.work/'smali'/OLD.replace('.','/')/'shooting/camera/RicohHook.smali',profiles,args.upstream_hook,args.movie)
     patch_menu(args.work,profiles)
@@ -471,7 +473,7 @@ def main():
         ('LICENSING.md','LICENSING.md'),
     ):
         shutil.copyfile(root/source,legal/name)
-    unsigned=args.work.parent/'fuji-unsigned.apk'
+    unsigned=args.work.parent/'film-studio-unsigned.apk'
     subprocess.run(['java','-jar',str(args.apktool),'b',str(args.work),'-o',str(unsigned)],check=True)
     key=root/'.private/signing.pem'
     key.parent.mkdir(exist_ok=True)
@@ -479,7 +481,7 @@ def main():
         generated,_=ensure_pem()
         shutil.move(generated,key)
         key.chmod(0o600)
-    output=root/'output'/('FujiStyle-'+VERSION+('-movie.apk' if args.movie else '-photo.apk'))
+    output=root/'output'/('FilmStudio-'+VERSION+('-movie.apk' if args.movie else '-photo.apk'))
     sign_apk(str(unsigned),str(output),str(key))
     with zipfile.ZipFile(output) as z:
         assert z.testzip() is None
@@ -487,7 +489,11 @@ def main():
     metadata=dict(file=output.name,package=NEW,sha256=hashlib.sha256(output.read_bytes()).hexdigest(),
                   version=VERSION,movie_enabled=args.movie,
                   camera_tested=False,encoded_video_filter_verified=False,
-                  source_apk_sha256=EXPECTED,profiles=10)
+                  source_apk_sha256=EXPECTED,profiles=len(profiles),
+                  app_name=APP_NAME,android_version=ANDROID_VERSION,
+                  profile_families={'fujifilm':10,'ricoh':5})
+    (root/'profiles/film_studio.json').write_text(json.dumps(dict(
+        version=VERSION,presets=profiles),ensure_ascii=False,indent=2))
     (root/'validation'/(output.stem+'.json')).write_text(json.dumps(metadata,indent=2))
     print('Built:',output)
 

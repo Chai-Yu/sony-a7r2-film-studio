@@ -2,12 +2,14 @@
 
 [项目首页](../README.md) · [English](INSTALL.en.md) · [日本語](INSTALL.ja.md)
 
-本指南对应 **0.1.3-alpha / 机内 0.1d**。实机环境为 a5100 固件1.10、Android 2.3.7；macOS 构建与 Wi-Fi 安装已验证。Windows/Linux 的命令说明未做相同的实机全流程验证。
+本指南对应 **0.2.0-alpha / 机内 0.2a**。实机环境为 a5100 固件1.10、Android 2.3.7；macOS 构建与 Wi-Fi 安装已验证。Windows/Linux 的命令说明未做相同的实机全流程验证。
+
+**0.2.0-alpha 更名为「胶片工坊」，保留旧版包名与签名，可用 `install -r` 覆盖更新。新增理光风格使用上游原参数，100% 不重新调色；四档强度、拍照和录像菜单共用。新合并版已在 a5100 上安装、启动，并有部分滤镜参数应用成功日志；旧版记录不代表本版所有照片／录像组合已验证。**
 
 ## 0. 直接安装发行版 APK
 
 1. 先看[机型兼容性](../README.md#compatibility)，确认你的机型和预期功能在说明范围内。
-2. 在[Releases](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha)的 Assets 中下载 **[FujiStyle-0.1.3-alpha-movie.apk](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.1.3-alpha/FujiStyle-0.1.3-alpha-movie.apk)**；不要下载 Source code ZIP 当作安装包。
+2. 在[Releases](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.2.0-alpha)的 Assets 中下载 **[FilmStudio-0.2.0-alpha-movie.apk](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.2.0-alpha/FilmStudio-0.2.0-alpha-movie.apk)**；不要下载 Source code ZIP 当作安装包。
 3. 同时下载 `SHA256SUMS.txt`，用 macOS 的 `shasum -a 256`、Linux 的 `sha256sum` 或 PowerShell 的 `Get-FileHash -Algorithm SHA256` 核对 APK。校验的是文件一致性，不是法律许可或兼容保证。
 4. 电脑安装 [Android Platform-Tools / adb](https://developer.android.com/tools/releases/platform-tools)。首次连接相机时按第 4 节启用 Wi-Fi ADB，再按第 5 节安装。已能连接 ADB 的用户可直接看第 5 节。
 5. **现成 APK 不需要 Python、Java、Apktool 或签名私钥。** 第 1～3 节供希望自行构建的读者使用。
@@ -18,10 +20,10 @@
 
 ```sh
 adb connect CAMERA_IP:5555
-adb -s CAMERA_IP:5555 install -r FujiStyle-0.1.3-alpha-movie.apk
+adb -s CAMERA_IP:5555 install -r FilmStudio-0.2.0-alpha-movie.apk
 ```
 
-将 `CAMERA_IP` 换成相机当前地址，安装完成显示 `Success`，然后在机身应用列表打开「富士风格」。第 5 节中的 `output/` 路径是本地构建输出目录；直接下载的用户请使用实际下载路径。
+将 `CAMERA_IP` 换成相机当前地址，安装完成显示 `Success`，然后在机身应用列表打开「胶片工坊」。第 5 节中的 `output/` 路径是本地构建输出目录；直接下载的用户请使用实际下载路径。
 
 ## 1. 先准备资料与设备
 
@@ -84,18 +86,18 @@ java -jar inputs/apktool.jar --version
 
 ```sh
 python tools/fit_luts.py inputs/luts/gfx-eterna-55-3d-lut-v110/33Grid/F-Log2 .
+python tools/build_apk.py --input inputs/base.apk --apktool inputs/apktool.jar --upstream-hook inputs/upstream/src/smali/RicohHook.smali --work build-local/decoded-020 --movie
 python tools/check_strength.py
-python tools/build_apk.py --input inputs/base.apk --apktool inputs/apktool.jar --upstream-hook inputs/upstream/src/smali/RicohHook.smali --work build-local/decoded-013 --movie
 python tools/check_build.py
 ```
 
 第一步生成本地 `profiles/` 参数、`output/` 预览 LUT 和 `validation/` 拟合报告；然后构建、签名并检查 APK。结果为：
 
 ```text
-output/FujiStyle-0.1.3-alpha-movie.apk
+output/FilmStudio-0.2.0-alpha-movie.apk
 ```
 
-`build-local/decoded-013` 必须为空或不存在。重复构建请指定一个新的工作目录。`--movie` 表示启用本指南的拍照和录像功能；省略它会生成仅拍照版本。
+`build-local/decoded-020` 必须为空或不存在。重复构建请指定一个新的工作目录。`--movie` 表示启用本指南的拍照和录像功能；省略它会生成仅拍照版本。
 
 **保管 `.private/signing.pem`。** 首次构建会自动生成签名密钥，之后更新必须保留同一密钥。不要上传密钥或把它交给其他使用者。不同人的签名不同，生成 APK 的 SHA-256 也会不同；本地报告中的哈希用于核对自己的构建；下载的发行 APK 应与 Releases 中的 SHA256SUMS.txt 核对。
 
@@ -118,10 +120,10 @@ macOS 发生 USB 占用时先关闭照片、图像捕捉及会访问相机的同
 ```sh
 adb connect CAMERA_IP:5555
 adb devices
-adb -s CAMERA_IP:5555 install -r output/FujiStyle-0.1.3-alpha-movie.apk
+adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.0-alpha-movie.apk
 ```
 
-预期 `adb devices` 中目标状态为 `device`，安装末尾显示 `Success`。相机应用程序列表 → **富士风格**。安装名称及大部分菜单为中文。
+预期 `adb devices` 中目标状态为 `device`，安装末尾显示 `Success`。相机应用程序列表 → **胶片工坊**。安装名称及大部分菜单为中文。
 
 如相机允许远程启动，也可执行：
 
@@ -135,7 +137,7 @@ pmca-gui 的「Select an apk → Open apk... → Install selected app」可作�
 
 ## 6. 相机操作与首次自检
 
-1. 拍照预览或录像待机按**中心键**选择风格。按 MENU 也可从首页进入「富士风格」。
+1. 拍照预览或录像待机按**中心键**选择风格。按 MENU 也可从首页进入「胶片风格」。列表包含「富士」与「理光」两组前缀，共 15 项。
 2. MENU 首页 →「滤镜强度」选择30/50/70/100%。初始100%，正常退出后保存。人像先对比30%与50%。
 3. 录像：MENU 首页 →「拍照／录像模式」→ 动态影像 P/A/S/M，然后设置「录像文件格式」及「录像帧率／画质」。拍照模式中这两项呈灰色时，先切到录像待机。按 MOVIE 开始，再按一次停止。
 4. MENU 第4页 →「白平衡」。原机创意风格在应用内固定为 STD，滤镜不会锁定白平衡。
@@ -154,6 +156,8 @@ pmca-gui 的「Select an apk → Open apk... → Install selected app」可作�
 | 录像设置灰色 | 进入动态影像 P/A/S/M 待机；具体档位取决于格式、当前PAL/NTSC和相机条件 |
 | ACROS 不是纯黑白 | 检查强度是否100% |
 | 颜色异常 | 正常退出应用并重启相机，再检查原机设置；不要靠修改固件或恢复出厂设置排查本应用 |
+
+从本版回退到 0.1.3 前，先选择「富士 PROVIA」并正常退出，避免旧版读取不支持的理光滤镜 ID。
 
 同一密钥构建的更新使用 `adb install -r`。回退时使用自己保存的旧 APK 与原密钥；不会自动降级或卸载。不要手动删除存储卡的数据库来找视频。
 

@@ -13,6 +13,7 @@
 | 本项目原创工具、补丁生成逻辑、测试和文档 | PolyForm Noncommercial 1.0.0，限贡献者有权授予的部分 |
 | `tools/sign_apk.py`，含本项目对它的修改 | 来源于 bonyback1 的项目，整个文件保留 [Apache-2.0](LICENSES/Apache-2.0.txt)；修改说明见文件开头及 NOTICE |
 | 其他可能包含的上游表达 | 上游权利和 Apache-2.0 条件继续有效；本仓库不能撤销既有许可 |
+| 上游理光／街头风格的 5 组矩阵与 Gamma 参数 | 从上述固定版本的 `RicohHook.smali` 提取，保留上游 Apache-2.0；并非理光官方发布的 LUT，不声明获得理光背书 |
 | 富士官方 LUT、相关说明及其权利 | 归 FUJIFILM 及相应权利人所有；不分发官方原始 LUT 文件；APK 内嵌拟合参数。本项目不授予这些第三方材料的使用、改编或再分发许可 |
 | Sony 基础应用、库、固件和商标 | 归各自权利人所有；发行 APK 包含改制后的 Sony 基础应用内容；不提供固件，不因打包、参考 API 或结构而取得其权利 |
 
@@ -37,6 +38,7 @@ Commercial use is not granted by that license. Its text controls the permitted p
 | Original tools, patch-generation logic, tests and documentation | PolyForm Noncommercial 1.0.0, only to the extent contributors can grant rights |
 | `tools/sign_apk.py`, including our modifications | Adapted from bonyback1's project; the whole file remains [Apache-2.0](LICENSES/Apache-2.0.txt), with modification notices |
 | Any other underlying upstream expression | Its existing rights and Apache-2.0 conditions remain applicable |
+| Five upstream Ricoh/street-style matrix and gamma profiles | Extracted from the pinned `RicohHook.smali`; upstream Apache-2.0 remains applicable. These are not Ricoh-published LUTs or endorsed presets |
 | Official Fujifilm LUTs and associated material | Owned by FUJIFILM and respective rights holders. Original LUT files are not distributed; fitted parameters are embedded in the APK. No third-party rights are granted here |
 | Sony base app, libraries, firmware and trademarks | Respective third-party rights. The release APK contains modified Sony base-app material, not firmware. Packaging does not grant ownership or additional rights |
 
@@ -61,6 +63,7 @@ As far as applicable law permits, the software is provided as is without warrant
 | 独自のツール、パッチ生成処理、テスト、説明書 | 貢献者が許諾できる範囲で PolyForm Noncommercial 1.0.0 |
 | `tools/sign_apk.py` と本プロジェクトによる同ファイルの変更 | bonyback1 のプロジェクトに由来し、ファイル全体を [Apache-2.0](LICENSES/Apache-2.0.txt) として維持。変更点を明記 |
 | その他の上流由来の表現 | 元の権利と Apache-2.0 の条件を維持 |
+| 上流のリコー／ストリート風5種の行列と Gamma | 指定リビジョンの `RicohHook.smali` から抽出し、Apache-2.0 を維持。リコー公式の LUT や推奨プリセットではありません |
 | 富士フイルム公式 LUT と関連資料 | FUJIFILM および各権利者に帰属。公式の元 LUT は配布せず、近似パラメータは APK に内蔵します。第三者の権利は許諾しません |
 | Sony の基礎アプリ、ライブラリ、ファームウェア、商標 | 各権利者に帰属。公開 APK には改変した Sony 基礎アプリを含みますが、ファームウェアは配布しません。パッケージ化によって権利を取得するものではありません |
 

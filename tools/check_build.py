@@ -54,12 +54,15 @@ def main():
                     for g in range(n)] for b in range(n)])
     points=np.array([[0,0,0],[1,1,1],[.13,.72,.41],[1,0,.4]])
     assert np.allclose(sample(cube,points),points,atol=1e-12)
-    data=json.loads((ROOT/'profiles/fuji_official_approx.json').read_text())
-    assert len(data['presets'])==10 and len({p['id'] for p in data['presets']})==10
+    data=json.loads((ROOT/'profiles/film_studio.json').read_text())
+    assert len(data['presets'])==15 and len({p['id'] for p in data['presets']})==15
     for p in data['presets']:
         m=np.array(p['matrix']);g=np.array(p['gamma'])
-        assert m.shape==(3,3) and np.all(m.sum(1)==1024)
+        assert m.shape==(3,3) and m.min()>=-2048 and m.max()<=3072
         assert g.shape==(1024,) and g.min()>=0 and g.max()<=1023 and np.all(np.diff(g)>=0)
+        if p['family']=='ricoh':
+            continue
+        assert p['family']=='fujifilm' and np.all(m.sum(1)==1024)
         exported=read_cube(ROOT/'output'/f'SonyProxy_{p["official_film"].replace(".","")}.cube')
         # Grid nodes round-trip exactly, including cube boundaries.
         nodes=np.array([[0,0,0],[1,1,1],[.25,.5,.75]])

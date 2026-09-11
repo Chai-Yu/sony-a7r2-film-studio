@@ -25,7 +25,21 @@ English: The clip demonstrates that monochrome processing reached saved video, n
 
 日本語：この動画は白黒処理が保存映像に反映された証拠であり、富士フイルム ACROS との正確な一致を示すものではありません。0.1b の結果は、0.1d の全組み合わせを確認したことにはなりません。アプリ内再生は写真のみで、動画は標準の対応形式の再生画面で確認します。個人の素材、機器ログ、撮影情報は公開しません。
 
-## 发布 APK / Released APK / 公開 APK
+## 0.2.0-alpha / 胶片工坊 / Film Studio
+
+`FilmStudio-0.2.0-alpha-movie.apk` — SHA-256:
+
+```text
+88632d187f75c6560c2b67b64d9de9774226d8a78fd7ba3330270493e8b0ad2a
+```
+
+中文：本版把应用名改为「胶片工坊」，合并 10 个富士参考风格与 5 个上游理光／街头风格。对最终签名 APK 重新反编译后，核对了全部 120 组数组（15 风格 × 4 强度 × 矩阵／Gamma）、菜单与查询映射。与 0.1.3 比较，原有 80 组富士数组逐项一致；新增理光 100% 参数与固定版本上游一致。曲线边界、强度端点、684 个签名条目、同一签名证书及包内许可检查通过。相机内版本名为 `0.2a`，包名不变。**实机覆盖安装显示 Success，启动成功，已安装版本读回为 0.2a。运行日志观察到原有富士风格及理光正片、负片、高反差黑白、森山风的参数应用成功；正负逆冲仅有静态检查。尚未验证本版照片／录像保存、全部强度或录像待机下的全部切换，也未做新色彩校准。**
+
+English: The app is renamed 胶片工坊 / Film Studio and combines ten Fujifilm-reference with five upstream Ricoh/street presets. Round-trip decompilation of the final signed APK verified all 120 arrays (15 looks × 4 strengths × matrix/gamma), menu IDs and lookups. All 80 existing Fujifilm arrays match 0.1.3 exactly; Ricoh at 100% matches the pinned upstream. Curve bounds, strength endpoints, 684 signed entries, the retained certificate and bundled legal files passed. The on-camera version is `0.2a`; the package is unchanged. **The in-place camera update returned Success, the app launched, and the installed version read back as 0.2a. Runtime logs showed successful application of existing Fujifilm profiles and Ricoh Positive, Negative, High Contrast B&W and Moriyama; Cross Process has only static checks. Saved photographs/video, all strengths and all movie-standby transitions remain unverified for this version. No new color calibration was performed.**
+
+日本語：アプリ名を「胶片工坊 / Film Studio」に変更し、富士参照10種と上流リコー／ストリート風5種を統合。最終署名 APK を再展開し、120配列（15種類 × 4強度 × 行列／Gamma）、メニューと参照処理を確認しました。既存の富士80配列は0.1.3と完全一致し、リコー100%も指定版の上流と一致します。カーブ範囲、強度端点、684署名項目、継続する署名証明書、同梱ライセンスを確認。カメラ内表示は `0.2a`、パッケージ名は維持しています。**実機の上書き更新は Success、起動成功、インストール済み版は0.2aと確認しました。既存の富士参照と、リコーのポジ・ネガ・高反差白黒・森山風で適用成功ログを確認。クロスプロセスは静的検証のみです。本版の写真／動画保存、全強度、動画待機中の全切り替えは未検証で、新たな色彩校正も行っていません。**
+
+## 0.1.3-alpha 发布 APK / Previous release / 旧公開 APK
 
 `FujiStyle-0.1.3-alpha-movie.apk` — SHA-256:
 
@@ -64,6 +78,16 @@ English: Independent training and validation use the unclipped region of the neu
 
 ## 本地检查 / Local checks / ローカル検査
 
+Optional compiled-payload regression check after decompiling the signed APK:
+
+```sh
+java -jar inputs/apktool.jar d -r output/FilmStudio-0.2.0-alpha-movie.apk -o build-local/verify-020
+python tools/check_combined.py --decoded build-local/verify-020 --upstream-hook inputs/upstream/src/smali/RicohHook.smali
+```
+
+Use a fresh verification directory. To compare all forty previous Fujifilm look/strength combinations, add `--previous-decoded PATH_TO_DECODED_013`. This option reads the previous build; it does not connect to the camera.
+
+
 After completing the rights and input steps in the [installation guide](INSTALL.en.md):
 
 ```sh
@@ -71,9 +95,9 @@ python tools/check_strength.py
 python tools/check_build.py
 ```
 
-These checks require locally fitted profiles; the APK check also requires a local build. They do not connect to the camera. They verify:
+Run these after a local build, which creates `profiles/film_studio.json` from the existing fitted profiles and pinned upstream hook. They do not connect to the camera. They verify:
 
-- Ten profiles, four supported strengths, 3×3 dimensions, neutral-preserving row sums, 1024-point monotonic curves and 10-bit bounds.
+- Fifteen profiles, four strengths, 3×3 dimensions, 1024-point monotonic curves and 10-bit bounds. Neutral rows remain neutral; intentional Ricoh tints retain their original row sums at 100%.
 - A bit-identical 100% endpoint and mathematical 0% identity endpoint; 0% is not an app menu choice.
 - `.cube` red/green/blue ordering and exported-grid round trips.
 - APK archive integrity, file and manifest digests, and the detached signature against the embedded certificate. This is integrity checking, not trust in the signer or proof of device compatibility.

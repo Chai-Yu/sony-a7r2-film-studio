@@ -1,10 +1,12 @@
-# A5100 Film Studio
+# 胶片工坊 / Film Studio
 
 [中文](README.md) · **English** · [日本語](README.ja.md)
 
 An unofficial film-look experiment for the **Sony a5100 / ILCE-5100**. It references the hardware color-processing approach in [bonyback1's Ricoh mod](https://github.com/bonyback1/sony-pmca-ricoh-mod) and uses [Fujifilm's publicly available GFX ETERNA 55 LUTs](https://www.fujifilm-x.com/global/support/download/lut/) as color-research references for photographs and experimental video.
 
-**Version: 0.1.3-alpha; on-camera version: 0.1d; app name: 富士风格.** Documentation is available in three languages; the camera UI is currently primarily Chinese.
+**Version: 0.2.0-alpha; on-camera version: 0.2a; app name: 胶片工坊.** Documentation is available in three languages; the camera UI is currently primarily Chinese.
+
+**Renamed to Film Studio (胶片工坊), combining ten Fujifilm-reference and five upstream Ricoh/street-style presets, fifteen in total.** Menu labels use 富士 / 理光 prefixes. The package and signing certificate are retained for an in-place update from 富士风格. The combined build installed and launched on the a5100, with successful parameter-application logs for selected presets; saved photographs/video from this version remain unverified. [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha) remains available for rollback.
 
 <a id="compatibility"></a>
 
@@ -27,9 +29,9 @@ Candidates come from the [upstream model list](https://github.com/bonyback1/sony
 
 ## Download and installation
 
-**[Download APK: 0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.1.3-alpha/FujiStyle-0.1.3-alpha-movie.apk)** · [Release notes and checksum files](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha)
+**[Download APK: 0.2.0-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.2.0-alpha/FilmStudio-0.2.0-alpha-movie.apk)** · [Release notes and checksum files](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.2.0-alpha)
 
-Download `FujiStyle-0.1.3-alpha-movie.apk`, then follow the [English installation guide](docs/INSTALL.en.md) to connect and install. No local compilation is required. **Code → Download ZIP contains source, not the installer.**
+Download `FilmStudio-0.2.0-alpha-movie.apk`, then follow the [English installation guide](docs/INSTALL.en.md) to connect and install. No local compilation is required. **Code → Download ZIP contains source, not the installer.**
 
 This is an unofficial experimental release with only the a5100 evidence described above. The APK contains Sony base-app material and parameters fitted from publicly available Fujifilm LUTs. A separate grant to adapt and redistribute those third-party materials has not been established. Publication does not represent Sony/FUJIFILM permission or guarantee immunity; [license scope](LICENSING.md) distinguishes the rights in each part. Original official LUT files and signing private keys are not distributed.
 
@@ -39,7 +41,7 @@ With your own lawfully built APK and Wi-Fi ADB already enabled:
 
 ```sh
 adb connect CAMERA_IP:5555
-adb -s CAMERA_IP:5555 install -r output/FujiStyle-0.1.3-alpha-movie.apk
+adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.0-alpha-movie.apk
 ```
 
 **IP address and privacy:** `CAMERA_IP` is a placeholder. Replace it with the current IP shown on your own camera in Tweak → Developer; do not type the placeholder literally or copy someone else's address. Keep the `:5555` port. Public instructions use a placeholder; hide or remove actual IP addresses before sharing screenshots or logs.
@@ -52,7 +54,8 @@ First-time users also need the preparation steps in the guide.
 
 ## Features
 
-- Ten official-LUT reference looks: PROVIA, Velvia, ASTIA, CLASSIC CHROME, REALA ACE, PRO Neg. Std, CLASSIC Neg., ETERNA, ETERNA BLEACH BYPASS and ACROS.
+- Ten Fujifilm official-LUT reference looks: PROVIA, Velvia, ASTIA, CLASSIC CHROME, REALA ACE, PRO Neg. Std, CLASSIC Neg., ETERNA, ETERNA BLEACH BYPASS and ACROS.
+- Five upstream Ricoh/street styles: GR Positive Film, Negative Film, High Contrast B&W, Moriyama Daido Style and Cross Process. Community presets, not official Ricoh LUTs.
 - Press the center button to select a look in still preview or movie standby.
 - MENU page 1 →「滤镜强度」(filter strength): **30%, 50%, 70%, 100%**. Starts at 100%; shared by stills and video and saved through normal app exit.
 - MENU page 1 →「拍照／录像模式」(still/movie mode) → movie P/A/S/M, then「录像文件格式」(format) and「录像帧率／画质」(frame rate/quality). Choices follow the camera's supported XAVC S, AVCHD and MP4 profiles and current PAL/NTSC system.
@@ -60,7 +63,7 @@ First-time users also need the preparation steps in the guide.
 - White balance remains available on MENU page 4. The app uses STD/Standard with contrast, saturation and sharpness at zero as its baseline; native Portrait/Vivid Creative Styles are not stacked in this app.
 - Separate package `com.yuki.imaging.app.pictureeffectplus`, allowing coexistence with the original Ricoh mod.
 
-For portraits, compare 30% and 50% first. Strength reduces both the color matrix and tone curve; it does not detect faces or automatically repair skin tones. **ACROS below 100% retains some color. Use 100% for monochrome.**
+For portraits, compare 30% and 50% first. Strength reduces both the color matrix and tone curve; it does not detect faces or automatically repair skin tones. **ACROS, Ricoh High Contrast B&W and Moriyama style retain some color below 100%. Use 100% for monochrome.**
 
 ## Evidence and limits
 

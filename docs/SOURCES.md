@@ -18,7 +18,25 @@ English: The reference supplies the hardware color-matrix/common-gamma approach 
 
 日本語：ハードウェア色行列、共通 Gamma カーブ、メニュー連携を参考にしています。同梱の署名ツールには SHA-1 の明示と JAR ヘッダー折り返しを追加し、Apache-2.0 を維持します。近似処理、動画メニュー、中央ボタン、強度は追加処理です。上流 hook は利用者がローカルで用意し、Git のソースツリーに基礎 APK は含みませんが、公開 APK には改変した基礎アプリを含みます。
 
-## 色彩资料 / Color reference / 色彩資料
+## 理光参考风格 / Ricoh-reference styles / リコー参照スタイル
+
+From 0.2.0-alpha, [the pinned upstream hook](https://github.com/bonyback1/sony-pmca-ricoh-mod/blob/7c565898562c73c5073c54dfc831c8c3df9c24cf/src/smali/RicohHook.smali) supplies five additional presets:
+
+| App ID | Style | Upstream array suffix |
+| --- | --- | --- |
+| `ricoh-positive` | GR Positive Film / GR 正片 / GR ポジフィルム | `pos` |
+| `ricoh-negative` | Negative Film / 负片 / ネガフィルム | `neg` |
+| `ricoh-hcbw` | High Contrast B&W / 高反差黑白 / ハイコントラスト白黒 | `hcbw` |
+| `ricoh-daido` | Moriyama Daido Style / 森山风 / 森山風 | `daido` |
+| `ricoh-cross` | Cross Process / 正负逆冲 / クロスプロセス | `xpro` |
+
+中文：本地构建直接读取上游的矩阵和 1024 点 Gamma，不重新拟合、不读取上游 `.CUB` 文件。100% 保留上游参数；30%／50%／70% 向恒等变换插值，保留负片、逆冲原有的中性偏色设计。原有富士参数与四档强度保持不变。理光组是社区参考风格，并非理光官方 LUT，也未经真机色彩匹配验证。上游参数保留 Apache-2.0；新增提取逻辑的许可见文件头。
+
+English: Local builds extract the upstream matrix and 1024-point gamma arrays without refitting or reading upstream `.CUB` files. 100% preserves the exact upstream parameters; 30/50/70% interpolate toward identity, including the original neutral tint in Negative Film and Cross Process. Existing Fujifilm parameters and all four strengths are unchanged. These are community Ricoh-reference styles, not official Ricoh LUTs or verified camera matches. Upstream parameters remain Apache-2.0; see the file header for the new extraction logic.
+
+日本語：上流の行列と1024点 Gamma 配列を直接抽出し、再近似や `.CUB` の読み込みは行いません。100%は上流と完全に同じパラメータで、30/50/70%は恒等変換へ補間します。ネガとクロスプロセスの中性色への色付けも維持します。既存の富士参照パラメータと4段階の強度は変更しません。リコー公式 LUT や実機の色再現を検証したものではなく、コミュニティの参照スタイルです。上流パラメータは Apache-2.0 を維持し、新規抽出処理のライセンスはファイル冒頭に示します。
+
+## 富士色彩资料 / Fujifilm color reference / 富士フイルム色彩資料
 
 **[FUJIFILM LUT download](https://www.fujifilm-x.com/global/support/download/lut/)** — GFX ETERNA 55 3D LUT v1.10, `33Grid/F-Log2`.
 

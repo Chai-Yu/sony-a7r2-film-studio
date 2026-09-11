@@ -1,10 +1,12 @@
-# A5100 Film Studio
+# 胶片工坊 / Film Studio
 
 [中文](README.md) · [English](README.en.md) · **日本語**
 
 **Sony a5100 / ILCE-5100** 向けの非公式フィルム調実験ツールです。[bonyback1 の Ricoh MOD](https://github.com/bonyback1/sony-pmca-ricoh-mod) のハードウェア色処理を参考にし、[富士フイルムが公開する GFX ETERNA 55 LUT](https://www.fujifilm-x.com/global/support/download/lut/) を色彩研究の参照資料として、写真と実験的な動画撮影に対応します。
 
-**バージョン：0.1.3-alpha／カメラ内表示：0.1d／アプリ名：富士风格。** 説明書は3言語対応ですが、カメラのアプリ画面は現在主に中国語です。
+**バージョン：0.2.0-alpha／カメラ内表示：0.2a／アプリ名：胶片工坊。** 説明書は3言語対応ですが、カメラのアプリ画面は現在主に中国語です。
+
+**アプリ名を Film Studio（胶片工坊）に変更し、富士参照10種と上流のリコー／ストリート風5種、合計15種類を統合しました。** メニューは「富士」「理光」の接頭辞で区別します。パッケージと署名証明書は維持し、旧「富士风格」へ上書き更新できます。統合版は a5100 で導入・起動し、一部プリセットの適用成功ログを確認しました。本版の写真／動画保存は未検証です。戻すための [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha) も引き続き公開しています。
 
 <a id="compatibility"></a>
 
@@ -27,9 +29,9 @@
 
 ## ダウンロードとインストール
 
-**[APK を直接ダウンロード：0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.1.3-alpha/FujiStyle-0.1.3-alpha-movie.apk)** · [リリース説明・チェックサム](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha)
+**[APK を直接ダウンロード：0.2.0-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.2.0-alpha/FilmStudio-0.2.0-alpha-movie.apk)** · [リリース説明・チェックサム](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.2.0-alpha)
 
-`FujiStyle-0.1.3-alpha-movie.apk` をダウンロードし、[日本語の導入手順](docs/INSTALL.ja.md)に沿って接続・インストールしてください。自分でビルドする必要はありません。**Code → Download ZIP はソースであり、インストーラーではありません。**
+`FilmStudio-0.2.0-alpha-movie.apk` をダウンロードし、[日本語の導入手順](docs/INSTALL.ja.md)に沿って接続・インストールしてください。自分でビルドする必要はありません。**Code → Download ZIP はソースであり、インストーラーではありません。**
 
 これは非公式の実験版で、実機確認は上記の a5100 に限ります。APK には Sony の基礎アプリと公開された富士フイルム LUT から近似したパラメータを含みます。これら第三者資料の改変・再配布について個別の許諾は未確認です。公開は Sony／FUJIFILM の許諾や免責を意味しません。各部分の権利は[ライセンスの適用範囲](LICENSING.md)を参照してください。公式の元 LUT ファイルと署名秘密鍵は配布しません。
 
@@ -39,7 +41,7 @@
 
 ```sh
 adb connect CAMERA_IP:5555
-adb -s CAMERA_IP:5555 install -r output/FujiStyle-0.1.3-alpha-movie.apk
+adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.0-alpha-movie.apk
 ```
 
 **IP アドレスとプライバシー：** `CAMERA_IP` は仮の表記です。Tweak → Developer で自分のカメラに現在表示されている IP アドレスに置き換えてください。仮の表記をそのまま入力したり、他人のアドレスをコピーしたりしないでください。末尾のポート `:5555` はそのままにします。公開手順には仮の表記を使い、スクリーンショットやログを共有する際は実際の IP アドレスを隠すか削除してください。
@@ -52,7 +54,8 @@ adb -s CAMERA_IP:5555 install -r output/FujiStyle-0.1.3-alpha-movie.apk
 
 ## 機能
 
-- 公式 LUT を参照した10種類：PROVIA、Velvia、ASTIA、CLASSIC CHROME、REALA ACE、PRO Neg. Std、CLASSIC Neg.、ETERNA、ETERNA BLEACH BYPASS、ACROS。
+- 富士フイルム公式 LUT を参照した10種類：PROVIA、Velvia、ASTIA、CLASSIC CHROME、REALA ACE、PRO Neg. Std、CLASSIC Neg.、ETERNA、ETERNA BLEACH BYPASS、ACROS。
+- 上流のリコー／ストリート風5種：GR ポジ、ネガ、ハイコントラスト白黒、森山風、クロスプロセス。コミュニティのスタイルであり、リコー公式 LUT ではありません。
 - 写真プレビューと動画待機中に、中央ボタンでフィルターを選択。
 - MENU 1ページ目 →「滤镜强度」（強度）：**30% / 50% / 70% / 100%**。初期値は100%。写真と動画で共通、通常終了時に設定を保存します。
 - MENU 1ページ目 →「拍照／录像模式」→ 動画 P/A/S/M を選び、「录像文件格式」（形式）と「录像帧率／画质」（フレームレート／画質）を設定。機種が対応する XAVC S / AVCHD / MP4 と現在の PAL/NTSC 設定に従います。
@@ -60,7 +63,7 @@ adb -s CAMERA_IP:5555 install -r output/FujiStyle-0.1.3-alpha-movie.apk
 - ホワイトバランスは MENU 4ページ目で調整できます。基準は STD/スタンダード、コントラスト・彩度・シャープネスは0。アプリ内でポートレートやビビッドを重ねる設定にはしていません。
 - パッケージ名は `com.yuki.imaging.app.pictureeffectplus`。元の Ricoh MOD と共存できます。
 
-人物撮影では、まず30%と50%を比較してください。強度は色変換と明暗カーブを弱めるもので、顔検出や肌色の自動補正ではありません。**ACROS を100%未満にすると色が一部残ります。完全なモノクロには100%を使います。**
+人物撮影では、まず30%と50%を比較してください。強度は色変換と明暗カーブを弱めるもので、顔検出や肌色の自動補正ではありません。**ACROS、リコーのハイコントラスト白黒、森山風は100%未満で色が一部残ります。完全なモノクロには100%を使います。**
 
 ## 確認範囲と制限
 

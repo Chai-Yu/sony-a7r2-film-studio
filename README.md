@@ -1,10 +1,12 @@
-# A5100 Film Studio
+# 胶片工坊 / Film Studio
 
 **中文** · [English](README.en.md) · [日本語](README.ja.md)
 
 面向 **Sony a5100 / ILCE-5100** 的非官方胶片风格实验工具。参考 [bonyback1 的 Ricoh 模组](https://github.com/bonyback1/sony-pmca-ricoh-mod) 的硬件色彩处理方法，并以 [富士公开的 GFX ETERNA 55 LUT](https://www.fujifilm-x.com/global/support/download/lut/) 为色彩研究参考，提供照片与实验性录像效果。
 
-**当前版本：0.1.3-alpha；相机内版本名：0.1d；应用名称：富士风格。** 文档提供三种语言，当前相机应用界面主要为中文。
+**当前版本：0.2.0-alpha；相机内版本名：0.2a；应用名称：胶片工坊。** 文档提供三种语言，当前相机应用界面主要为中文。
+
+**本版更名为「胶片工坊」，合并 10 个富士参考风格与 5 个上游理光／街头风格，共 15 个。** 相机菜单以「富士」「理光」前缀区分。包名与签名沿用旧版「富士风格」，可覆盖更新；新合并版已在 a5100 上安装、启动，并观察到部分滤镜参数应用成功；本版照片／录像保存尚待验证。原版 [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha) 仍保留供回退。
 
 <a id="compatibility"></a>
 
@@ -27,9 +29,9 @@
 
 ## 下载与安装
 
-**[直接下载 APK：0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.1.3-alpha/FujiStyle-0.1.3-alpha-movie.apk)** · [发行说明与校验文件](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha)
+**[直接下载 APK：0.2.0-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.2.0-alpha/FilmStudio-0.2.0-alpha-movie.apk)** · [发行说明与校验文件](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.2.0-alpha)
 
-下载 `FujiStyle-0.1.3-alpha-movie.apk` 后，按照[中文安装教程](docs/INSTALL.zh-CN.md)连接相机并安装，无需自己编译。**Code → Download ZIP 是源码，不是安装包。**
+下载 `FilmStudio-0.2.0-alpha-movie.apk` 后，按照[中文安装教程](docs/INSTALL.zh-CN.md)连接相机并安装，无需自己编译。**Code → Download ZIP 是源码，不是安装包。**
 
 本发行版为非官方实验版本，仅有上文所列的 a5100 实机验证。APK 包含 Sony 基础应用内容和由富士公开 LUT 拟合出的参数；未确认针对这些第三方材料改编、再分发的独立授权。发布不表示获得 Sony 或 FUJIFILM 许可，也不保证免责；[版权与许可范围](LICENSING.md)单独说明各部分的权利。官方原始 LUT 和签名私钥不提供下载。
 
@@ -39,7 +41,7 @@
 
 ```sh
 adb connect CAMERA_IP:5555
-adb -s CAMERA_IP:5555 install -r output/FujiStyle-0.1.3-alpha-movie.apk
+adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.0-alpha-movie.apk
 ```
 
 **IP 与隐私：** `CAMERA_IP` 只是占位符，必须替换为你自己的相机在 Tweak → Developer 中当前显示的 IP；不要原样输入，也不要照抄他人的地址。保留后面的 `:5555` 端口。公开教程使用占位符；分享截图或日志时，请遮住或删除真实 IP。
@@ -52,7 +54,8 @@ adb -s CAMERA_IP:5555 install -r output/FujiStyle-0.1.3-alpha-movie.apk
 
 ## 功能
 
-- 10 种官方 LUT 参考风格：PROVIA、Velvia、ASTIA、CLASSIC CHROME、REALA ACE、PRO Neg. Std、CLASSIC Neg.、ETERNA、ETERNA BLEACH BYPASS、ACROS。
+- 10 种富士官方 LUT 参考风格：PROVIA、Velvia、ASTIA、CLASSIC CHROME、REALA ACE、PRO Neg. Std、CLASSIC Neg.、ETERNA、ETERNA BLEACH BYPASS、ACROS。
+- 5 种上游理光／街头风格：GR 正片、负片、高反差黑白、森山风、正负逆冲。来自社区模组，非理光官方 LUT。
 - 拍照及录像待机时，按中心键进入滤镜选择。
 - MENU 首页 →「滤镜强度」：**30% / 50% / 70% / 100%**。初始为 100%，拍照与录像共用，正常退出后保存选择。
 - MENU 首页 →「拍照／录像模式」→ 动态影像 P/A/S/M，再设置「录像文件格式」及「录像帧率／画质」。显示相机支持的 XAVC S / AVCHD / MP4 组合，不强行开放另一 PAL/NTSC 制式。
@@ -60,7 +63,7 @@ adb -s CAMERA_IP:5555 install -r output/FujiStyle-0.1.3-alpha-movie.apk
 - MENU 第 4 页可调整白平衡。滤镜以 STD 标准、对比度/饱和度/锐度为 0 作为基础，应用内不叠加原机人像、鲜艳等创意风格。
 - 独立包名 `com.yuki.imaging.app.pictureeffectplus`，可与原 Ricoh 模组共存。
 
-人像可先比较 30% 与 50%。强度减弱颜色矩阵和明暗曲线，并不识别人脸或自动校正肤色。**ACROS 低于 100% 时会保留部分颜色；纯黑白请选 100%。**
+人像可先比较 30% 与 50%。强度减弱颜色矩阵和明暗曲线，并不识别人脸或自动校正肤色。**ACROS、理光高反差黑白和森山风在低于 100% 时会保留部分颜色；纯黑白请选 100%。**
 
 ## 已验证范围与限制
 

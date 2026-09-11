@@ -2,12 +2,14 @@
 
 [プロジェクト](../README.ja.md) · [中文](INSTALL.zh-CN.md) · [English](INSTALL.en.md)
 
-対象は **0.1.3-alpha／カメラ内表示0.1d**。実機は a5100、ファームウェア1.10、Android2.3.7です。macOS でのビルドと Wi-Fi インストールを確認しました。Windows/Linux の同等手順は、同じ実機で全工程を検証していません。
+対象は **0.2.0-alpha／カメラ内表示0.2a**。実機は a5100、ファームウェア1.10、Android2.3.7です。macOS でのビルドと Wi-Fi インストールを確認しました。Windows/Linux の同等手順は、同じ実機で全工程を検証していません。
+
+**0.2.0-alpha では「胶片工坊 / Film Studio」に改名し、同じパッケージと署名で `install -r` 更新ができます。追加したリコー風は100%で上流の値を維持し、15種類すべてが4段階の強度と写真／動画メニューを共有します。統合版は a5100 で導入・起動と一部の適用ログを確認しました。本版の保存ファイルは未検証で、旧版の記録は新しい全組み合わせの検証を意味しません。**
 
 ## 0. 公開 APK をそのまま導入する
 
 1. [対応機種](../README.ja.md#compatibility)で機種と利用予定の機能を確認します。
-2. [Releases の Assets](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha)から **[FujiStyle-0.1.3-alpha-movie.apk](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.1.3-alpha/FujiStyle-0.1.3-alpha-movie.apk)** をダウンロードします。Source code ZIP はインストーラーではありません。
+2. [Releases の Assets](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.2.0-alpha)から **[FilmStudio-0.2.0-alpha-movie.apk](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.2.0-alpha/FilmStudio-0.2.0-alpha-movie.apk)** をダウンロードします。Source code ZIP はインストーラーではありません。
 3. `SHA256SUMS.txt` も取得し、macOS は `shasum -a 256`、Linux は `sha256sum`、PowerShell は `Get-FileHash -Algorithm SHA256` で APK を照合します。確認できるのはファイルの一致で、許諾や互換性ではありません。
 4. PC に [Android Platform-Tools / adb](https://developer.android.com/tools/releases/platform-tools) を用意します。初回は第4節で Wi-Fi ADB を有効にして第5節へ、接続済みなら第5節へ進みます。
 5. **公開 APK の導入だけなら Python、Java、Apktool、署名秘密鍵は不要です。** 第1～3節は自分でビルドしたい人向けです。
@@ -18,10 +20,10 @@
 
 ```sh
 adb connect CAMERA_IP:5555
-adb -s CAMERA_IP:5555 install -r FujiStyle-0.1.3-alpha-movie.apk
+adb -s CAMERA_IP:5555 install -r FilmStudio-0.2.0-alpha-movie.apk
 ```
 
-`CAMERA_IP` をカメラの現在のアドレスに置き換えます。`Success` を確認し、カメラのアプリ一覧から「富士风格」を開きます。第5節の `output/` はローカルビルドの出力先なので、直接ダウンロードした場合は実際の保存先を指定してください。
+`CAMERA_IP` をカメラの現在のアドレスに置き換えます。`Success` を確認し、カメラのアプリ一覧から「胶片工坊」を開きます。第5節の `output/` はローカルビルドの出力先なので、直接ダウンロードした場合は実際の保存先を指定してください。
 
 ## 1. 事前準備と権利の確認
 
@@ -84,15 +86,15 @@ java -jar inputs/apktool.jar --version
 
 ```sh
 python tools/fit_luts.py inputs/luts/gfx-eterna-55-3d-lut-v110/33Grid/F-Log2 .
+python tools/build_apk.py --input inputs/base.apk --apktool inputs/apktool.jar --upstream-hook inputs/upstream/src/smali/RicohHook.smali --work build-local/decoded-020 --movie
 python tools/check_strength.py
-python tools/build_apk.py --input inputs/base.apk --apktool inputs/apktool.jar --upstream-hook inputs/upstream/src/smali/RicohHook.smali --work build-local/decoded-013 --movie
 python tools/check_build.py
 ```
 
 最初のコマンドで `profiles/`、`output/` のプレビュー LUT、`validation/` の数値評価を生成します。続いて強度の検査、APK のビルド・署名・検証を実行します。生成先：
 
 ```text
-output/FujiStyle-0.1.3-alpha-movie.apk
+output/FilmStudio-0.2.0-alpha-movie.apk
 ```
 
 作業ディレクトリは未作成か空である必要があります。再ビルドでは新しい作業先を指定します。`--movie` は本書の写真・動画機能を有効にします。省略すると写真用の版になります。
@@ -118,10 +120,10 @@ macOS で USB が使用中になる場合は、写真、イメージキャプチ
 ```sh
 adb connect CAMERA_IP:5555
 adb devices
-adb -s CAMERA_IP:5555 install -r output/FujiStyle-0.1.3-alpha-movie.apk
+adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.0-alpha-movie.apk
 ```
 
-対象が `device` と表示され、最後に `Success` が出ればインストール完了です。カメラのアプリ一覧から **富士风格** を起動します。名称と大部分のメニューは中国語です。
+対象が `device` と表示され、最後に `Success` が出ればインストール完了です。カメラのアプリ一覧から **胶片工坊** を起動します。名称と大部分のメニューは中国語です。
 
 任意でリモート起動もできます。
 
@@ -135,7 +137,7 @@ pmca-gui の **Select an apk → Open apk... → Install selected app** でロ�
 
 ## 6. 操作と最初の確認
 
-1. 写真プレビュー／動画待機中に**中央ボタン**でフィルターを選びます。MENU 1ページ目の「富士风格」からも開けます。
+1. 写真プレビュー／動画待機中に**中央ボタン**でフィルターを選びます。MENU 1ページ目の「胶片风格」からも開けます。「富士」「理光」の接頭辞が付いた15項目を選べます。
 2. 「滤镜强度」で30/50/70/100%を選択。初期値100%、通常終了時に保存します。人物では30%と50%を比較してください。
 3. 動画は「拍照／录像模式」→ 動画 P/A/S/M を選んでから「录像文件格式」と「录像帧率／画质」を設定します。写真モードでグレーの場合は先に動画待機へ切り替えます。MOVIE で開始／停止します。
 4. ホワイトバランスは MENU 4ページ目の「白平衡」。アプリ内のクリエイティブスタイルは STD 固定ですが、ホワイトバランスは固定しません。
@@ -154,6 +156,8 @@ pmca-gui の **Select an apk → Open apk... → Install selected app** でロ�
 | 動画設定がグレー | 動画 P/A/S/M の待機へ。形式、PAL/NTSC、機種条件により選択肢は異なります |
 | ACROS に色が残る | 強度100%を選択 |
 | 色がおかしい | 通常終了してカメラを再起動し、標準設定を確認。本アプリの排障にファームウェア変更や初期化は行いません |
+
+0.1.3へ戻す前に「富士 PROVIA」を選び、通常終了してください。旧版が未対応のリコー ID を読み込むことを防ぎます。
 
 同じ鍵の更新は `adb install -r` を使用します。戻す場合は自分で保存した旧 APK と元の鍵を使います。自動削除や自動ダウングレードはしません。動画を探すためにカードのデータベースを削除しないでください。
 
