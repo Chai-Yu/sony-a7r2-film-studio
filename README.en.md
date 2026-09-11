@@ -6,9 +6,32 @@ An unofficial film-look experiment for the **Sony a5100 / ILCE-5100**. It refere
 
 **Version: 0.1.3-alpha; on-camera version: 0.1d; app name: 富士风格.** Documentation is available in three languages; the camera UI is currently primarily Chinese.
 
+<a id="compatibility"></a>
+
+## Camera compatibility
+
+**Only the a5100 has been tested by this project. This app does not work with every Sony camera.**
+
+| Model | Status in this project |
+| --- | --- |
+| **a5100 / ILCE-5100, firmware 1.10** | Tested within the feature/version limits documented below |
+| a6000, a6300, a6500 | PMCA candidates listed upstream; this version is untested |
+| a7, a7R, a7S, a7 II, a7R II, a7S II | PMCA candidates listed upstream; this version is untested |
+| RX100 III/IV/V, RX10 II/III, RX1R II, HX90 | PMCA candidates listed upstream; this version is untested |
+| a6400, a6700, a7 III, a7C | Do not support the PlayMemories Camera Apps installation platform required here |
+| Other models or firmware | Not assessed; a similar model name does not establish compatibility |
+
+Candidates come from the [upstream model list](https://github.com/bonyback1/sony-pmca-ricoh-mod/blob/7c565898562c73c5073c54dfc831c8c3df9c24cf/README.md), not tests of this project's added video and strength features. PMCA is the on-camera app platform required here; MTP or phone remote control alone does not establish PMCA support.
+
+**The current video menu follows a5100 specifications and includes no 4K choices.** It does not promise every native format, frame rate or bitrate on other models. Successful installation must be followed by separate checks of preview, look selection, JPEG persistence, recording start/stop, saved-video playback and color reset after exit. Actual colors may differ across models. Reports should identify model, firmware, app version and exactly what was tested.
+
 ## Download and installation
 
-This repository distributes source, patch generators and documentation. **It does not distribute APKs, official Fujifilm LUTs or fitted parameter tables.** Permission to modify and redistribute those third-party materials has not been established. Check the rights for your inputs and intended use before building locally; owning a camera or downloading a file for free does not establish those permissions.
+**[Download APK: 0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.1.3-alpha/FujiStyle-0.1.3-alpha-movie.apk)** · [Release notes and checksum files](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha)
+
+Download `FujiStyle-0.1.3-alpha-movie.apk`, then follow the [English installation guide](docs/INSTALL.en.md) to connect and install. No local compilation is required. **Code → Download ZIP contains source, not the installer.**
+
+This is an unofficial experimental release with only the a5100 evidence described above. The APK contains Sony base-app material and parameters fitted from publicly available Fujifilm LUTs. A separate grant to adapt and redistribute those third-party materials has not been established. Publication does not represent Sony/FUJIFILM permission or guarantee immunity; [license scope](LICENSING.md) distinguishes the rights in each part. Original official LUT files and signing private keys are not distributed.
 
 → **[Complete English installation guide](docs/INSTALL.en.md)**: inputs → local build → first-time connection → Wi-Fi ADB installation → camera controls → updates and troubleshooting.
 
@@ -20,6 +43,10 @@ adb -s CAMERA_IP:5555 install -r output/FujiStyle-0.1.3-alpha-movie.apk
 ```
 
 Replace `CAMERA_IP` with the camera's actual address. First-time users also need the preparation steps in the guide.
+
+### Does the APK recipient need to compile anything?
+
+**No. A signed APK can be installed through the documented procedure; runtime compatibility still depends on the camera and environment.** Recipients do not need Python, Java, Apktool or the private signing key. The local build chapters are for modifying or generating an APK yourself; doing so does not itself resolve third-party permissions.
 
 ## Features
 

@@ -4,11 +4,28 @@
 
 本指南对应 **0.1.3-alpha / 机内 0.1d**。实机环境为 a5100 固件1.10、Android 2.3.7；macOS 构建与 Wi-Fi 安装已验证。Windows/Linux 的命令说明未做相同的实机全流程验证。
 
+## 0. 直接安装发行版 APK
+
+1. 先看[机型兼容性](../README.md#compatibility)，确认你的机型和预期功能在说明范围内。
+2. 在[Releases](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha)的 Assets 中下载 **[FujiStyle-0.1.3-alpha-movie.apk](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.1.3-alpha/FujiStyle-0.1.3-alpha-movie.apk)**；不要下载 Source code ZIP 当作安装包。
+3. 同时下载 `SHA256SUMS.txt`，用 macOS 的 `shasum -a 256`、Linux 的 `sha256sum` 或 PowerShell 的 `Get-FileHash -Algorithm SHA256` 核对 APK。校验的是文件一致性，不是法律许可或兼容保证。
+4. 电脑安装 [Android Platform-Tools / adb](https://developer.android.com/tools/releases/platform-tools)。首次连接相机时按第 4 节启用 Wi-Fi ADB，再按第 5 节安装。已能连接 ADB 的用户可直接看第 5 节。
+5. **现成 APK 不需要 Python、Java、Apktool 或签名私钥。** 第 1～3 节供希望自行构建的读者使用。
+
+假设终端当前目录就是 APK 所在的下载文件夹，安装命令是：
+
+```sh
+adb connect CAMERA_IP:5555
+adb -s CAMERA_IP:5555 install -r FujiStyle-0.1.3-alpha-movie.apk
+```
+
+将 `CAMERA_IP` 换成相机当前地址，安装完成显示 `Success`，然后在机身应用列表打开「富士风格」。第 5 节中的 `output/` 路径是本地构建输出目录；直接下载的用户请使用实际下载路径。
+
 ## 1. 先准备资料与设备
 
-这是源码发布，仓库没有可直接下载的 APK 或色彩参数。先读[许可范围](../LICENSING.md)：只有在输入资料和预定改制用途获得必要许可，或适用法律确实允许时，才继续构建。富士的公开下载及本项目非商用许可，均不是对第三方改制、再分发的授权。本项目不提供索尼基础 APK 的镜像或授权保证。
+APK 与源码均提供，但不代表项目取得 Sony 或 FUJIFILM 的独立改编、再分发授权。各部分的权利见[许可范围](../LICENSING.md)。以下第 1～3 节是可选的本地构建步骤；自行构建前仍需确认输入材料与预定用途的相应权利。官方原始 LUT 与 Sony 未修改的基础 APK 不另行镜像。
 
-需要：
+本地构建需要：
 
 - 支持 PlayMemories Camera Apps 的 a5100；其他机型仅供进一步研究。
 - 已备份的存储卡、充足电量、可传输数据的 USB 线，以及电脑和相机都能连接的可信 Wi-Fi。
@@ -78,7 +95,7 @@ output/FujiStyle-0.1.3-alpha-movie.apk
 
 `build-local/decoded-013` 必须为空或不存在。重复构建请指定一个新的工作目录。`--movie` 表示启用本指南的拍照和录像功能；省略它会生成仅拍照版本。
 
-**保管 `.private/signing.pem`。** 首次构建会自动生成签名密钥，之后更新必须保留同一密钥。不要上传密钥或把它交给其他使用者。不同人的签名不同，生成 APK 的 SHA-256 也会不同；本地报告中的哈希用于核对自己的文件，不应当作统一发行包哈希。
+**保管 `.private/signing.pem`。** 首次构建会自动生成签名密钥，之后更新必须保留同一密钥。不要上传密钥或把它交给其他使用者。不同人的签名不同，生成 APK 的 SHA-256 也会不同；本地报告中的哈希用于核对自己的构建；下载的发行 APK 应与 Releases 中的 SHA256SUMS.txt 核对。
 
 ## 4. 第一次让相机开启 Wi-Fi ADB
 

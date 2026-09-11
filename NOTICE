@@ -10,13 +10,19 @@ Copyright in upstream material remains with its respective contributors.
 tools/sign_apk.py is an adapted upstream file and remains Apache-2.0.
 Modifications: explicit SHA-1 signatures for the tested API 10 runtime and JAR manifest line folding.
 The camera patch generator also references upstream hook interfaces and the existing Sony application structure.
+The release modifies the upstream RicohHook and camera controllers/menu resources, adding
+LUT-fitted profiles, adjustable strength, movie controls, standby filter selection and a separate package name.
+The APK includes these notices and license texts in assets/legal/.
 No separate upstream NOTICE file was found at the reviewed revision.
 
 Color reference: FUJIFILM GFX ETERNA 55 3D LUT package v1.10,
 33Grid / F-Log2, with FLog2_to_WDR-709 as the neutral fitting proxy.
 https://www.fujifilm-x.com/global/support/download/lut/
 Official LUTs and associated documentation remain the property of FUJIFILM and their respective rights holders.
-This publication contains no official LUTs, fitted LUT-derived parameter tables, or camera APKs.
+The release APK includes fitted LUT-derived parameters and modified Sony base-application material.
+Original official LUT files and signing private keys are not distributed.
+Third-party adaptation and redistribution permission has not been independently established.
+Publication is not represented as proof of permission or a guarantee of non-infringement.
 Public availability is not represented as permission to modify or redistribute third-party material.
 
 Sony, PlayMemories Camera Apps, FUJIFILM, Ricoh and the film-simulation/product names

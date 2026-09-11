@@ -4,11 +4,28 @@
 
 For **0.1.3-alpha / on-camera 0.1d**. The tested device is an a5100 with firmware 1.10 and Android 2.3.7. Building on macOS and installing over Wi-Fi were exercised; equivalent Windows/Linux instructions have not had the same end-to-end hardware test.
 
+## 0. Install the released APK directly
+
+1. Read [camera compatibility](../README.en.md#compatibility) for your model and intended features.
+2. Download **[FujiStyle-0.1.3-alpha-movie.apk](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.1.3-alpha/FujiStyle-0.1.3-alpha-movie.apk)** from [Releases → Assets](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha). The Source code ZIP is not an installer.
+3. Download `SHA256SUMS.txt` too. Check the APK with `shasum -a 256` on macOS, `sha256sum` on Linux, or `Get-FileHash -Algorithm SHA256` in PowerShell. A checksum verifies file identity, not permission or compatibility.
+4. Install [Android Platform-Tools / adb](https://developer.android.com/tools/releases/platform-tools) on the computer. First-time users follow section 4 to enable Wi-Fi ADB and section 5 to install; if ADB already works, go to section 5.
+5. **Installing a released APK requires no Python, Java, Apktool or private signing key.** Sections 1–3 are for people who want to build it themselves.
+
+If the terminal is in the folder containing the downloaded APK:
+
+```sh
+adb connect CAMERA_IP:5555
+adb -s CAMERA_IP:5555 install -r FujiStyle-0.1.3-alpha-movie.apk
+```
+
+Replace `CAMERA_IP` with the camera's current address. Wait for `Success`, then open「富士风格」from the camera's app list. The `output/` path in section 5 refers to local build output; use your actual download path when installing a release.
+
 ## 1. Prerequisites and rights
 
-This is a source release: no downloadable APK or fitted color data is included. Read [license scope](../LICENSING.md) first. Continue only when the rights for your inputs and intended modifications have been established, or applicable law actually permits them. A public Fujifilm download and this project's noncommercial license do not authorize modification or redistribution of third-party material. This project provides no Sony base-APK mirror or assurance of permission.
+An APK and source are provided, without representing a separate Sony or FUJIFILM grant to adapt or redistribute their material. See [license scope](../LICENSING.md). Sections 1–3 below are optional local build instructions; check the rights for your inputs and intended use before building. Original official LUT files and Sony's unmodified base APK are not separately mirrored.
 
-Prepare:
+For a local build, prepare:
 
 - An a5100 supporting PlayMemories Camera Apps; other models are unverified.
 - A backed-up memory card, adequate battery charge, a USB data cable, and a trusted Wi-Fi network accessible to the camera and computer.
@@ -78,7 +95,7 @@ output/FujiStyle-0.1.3-alpha-movie.apk
 
 The work directory must be absent or empty. Use a new work directory for another build. `--movie` enables the still/video features covered here; omitting it produces the still-only variant.
 
-**Keep `.private/signing.pem` private and backed up.** The first build generates a key; retain it for future updates. Do not upload or share it. Different builders have different signing keys and APK hashes. The generated local hash identifies your own file, not a universal downloadable release.
+**Keep `.private/signing.pem` private and backed up.** The first build generates a key; retain it for future updates. Do not upload or share it. Different builders have different signing keys and APK hashes. A locally generated hash identifies your own build. Verify a downloaded release APK against the SHA256SUMS.txt published with that release.
 
 ## 4. First-time Wi-Fi ADB setup
 

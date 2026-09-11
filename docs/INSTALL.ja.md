@@ -4,11 +4,28 @@
 
 対象は **0.1.3-alpha／カメラ内表示0.1d**。実機は a5100、ファームウェア1.10、Android2.3.7です。macOS でのビルドと Wi-Fi インストールを確認しました。Windows/Linux の同等手順は、同じ実機で全工程を検証していません。
 
+## 0. 公開 APK をそのまま導入する
+
+1. [対応機種](../README.ja.md#compatibility)で機種と利用予定の機能を確認します。
+2. [Releases の Assets](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha)から **[FujiStyle-0.1.3-alpha-movie.apk](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.1.3-alpha/FujiStyle-0.1.3-alpha-movie.apk)** をダウンロードします。Source code ZIP はインストーラーではありません。
+3. `SHA256SUMS.txt` も取得し、macOS は `shasum -a 256`、Linux は `sha256sum`、PowerShell は `Get-FileHash -Algorithm SHA256` で APK を照合します。確認できるのはファイルの一致で、許諾や互換性ではありません。
+4. PC に [Android Platform-Tools / adb](https://developer.android.com/tools/releases/platform-tools) を用意します。初回は第4節で Wi-Fi ADB を有効にして第5節へ、接続済みなら第5節へ進みます。
+5. **公開 APK の導入だけなら Python、Java、Apktool、署名秘密鍵は不要です。** 第1～3節は自分でビルドしたい人向けです。
+
+ダウンロードした APK のフォルダーでターミナルを開いた場合：
+
+```sh
+adb connect CAMERA_IP:5555
+adb -s CAMERA_IP:5555 install -r FujiStyle-0.1.3-alpha-movie.apk
+```
+
+`CAMERA_IP` をカメラの現在のアドレスに置き換えます。`Success` を確認し、カメラのアプリ一覧から「富士风格」を開きます。第5節の `output/` はローカルビルドの出力先なので、直接ダウンロードした場合は実際の保存先を指定してください。
+
 ## 1. 事前準備と権利の確認
 
-ソース公開のため、APK や近似カラー設定は同梱していません。[ライセンスの適用範囲](../LICENSING.md)を読み、入力資料と予定する改変について必要な許諾を得た場合、または適用法が実際に認める場合に限り先へ進んでください。富士フイルムの公開ダウンロードや本プロジェクトの非商用ライセンスは、第三者資料の改変・再配布を許諾するものではありません。ソニーの基礎 APK のミラーや権利保証は提供しません。
+APK とソースを提供しますが、Sony または FUJIFILM から改変・再配布の個別許諾を得たことを示すものではありません。[権利関係](../LICENSING.md)を参照してください。以下の第1～3節は任意のローカルビルド手順です。入力資料と予定用途の権利は別途確認してください。公式の元 LUT と Sony の未改変の基礎 APK は別途ミラー配布しません。
 
-必要なもの：
+ローカルビルドに必要なもの：
 
 - PlayMemories Camera Apps 対応の a5100。他機種は未検証です。
 - バックアップ済みカード、十分な電池残量、データ通信対応 USB ケーブル、カメラとPCが接続できる信頼できる Wi-Fi。
@@ -78,7 +95,7 @@ output/FujiStyle-0.1.3-alpha-movie.apk
 
 作業ディレクトリは未作成か空である必要があります。再ビルドでは新しい作業先を指定します。`--movie` は本書の写真・動画機能を有効にします。省略すると写真用の版になります。
 
-**`.private/signing.pem` を非公開のまま保管・バックアップしてください。** 初回に生成され、更新時も同じ鍵が必要です。共有やアップロードはしないでください。ビルドする人ごとに鍵と APK のハッシュが異なります。検証レポートのハッシュは自分のファイル確認用で、共通配布物のハッシュではありません。
+**`.private/signing.pem` を非公開のまま保管・バックアップしてください。** 初回に生成され、更新時も同じ鍵が必要です。共有やアップロードはしないでください。ビルドする人ごとに鍵と APK のハッシュが異なります。ローカルの検証レポートは自分のビルドの照合用です。ダウンロードした公開 APK は、そのリリースの SHA256SUMS.txt と照合してください。
 
 ## 4. 初回の Wi-Fi ADB 設定
 

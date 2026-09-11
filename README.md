@@ -6,9 +6,32 @@
 
 **当前版本：0.1.3-alpha；相机内版本名：0.1d；应用名称：富士风格。** 文档提供三种语言，当前相机应用界面主要为中文。
 
+<a id="compatibility"></a>
+
+## 机型兼容性
+
+**目前只有 a5100 经过本项目实机验证，不是所有索尼相机都能使用。**
+
+| 机型 | 本项目状态 |
+| --- | --- |
+| **a5100 / ILCE-5100，固件 1.10** | 已实测；具体功能和版本范围见下方验证记录 |
+| a6000、a6300、a6500 | 上游列出的 PMCA 候选机型；本版本未实测 |
+| a7、a7R、a7S、a7 II、a7R II、a7S II | 上游列出的 PMCA 候选机型；本版本未实测 |
+| RX100 III／IV／V、RX10 II／III、RX1R II、HX90 | 上游列出的 PMCA 候选机型；本版本未实测 |
+| a6400、a6700、a7 III、a7C | 不支持本应用依赖的 PlayMemories Camera Apps 安装方式 |
+| 其他型号或固件 | 尚未评估，不能从相近型号推定兼容 |
+
+候选名单依据[上游项目的机型说明](https://github.com/bonyback1/sony-pmca-ricoh-mod/blob/7c565898562c73c5073c54dfc831c8c3df9c24cf/README.md)，不是本项目新增录像、强度功能的测试结果。PMCA 是本应用依赖的机内应用平台；仅有 MTP 或手机遥控功能不代表支持它。
+
+**录像菜单目前按 a5100 的规格编写，没有提供 4K 选项。** 不承诺在其他机型上开放其全部原生格式、帧率和码率。即使安装成功，也需分别确认取景、滤镜切换、JPEG 保存、录像开始／停止及文件回放，以及退出后的色彩恢复；不同机型的实际色彩也可能不同。反馈请附型号、固件、应用版本及具体测试项目。
+
 ## 下载与安装
 
-本仓库发布源码、补丁生成器和文档，**不提供 APK、富士官方 LUT 或拟合参数下载**。这些第三方内容的修改和再分发授权尚未确认。先确认输入文件及用途获得所需许可，再在本地生成安装包；仅持有相机或能免费下载文件，不等于获得改制、再分发授权。
+**[直接下载 APK：0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.1.3-alpha/FujiStyle-0.1.3-alpha-movie.apk)** · [发行说明与校验文件](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha)
+
+下载 `FujiStyle-0.1.3-alpha-movie.apk` 后，按照[中文安装教程](docs/INSTALL.zh-CN.md)连接相机并安装，无需自己编译。**Code → Download ZIP 是源码，不是安装包。**
+
+本发行版为非官方实验版本，仅有上文所列的 a5100 实机验证。APK 包含 Sony 基础应用内容和由富士公开 LUT 拟合出的参数；未确认针对这些第三方材料改编、再分发的独立授权。发布不表示获得 Sony 或 FUJIFILM 许可，也不保证免责；[版权与许可范围](LICENSING.md)单独说明各部分的权利。官方原始 LUT 和签名私钥不提供下载。
 
 → **[中文完整安装教程](docs/INSTALL.zh-CN.md)**：准备输入 → 本地构建 → 首次启用连接 → Wi-Fi ADB 安装 → 相机操作 → 更新与故障排查。
 
@@ -20,6 +43,10 @@ adb -s CAMERA_IP:5555 install -r output/FujiStyle-0.1.3-alpha-movie.apk
 ```
 
 将 `CAMERA_IP` 替换为机身实际地址。首次安装还需要教程中的准备步骤。
+
+### 拿到 APK 后还要自己编译吗？
+
+**不需要。已签名 APK 可以通过教程中的安装方式直接安装，能否运行仍取决于机型和环境。** 接收者不需要 Python、Java、Apktool 或签名私钥。只有自行修改和生成 APK 时，才需要本地构建章节；自行构建也不会自动解决第三方许可问题。
 
 ## 功能
 

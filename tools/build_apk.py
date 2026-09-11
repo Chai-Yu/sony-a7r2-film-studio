@@ -461,6 +461,16 @@ def main():
     patch_menu(args.work,profiles)
     if args.movie:patch_movie(args.work)
     rename_package(args.work)
+    # Keep attribution and license scope with the installable artifact itself.
+    legal=args.work/'assets/legal'
+    legal.mkdir(parents=True,exist_ok=True)
+    for source,name in (
+        ('LICENSE','LICENSE-PolyForm-Noncommercial-1.0.0.txt'),
+        ('LICENSES/Apache-2.0.txt','LICENSE-Apache-2.0.txt'),
+        ('NOTICE','NOTICE.txt'),
+        ('LICENSING.md','LICENSING.md'),
+    ):
+        shutil.copyfile(root/source,legal/name)
     unsigned=args.work.parent/'fuji-unsigned.apk'
     subprocess.run(['java','-jar',str(args.apktool),'b',str(args.work),'-o',str(unsigned)],check=True)
     key=root/'.private/signing.pem'
