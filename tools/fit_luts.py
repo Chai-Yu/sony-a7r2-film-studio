@@ -30,7 +30,7 @@ FILMS = [
 def read_cube(path):
     size = None
     rows = []
-    for line in Path(path).read_text().splitlines():
+    for line in Path(path).read_text(encoding='utf-8').splitlines():
         words = line.split()
         if not words or words[0].startswith('#'):
             continue
@@ -72,7 +72,7 @@ def write_cube(path, matrix, curve, title):
     grid = np.array([(r,g,b) for b in np.linspace(0,1,n)
                      for g in np.linspace(0,1,n) for r in np.linspace(0,1,n)])
     result = apply_model(grid, matrix, curve)
-    with Path(path).open('w') as f:
+    with Path(path).open('w',encoding='utf-8') as f:
         f.write('# Sony Standard / Rec.709 proxy input, FULL range. Experimental approximation.\n')
         f.write('# Not an official Fujifilm LUT; do not apply to F-Log footage.\n')
         f.write(f'TITLE "{title} - Sony proxy approximation"\nLUT_3D_SIZE {n}\n')
@@ -176,10 +176,10 @@ def main():
           'Camera ISP matrix/curve order and transfer functions require hardware measurement.',
           'Grain, sensor response, highlight recovery and Fujifilm camera behavior are not reproduced.'],
         presets=profiles)
-    (root/'profiles'/'fuji_official_approx.json').write_text(json.dumps(data,ensure_ascii=False,indent=2))
+    (root/'profiles'/'fuji_official_approx.json').write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding='utf-8')
     (root/'validation'/'fit_metrics.json').write_text(json.dumps(dict(
         domain='Unclipped official WDR-709 proxy RGB; not a camera accuracy measurement',
-        train_samples=len(train_x),seed=5100,metrics=metrics),indent=2))
+        train_samples=len(train_x),seed=5100,metrics=metrics),indent=2),encoding='utf-8')
 
 if __name__ == '__main__':
     main()

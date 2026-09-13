@@ -30,7 +30,7 @@ From 0.2.0-alpha, [the pinned upstream hook](https://github.com/bonyback1/sony-p
 | `ricoh-daido` | Moriyama Daido Style / 森山风 / 森山風 | `daido` |
 | `ricoh-cross` | Cross Process / 正负逆冲 / クロスプロセス | `xpro` |
 
-中文：本地构建直接读取上游的矩阵和 1024 点 Gamma，不重新拟合、不读取上游 `.CUB` 文件。100% 保留上游参数；30%／50%／70% 向恒等变换插值，保留负片、逆冲原有的中性偏色设计。原有富士参数与四档强度保持不变。理光组是社区参考风格，并非理光官方 LUT，也未经真机色彩匹配验证。上游参数保留 Apache-2.0；新增提取逻辑的许可见文件头。
+中文：本地构建直接读取上游的矩阵和 1024 点 Gamma，不重新拟合、不读取上游 `.CUB` 文件。100% 保留上游参数；30%／50%／70% 向恒等变换插值，保留负片、逆冲原有的中性偏色设计。原有富士参数与四档强度保持不变。理光组是社区参考风格，并非理光官方 LUT，也未经真机色彩匹配验证。黑白构（ACROS、理光高反差黑白、森山风）例外：其矩阵不参与插值，只有曲线随强度变平，因此在任何强度下都保持中性灰。上游参数保留 Apache-2.0；新增提取逻辑的许可见文件头。
 
 English: Local builds extract the upstream matrix and 1024-point gamma arrays without refitting or reading upstream `.CUB` files. 100% preserves the exact upstream parameters; 30/50/70% interpolate toward identity, including the original neutral tint in Negative Film and Cross Process. Existing Fujifilm parameters and all four strengths are unchanged. These are community Ricoh-reference styles, not official Ricoh LUTs or verified camera matches. Upstream parameters remain Apache-2.0; see the file header for the new extraction logic.
 

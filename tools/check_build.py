@@ -47,6 +47,15 @@ def check_signature(apk):
                 '-content',str(tmp/'cert.sf'),'-noverify','-out',os.devnull],check=True,capture_output=True)
         return len(manifest_names)
 
+def check_alignment(apk):
+    """resources.arsc must stay stored and 4-byte aligned, like the base APK."""
+    with zipfile.ZipFile(apk) as z:
+        info = z.getinfo('resources.arsc')
+        assert info.compress_type == zipfile.ZIP_STORED, 'resources.arsc is compressed'
+        offset = info.header_offset + 30 + len(info.filename.encode('utf-8')) + len(info.extra)
+        assert offset % 4 == 0, 'resources.arsc is not 4-byte aligned: '+str(offset)
+        return offset
+
 def main():
     # Asymmetric values expose red/blue axis swaps in .cube interpolation.
     n=5
@@ -54,7 +63,7 @@ def main():
                     for g in range(n)] for b in range(n)])
     points=np.array([[0,0,0],[1,1,1],[.13,.72,.41],[1,0,.4]])
     assert np.allclose(sample(cube,points),points,atol=1e-12)
-    data=json.loads((ROOT/'profiles/film_studio.json').read_text())
+    data=json.loads((ROOT/'profiles/film_studio.json').read_text(encoding='utf-8'))
     assert len(data['presets'])==15 and len({p['id'] for p in data['presets']})==15
     for p in data['presets']:
         m=np.array(p['matrix']);g=np.array(p['gamma'])
@@ -70,11 +79,12 @@ def main():
     apks=list((ROOT/'output').glob('*.apk'))
     assert apks, 'No APK builds found'
     results={apk.name:dict(signed_entries=check_signature(apk),
+        resources_arsc_offset=check_alignment(apk),
         sha256=hashlib.sha256(apk.read_bytes()).hexdigest()) for apk in apks}
     report=dict(cube_axis_test='passed',profile_bounds_test='passed',
                 exported_cube_grid_roundtrip='passed',apk_signatures=results,
                 runtime_report='camera_runtime.json; runtime is not established by this static check')
-    (ROOT/'validation/static_checks.json').write_text(json.dumps(report,indent=2))
+    (ROOT/'validation/static_checks.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
     print(json.dumps(report,indent=2))
 
 if __name__=='__main__':main()
