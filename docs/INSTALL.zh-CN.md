@@ -2,19 +2,39 @@
 
 [项目首页](../README.md) · [English](INSTALL.en.md) · [日本語](INSTALL.ja.md)
 
-本指南对应 **0.2.0-alpha / 机内 0.2a**。实机环境为 a5100 固件1.10、Android 2.3.7；macOS 构建与 Wi-Fi 安装已验证。Windows/Linux 的命令说明未做相同的实机全流程验证。
+本指南对应 **0.2.1-alpha / 机内 0.2a**。实机环境为 a5100（固件 1.10、Android 2.3.7）与 a7R II（Android 4.1.2）；macOS 构建与 Wi-Fi 安装已验证，Windows/Linux 命令与 pmca-gui 流程未做相同的实机全流程验证。
 
-**0.2.0-alpha 更名为「胶片工坊」，保留旧版包名与签名，可用 `install -r` 覆盖更新。新增理光风格使用上游原参数，100% 不重新调色；四档强度、拍照和录像菜单共用。新合并版已在 a5100 上安装、启动，并有部分滤镜参数应用成功日志；旧版记录不代表本版所有照片／录像组合已验证。**
+**自 0.2.0-alpha 起更名为「胶片工坊」，保留旧版包名与签名，可用 `install -r` 覆盖更新。新增理光风格使用上游原参数，100% 不重新调色；四档强度、拍照和录像菜单共用。新合并版已在 a5100 上安装、启动，并有部分滤镜参数应用成功日志；旧版记录不代表本版所有照片／录像组合已验证。**
 
 ## 0. 直接安装发行版 APK
 
 1. 先看[机型兼容性](../README.md#compatibility)，确认你的机型和预期功能在说明范围内。
-2. 在[Releases](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.2.0-alpha)的 Assets 中下载 **[FilmStudio-0.2.0-alpha-movie.apk](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.2.0-alpha/FilmStudio-0.2.0-alpha-movie.apk)**；不要下载 Source code ZIP 当作安装包。
-3. 同时下载 `SHA256SUMS.txt`，用 macOS 的 `shasum -a 256`、Linux 的 `sha256sum` 或 PowerShell 的 `Get-FileHash -Algorithm SHA256` 核对 APK。校验的是文件一致性，不是法律许可或兼容保证。
-4. 电脑安装 [Android Platform-Tools / adb](https://developer.android.com/tools/releases/platform-tools)。首次连接相机时按第 4 节启用 Wi-Fi ADB，再按第 5 节安装。已能连接 ADB 的用户可直接看第 5 节。
-5. **现成 APK 不需要 Python、Java、Apktool 或签名私钥。** 第 1～3 节供希望自行构建的读者使用。
+2. 在[Releases](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.1-alpha)的 Assets 中下载 **[FilmStudio-0.2.0-alpha-movie.apk](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.0-alpha-movie.apk)**（3,785,488 字节）；不要下载 Source code ZIP 当作安装包。
+3. 核对 APK 的 SHA-256（macOS 用 `shasum -a 256`、Linux 用 `sha256sum`、PowerShell 用 `Get-FileHash -Algorithm SHA256`），应为 `2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120`。校验的是文件一致性，不是法律许可或兼容保证。
+4. 选一种安装方式：**方法 A** 用图形界面、不需要开发者模式，适合只想装来用的人；**方法 B** 用命令行，需先按第 4 节开启 Wi-Fi ADB。
 
-假设终端当前目录就是 APK 所在的下载文件夹，安装命令是：
+**现成 APK 不需要 Python、Java、Apktool 或签名私钥。** 第 1～3 节供希望自行构建的读者使用。
+
+### 方法 A：用 pmca-gui 安装（图形界面，无需开发者模式）
+
+[pmca-gui](https://github.com/ma1co/Sony-PMCA-RE) 是 Sony-PMCA-RE 的图形界面，通过 USB 直接安装 APK：**不需要机内 ADB，也不需要敲命令**。
+
+1. 到 [Sony-PMCA-RE Releases](https://github.com/ma1co/Sony-PMCA-RE/releases/latest) 下载 pmca-gui 预编译版本（Windows／macOS 都有现成二进制；Linux 需 Python 3 + libusb，克隆仓库后运行 `./pmca-gui.py`）。
+2. 用 USB 线连接相机与电脑，相机选可传输数据的 USB 连接模式。
+3. 打开 pmca-gui，切到 **`Install app`** 标签页。
+4. 勾选 **`Select an apk`**（**不是** `Select an app from the app list`），点 **`Open apk...`**，选中第 2 步下载的 `FilmStudio-0.2.0-alpha-movie.apk`。
+5. 点 **`Install selected app`**，等待完成；之后按第 6 节在机身应用列表打开「胶片工坊」。
+
+限制与风险：
+
+- 相机必须支持 **PlayMemories Camera Apps（PMCA）**。可用机型见[设备列表](https://openmemories.readthedocs.io/devices.html)与本项目[机型兼容性](../README.md#compatibility)。
+- Windows 用系统自带的大容量存储／MTP 驱动即可；macOS 需装 Sony 的 Camera Driver，并先退出照片、Dropbox、Google Drive 等可能占用 USB 驱动的程序。
+- 建议同时安装 [OpenMemories: Tweak](https://github.com/ma1co/OpenMemories-Tweak)：它提供机内设置调整与 telnet／adb 服务（方法 B 也依赖它）。
+- PMCA-RE 属于反向工程实验工具，其官方说明明确表示**可能损坏硬件且不承担责任**。操作前请备份存储卡、保证电量充足，并自行判断风险。
+
+### 方法 B：Wi-Fi ADB（命令行）
+
+需先按第 4 节用 OpenMemories: Tweak 开启机内 ADB。假设终端当前目录就是 APK 所在的下载文件夹，安装命令是：
 
 **IP 与隐私：** `CAMERA_IP` 只是占位符，必须替换为你自己的相机在 Tweak → Developer 中当前显示的 IP；不要原样输入，也不要照抄他人的地址。保留后面的 `:5555` 端口。公开教程使用占位符；分享截图或日志时，请遮住或删除真实 IP。
 
@@ -99,7 +119,7 @@ output/FilmStudio-0.2.0-alpha-movie.apk
 
 `build-local/decoded-020` 必须为空或不存在。重复构建请指定一个新的工作目录。`--movie` 表示启用本指南的拍照和录像功能；省略它会生成仅拍照版本。
 
-**保管 `.private/signing.pem`。** 首次构建会自动生成签名密钥，之后更新必须保留同一密钥。不要上传密钥或把它交给其他使用者。不同人的签名不同，生成 APK 的 SHA-256 也会不同；本地报告中的哈希用于核对自己的构建；下载的发行 APK 应与 Releases 中的 SHA256SUMS.txt 核对。
+**保管 `.private/signing.pem`。** 首次构建会自动生成签名密钥，之后更新必须保留同一密钥。不要上传密钥或把它交给其他使用者。不同人的签名不同，生成 APK 的 SHA-256 也会不同；本地报告中的哈希用于核对自己的构建；下载的发行 APK 应与第 0 节列出的 SHA-256 核对。
 
 ## 4. 第一次让相机开启 Wi-Fi ADB
 

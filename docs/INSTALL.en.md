@@ -2,19 +2,39 @@
 
 [Project](../README.en.md) · [中文](INSTALL.zh-CN.md) · [日本語](INSTALL.ja.md)
 
-For **0.2.0-alpha / on-camera 0.2a**. The tested device is an a5100 with firmware 1.10 and Android 2.3.7. Building on macOS and installing over Wi-Fi were exercised; equivalent Windows/Linux instructions have not had the same end-to-end hardware test.
+For **0.2.1-alpha / on-camera 0.2a**. Tested devices are an a5100 (firmware 1.10, Android 2.3.7) and an a7R II (Android 4.1.2). Building on macOS and installing over Wi-Fi were exercised; the equivalent Windows/Linux commands and the pmca-gui route have not had the same end-to-end hardware test.
 
-**0.2.0-alpha renames the app to 胶片工坊 / Film Studio while retaining the package and certificate for `install -r` updates. Added Ricoh styles preserve upstream parameters at 100%; all fifteen styles share the four strengths and still/movie menus. The combined build installed and launched on the a5100 with selected parameter-application logs; saved media from this version remain unverified, and older evidence does not validate every new combination.**
+**From 0.2.0-alpha the app is renamed to 胶片工坊 / Film Studio while retaining the package and certificate for `install -r` updates. Added Ricoh styles preserve upstream parameters at 100%; all fifteen styles share the four strengths and still/movie menus. The combined build installed and launched on the a5100 with selected parameter-application logs; saved media from this version remain unverified, and older evidence does not validate every new combination.**
 
 ## 0. Install the released APK directly
 
 1. Read [camera compatibility](../README.en.md#compatibility) for your model and intended features.
-2. Download **[FilmStudio-0.2.0-alpha-movie.apk](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.2.0-alpha/FilmStudio-0.2.0-alpha-movie.apk)** from [Releases → Assets](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.2.0-alpha). The Source code ZIP is not an installer.
-3. Download `SHA256SUMS.txt` too. Check the APK with `shasum -a 256` on macOS, `sha256sum` on Linux, or `Get-FileHash -Algorithm SHA256` in PowerShell. A checksum verifies file identity, not permission or compatibility.
-4. Install [Android Platform-Tools / adb](https://developer.android.com/tools/releases/platform-tools) on the computer. First-time users follow section 4 to enable Wi-Fi ADB and section 5 to install; if ADB already works, go to section 5.
-5. **Installing a released APK requires no Python, Java, Apktool or private signing key.** Sections 1–3 are for people who want to build it themselves.
+2. Download **[FilmStudio-0.2.0-alpha-movie.apk](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.0-alpha-movie.apk)** (3,785,488 bytes) from [Releases → Assets](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.1-alpha). The Source code ZIP is not an installer.
+3. Check the SHA-256 with `shasum -a 256` on macOS, `sha256sum` on Linux, or `Get-FileHash -Algorithm SHA256` in PowerShell. It must be `2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120`. A checksum verifies file identity, not permission or compatibility.
+4. Choose an installation route: **Method A** is a graphical tool that needs no developer mode and suits people who only want to install and use the app; **Method B** is the command line and requires Wi-Fi ADB from section 4.
 
-If the terminal is in the folder containing the downloaded APK:
+**Installing a released APK requires no Python, Java, Apktool or private signing key.** Sections 1–3 are for people who want to build it themselves.
+
+### Method A: install with pmca-gui (graphical, no developer mode)
+
+[pmca-gui](https://github.com/ma1co/Sony-PMCA-RE) is the graphical front end of Sony-PMCA-RE. It installs the APK over USB and needs **no on-camera ADB and no command line**.
+
+1. Download a prebuilt pmca-gui from [Sony-PMCA-RE Releases](https://github.com/ma1co/Sony-PMCA-RE/releases/latest) (Windows and macOS binaries are provided; on Linux use Python 3 + libusb and run `./pmca-gui.py` from a clone).
+2. Connect the camera to the computer over USB and choose a USB connection mode that transfers data.
+3. Open pmca-gui and switch to the **`Install app`** tab.
+4. Select the **`Select an apk`** radio button (not `Select an app from the app list`), click **`Open apk...`** and choose the `FilmStudio-0.2.0-alpha-movie.apk` downloaded in step 2.
+5. Click **`Install selected app`** and wait for it to finish. Then open 胶片工坊 from the camera's app list as described in section 6.
+
+Limits and risk:
+
+- The camera must support **PlayMemories Camera Apps (PMCA)**. See the [device list](https://openmemories.readthedocs.io/devices.html) and this project's [camera compatibility](../README.en.md#compatibility).
+- On Windows the operating system's mass storage / MTP drivers are enough. On macOS install Sony's Camera Driver and close Photos, Dropbox, Google Drive or anything else that may hold the USB drivers.
+- Installing [OpenMemories: Tweak](https://github.com/ma1co/OpenMemories-Tweak) as well is recommended: it provides on-camera settings and the telnet/adb servers that Method B relies on.
+- PMCA-RE is a reverse-engineering experiment whose own documentation states that it **may damage your hardware and accepts no responsibility**. Back up your card, make sure the battery is charged, and judge the risk yourself.
+
+### Method B: Wi-Fi ADB (command line)
+
+First enable on-camera ADB with OpenMemories: Tweak as described in section 4. If the terminal is in the folder containing the downloaded APK:
 
 **IP address and privacy:** `CAMERA_IP` is a placeholder. Replace it with the current IP shown on your own camera in Tweak → Developer; do not type the placeholder literally or copy someone else's address. Keep the `:5555` port. Public instructions use a placeholder; hide or remove actual IP addresses before sharing screenshots or logs.
 
@@ -99,7 +119,7 @@ output/FilmStudio-0.2.0-alpha-movie.apk
 
 The work directory must be absent or empty. Use a new work directory for another build. `--movie` enables the still/video features covered here; omitting it produces the still-only variant.
 
-**Keep `.private/signing.pem` private and backed up.** The first build generates a key; retain it for future updates. Do not upload or share it. Different builders have different signing keys and APK hashes. A locally generated hash identifies your own build. Verify a downloaded release APK against the SHA256SUMS.txt published with that release.
+**Keep `.private/signing.pem` private and backed up.** The first build generates a key; retain it for future updates. Do not upload or share it. Different builders have different signing keys and APK hashes. A locally generated hash identifies your own build. Verify a downloaded release APK against the SHA-256 listed in section 0.
 
 ## 4. First-time Wi-Fi ADB setup
 

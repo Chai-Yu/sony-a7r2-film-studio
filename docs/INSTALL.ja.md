@@ -2,19 +2,39 @@
 
 [プロジェクト](../README.ja.md) · [中文](INSTALL.zh-CN.md) · [English](INSTALL.en.md)
 
-対象は **0.2.0-alpha／カメラ内表示0.2a**。実機は a5100、ファームウェア1.10、Android2.3.7です。macOS でのビルドと Wi-Fi インストールを確認しました。Windows/Linux の同等手順は、同じ実機で全工程を検証していません。
+対象は **0.2.1-alpha／カメラ内表示0.2a**。実機は a5100（ファームウェア1.10、Android 2.3.7）と a7R II（Android 4.1.2）です。macOS でのビルドと Wi-Fi インストールを確認しました。Windows/Linux の同等手順と pmca-gui の手順は、同じ実機で全工程を検証していません。
 
 **0.2.0-alpha では「胶片工坊 / Film Studio」に改名し、同じパッケージと署名で `install -r` 更新ができます。追加したリコー風は100%で上流の値を維持し、15種類すべてが4段階の強度と写真／動画メニューを共有します。統合版は a5100 で導入・起動と一部の適用ログを確認しました。本版の保存ファイルは未検証で、旧版の記録は新しい全組み合わせの検証を意味しません。**
 
 ## 0. 公開 APK をそのまま導入する
 
 1. [対応機種](../README.ja.md#compatibility)で機種と利用予定の機能を確認します。
-2. [Releases の Assets](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.2.0-alpha)から **[FilmStudio-0.2.0-alpha-movie.apk](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.2.0-alpha/FilmStudio-0.2.0-alpha-movie.apk)** をダウンロードします。Source code ZIP はインストーラーではありません。
-3. `SHA256SUMS.txt` も取得し、macOS は `shasum -a 256`、Linux は `sha256sum`、PowerShell は `Get-FileHash -Algorithm SHA256` で APK を照合します。確認できるのはファイルの一致で、許諾や互換性ではありません。
-4. PC に [Android Platform-Tools / adb](https://developer.android.com/tools/releases/platform-tools) を用意します。初回は第4節で Wi-Fi ADB を有効にして第5節へ、接続済みなら第5節へ進みます。
-5. **公開 APK の導入だけなら Python、Java、Apktool、署名秘密鍵は不要です。** 第1～3節は自分でビルドしたい人向けです。
+2. [Releases の Assets](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.1-alpha)から **[FilmStudio-0.2.0-alpha-movie.apk](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.0-alpha-movie.apk)**（3,785,488 バイト）をダウンロードします。Source code ZIP はインストーラーではありません。
+3. APK の SHA-256 を確認します（macOS は `shasum -a 256`、Linux は `sha256sum`、PowerShell は `Get-FileHash -Algorithm SHA256`）。値は `2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120` です。確認できるのはファイルの一致で、許諾や互換性ではありません。
+4. 導入方法を選びます：**方法 A** は GUI で開発者モード不要、入れて使うだけの人向けです。**方法 B** はコマンドラインで、第4節の Wi-Fi ADB が必要です。
 
-ダウンロードした APK のフォルダーでターミナルを開いた場合：
+**公開 APK の導入だけなら Python、Java、Apktool、署名秘密鍵は不要です。** 第1～3節は自分でビルドしたい人向けです。
+
+### 方法 A：pmca-gui で導入する（GUI・開発者モード不要）
+
+[pmca-gui](https://github.com/ma1co/Sony-PMCA-RE) は Sony-PMCA-RE の GUI です。USB 経由で APK を導入でき、**機内 ADB もコマンド操作も不要**です。
+
+1. [Sony-PMCA-RE Releases](https://github.com/ma1co/Sony-PMCA-RE/releases/latest) から pmca-gui のビルド済み版を入手します（Windows／macOS はバイナリあり。Linux は Python 3 + libusb で、クローン後に `./pmca-gui.py` を実行）。
+2. USB ケーブルでカメラと PC を接続し、データ転送できる USB 接続モードにします。
+3. pmca-gui を起動し、**`Install app`** タブに切り替えます。
+4. **`Select an apk`** のラジオボタンを選び（`Select an app from the app list` ではありません）、**`Open apk...`** を押して手順 2 でダウンロードした `FilmStudio-0.2.0-alpha-movie.apk` を選びます。
+5. **`Install selected app`** を押して完了を待ちます。その後、第6節のとおりカメラのアプリ一覧から「胶片工坊」を開きます。
+
+制限とリスク：
+
+- カメラが **PlayMemories Camera Apps（PMCA）** に対応している必要があります。対応機種は[デバイス一覧](https://openmemories.readthedocs.io/devices.html)と本プロジェクトの[対応機種](../README.ja.md#compatibility)を参照してください。
+- Windows は OS 標準の大容量ストレージ／MTP ドライバーで動作します。macOS は Sony の Camera Driver が必要で、写真アプリ、Dropbox、Google Drive など USB ドライバーを掴むアプリを終了しておきます。
+- [OpenMemories: Tweak](https://github.com/ma1co/OpenMemories-Tweak) も導入することを推奨します。機内設定の調整と、方法 B が使う telnet／adb サーバーを提供します。
+- PMCA-RE はリバースエンジニアリングの実験的なツールで、公式説明に**ハードウェアを破損する可能性があり責任を負わない**と明記されています。カードをバックアップし、電池を十分にして、リスクは自己判断でお願いします。
+
+### 方法 B：Wi-Fi ADB（コマンドライン）
+
+第4節のとおり OpenMemories: Tweak で機内 ADB を有効にします。ダウンロードした APK のフォルダーでターミナルを開いた場合：
 
 **IP アドレスとプライバシー：** `CAMERA_IP` は仮の表記です。Tweak → Developer で自分のカメラに現在表示されている IP アドレスに置き換えてください。仮の表記をそのまま入力したり、他人のアドレスをコピーしたりしないでください。末尾のポート `:5555` はそのままにします。公開手順には仮の表記を使い、スクリーンショットやログを共有する際は実際の IP アドレスを隠すか削除してください。
 
@@ -99,7 +119,7 @@ output/FilmStudio-0.2.0-alpha-movie.apk
 
 作業ディレクトリは未作成か空である必要があります。再ビルドでは新しい作業先を指定します。`--movie` は本書の写真・動画機能を有効にします。省略すると写真用の版になります。
 
-**`.private/signing.pem` を非公開のまま保管・バックアップしてください。** 初回に生成され、更新時も同じ鍵が必要です。共有やアップロードはしないでください。ビルドする人ごとに鍵と APK のハッシュが異なります。ローカルの検証レポートは自分のビルドの照合用です。ダウンロードした公開 APK は、そのリリースの SHA256SUMS.txt と照合してください。
+**`.private/signing.pem` を非公開のまま保管・バックアップしてください。** 初回に生成され、更新時も同じ鍵が必要です。共有やアップロードはしないでください。ビルドする人ごとに鍵と APK のハッシュが異なります。ローカルの検証レポートは自分のビルドの照合用です。ダウンロードした公開 APK は、第0節に記載した SHA-256 と照合してください。
 
 ## 4. 初回の Wi-Fi ADB 設定
 
