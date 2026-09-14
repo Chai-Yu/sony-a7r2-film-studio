@@ -112,6 +112,19 @@ def render(matrix, curve, source):
                        np.asarray(curve, float) / 1023.0)
 
 
+def is_monochrome(matrix):
+    """An ACROS-style matrix has three identical rows, so its output is always grey.
+
+    There is no chroma to correct, and scaling does not leave such a matrix alone:
+    it moves the grey weights, which is the only thing the matrix does. Measured on
+    a spread of saturated colours, scaling to 0.75 shifts the rendered grey by 0.85%
+    on average and up to 3.6%. Leave-one-scene-out says the untouched matrix is also
+    the more accurate one (RGB error 0.0681 / 0.0860 / 0.0317 against 0.0680 / 0.0861
+    / 0.0334 for 0.75), so this is skipped rather than corrected.
+    """
+    return all(list(row) == list(matrix[0]) for row in matrix)
+
+
 def fit_matrix(source, target, curve, token):
     """Fit one matrix to a real scene state, with the film's own curve held fixed.
 
@@ -214,6 +227,9 @@ def refit(scenes, lut_dir, presets):
     # The matrices that ship are fitted on every scene that is available.
     final = {}
     for token, slot, _ in FILMS:
+        if is_monochrome(raw_of[slot]):
+            final[slot] = [row[:] for row in raw_of[slot]]
+            continue
         source = np.vstack([scene['c_std'] for scene in scenes.values()])
         target = np.vstack([targets[slot][name] for name in names])
         final[slot] = fit_matrix(source, target, curve_of[slot], token)
@@ -258,6 +274,10 @@ def main():
         print()
         print(f'  {"film":15s} {"fitted":>9s} {"refit":>9s}')
         for token, slot, _ in FILMS:
+            if is_monochrome(by_id[slot]['matrix_fit']):
+                print(f'  {slot:15s}      (monochrome, left alone)')
+                by_id[slot]['matrix'] = [row[:] for row in by_id[slot]['matrix_fit']]
+                continue
             before = chroma_gain(by_id[slot]['matrix_fit'], PROBE)
             after = chroma_gain(fitted[slot], PROBE)
             print(f'  {slot:15s} {before:9.3f} {after:9.3f}')
@@ -278,12 +298,18 @@ def main():
                     for name, values in summary.items()},
             applies_to='fujifilm (the Leica family uses a constructed baseline and has '
                        'not been measured this way; Ricoh comes from upstream)',
+            monochrome='left unchanged: an ACROS-style matrix has three identical rows, '
+                       'so it carries no chroma to correct',
             detail='docs/VALIDATION.md, 2026-09-14')
     else:
         print(f'chroma factor {args.factor:.4f}')
         print(f'{"film":16s} {"fit":>8s} {"shipped":>9s} {"change":>8s}')
         for preset in presets:
             before = chroma_gain(preset['matrix_fit'], PROBE)
+            if is_monochrome(preset['matrix_fit']):
+                preset['matrix'] = [row[:] for row in preset['matrix_fit']]
+                print(f'{preset["id"]:16s} {before:8.3f}     (monochrome, left alone)')
+                continue
             preset['matrix'] = blend(preset['matrix_fit'], args.factor)
             after = chroma_gain(preset['matrix'], PROBE)
             print(f'{preset["id"]:16s} {before:8.3f} {after:9.3f} {after - before:+8.3f}')
@@ -303,6 +329,9 @@ def main():
                      'at 0.75; the domain refit gives 22.22% and is not shipped)',
             known_limitation='still wrong per look: it exaggerates the correction for '
                              'the desaturating looks, REALA ACE above all',
+            monochrome='left unchanged: an ACROS-style matrix has three identical rows, '
+                       'so it carries no chroma to correct and scaling it would only '
+                       'move the grey weights',
             applies_to='fujifilm (the Leica family uses a constructed baseline and has '
                        'not been measured this way; Ricoh comes from upstream)',
             detail='docs/VALIDATION.md, 2026-09-14')

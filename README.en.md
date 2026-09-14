@@ -39,9 +39,9 @@ Candidates come from the [upstream model list](https://github.com/bonyback1/sony
 
 **[Download APK: 0.2.2-alpha (adds the Leica styles)](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)** · [Release notes](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha)
 
-- File: `FilmStudio-0.2.2-alpha-movie.apk` (3,789,785 bytes) - the default `faithful` tone treatment
-- SHA-256: `1270f7d9dbed2f3b5d82f6c0ce93d5844c512e7b00108eb1c5c8c20c3ec50199`
-- White-anchored companion: `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk` (3,790,893 bytes, SHA-256 `18c6f068d253edf5d0fd417da9db160551a1ed43566626fa53e7dbe9702f98e4`) - keeps white at white instead of darkening globally. **The two differ only in the Leica tone output**; they share one matrix, so which to use is a judgement on real footage.
+- File: `FilmStudio-0.2.2-alpha-movie.apk` (3,789,781 bytes) - the default `faithful` tone treatment
+- SHA-256: `5a6417043e9fe9bba470f7d10d61440c1227a10ba835734748b325e43c752ad3`
+- White-anchored companion: `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk` (3,790,896 bytes, SHA-256 `c5ebc6799258dfbc091657902bbb593e01ad7d1d737738d9a469a211e7e2f0c2`) - keeps white at white instead of darkening globally. **The two differ only in the Leica tone output**; they share one matrix, so which to use is a judgement on real footage.
 
 Then follow the [English installation guide](docs/INSTALL.en.md) to install it; no local compilation is required. **If you only want to install and shoot, take "Method A"**: set the camera's USB mode to MTP and install the APK with pmca-gui - no developer mode and no command line. **Code → Download ZIP contains source, not the installer.**
 

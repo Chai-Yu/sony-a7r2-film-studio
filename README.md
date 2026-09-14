@@ -39,9 +39,9 @@
 
 **[直接下载 APK：0.2.2-alpha（含徕卡风格）](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)** · [发行说明](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha)
 
-- 文件：`FilmStudio-0.2.2-alpha-movie.apk`（3,789,785 字节）—— 默认的 faithful 影调处理
-- SHA-256：`1270f7d9dbed2f3b5d82f6c0ce93d5844c512e7b00108eb1c5c8c20c3ec50199`
-- 白点锚定变体：`FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`（3,790,893 字节，SHA-256 `18c6f068d253edf5d0fd417da9db160551a1ed43566626fa53e7dbe9702f98e4`）—— 保留白点、不做全局压暗。**两者只差徕卡风格的影调输出**，矩阵相同；选哪个看实拍观感。
+- 文件：`FilmStudio-0.2.2-alpha-movie.apk`（3,789,781 字节）—— 默认的 faithful 影调处理
+- SHA-256：`5a6417043e9fe9bba470f7d10d61440c1227a10ba835734748b325e43c752ad3`
+- 白点锚定变体：`FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`（3,790,896 字节，SHA-256 `c5ebc6799258dfbc091657902bbb593e01ad7d1d737738d9a469a211e7e2f0c2`）—— 保留白点、不做全局压暗。**两者只差徕卡风格的影调输出**，矩阵相同；选哪个看实拍观感。
 
 下载后按照[中文安装教程](docs/INSTALL.zh-CN.md)安装，无需自己编译。**只想装来用的走「方法 A」**：相机 USB 模式设为 MTP，用 pmca-gui 选中 APK 直接安装，不需要开发者模式，也不需命令行。**Code → Download ZIP 是源码，不是安装包。**
 

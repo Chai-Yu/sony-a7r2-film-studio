@@ -9,8 +9,8 @@ For **0.2.2-alpha / on-camera 0.2.2**. Tested devices are an a5100 (firmware 1.1
 ## 0. Install the released APK directly
 
 1. Read [camera compatibility](../README.en.md#compatibility) for your model and intended features.
-2. Download **[FilmStudio-0.2.2-alpha-movie.apk](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)** (3,789,785 bytes) from [Releases → Assets](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha). The Source code ZIP is not an installer. The same page carries the white-anchored companion `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`; the two differ only in the Leica tone output.
-3. Check the SHA-256 with `shasum -a 256` on macOS, `sha256sum` on Linux, or `Get-FileHash -Algorithm SHA256` in PowerShell. It must be `1270f7d9dbed2f3b5d82f6c0ce93d5844c512e7b00108eb1c5c8c20c3ec50199`. A checksum verifies file identity, not permission or compatibility.
+2. Download **[FilmStudio-0.2.2-alpha-movie.apk](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)** (3,789,781 bytes) from [Releases → Assets](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha). The Source code ZIP is not an installer. The same page carries the white-anchored companion `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`; the two differ only in the Leica tone output.
+3. Check the SHA-256 with `shasum -a 256` on macOS, `sha256sum` on Linux, or `Get-FileHash -Algorithm SHA256` in PowerShell. It must be `5a6417043e9fe9bba470f7d10d61440c1227a10ba835734748b325e43c752ad3`. A checksum verifies file identity, not permission or compatibility.
 4. Choose an installation route: **Method A** is a graphical tool that needs no developer mode and suits people who only want to install and use the app; **Method B** is the command line and requires Wi-Fi ADB from section 4.
 
 **Installing a released APK requires no Python, Java, Apktool or private signing key.** Sections 1–3 are for people who want to build it themselves.
