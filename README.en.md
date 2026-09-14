@@ -7,13 +7,10 @@ An unofficial film-look experiment for the **Sony a5100 / ILCE-5100 and a7R II /
 ## Version
 
 - **Current version: `0.2.2-alpha`** - release tag `v0.2.2-alpha`, on-camera version string `0.2.2` (`0.2.2a` for the white-anchored variant). App name: 胶片工坊.
-- **What 0.2.2 adds:** two Leica Look reference styles (Classic, Natural) on top of the ten Fujifilm-reference and five upstream Ricoh/street-style presets, **seventeen in total**. Menu labels use 富士 / 理光 / 徕卡 prefixes. The package and signing certificate are retained, so this updates in place.
-- **This download also contains two 2026-09-14 fixes:**
-  1. **The look menu could wedge the app.** Pressing MENU on the chooser the centre button opened closed the layout but left the menu state on the stack, after which no key responded and only a power cycle recovered the camera. Fixed, and verified on an a7R II across dozens of round trips.
-  2. **The Fujifilm looks over-saturated.** Their fits map Fujifilm's flat neutral reference, but the camera feeds the matrix its own rendered Standard image, about 1.26x more chromatic, so the chroma gain stacked on top. Now calibrated against real shots: the residual deviation from the reference look at 100% strength drops from 27% to about **7.5%**.
-- The earlier [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha) (upstream repository) remains available for rollback.
+- **Seventeen looks** in all: ten Fujifilm official-LUT reference styles, five upstream Ricoh/street styles and two Leica Look reference styles. Menu labels use 富士 / 理光 / 徕卡 prefixes.
+- The package and signing certificate are retained, so this updates in place. The earlier [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha) (upstream repository) remains available for rollback.
 
-See the [validation notes](docs/VALIDATION.md) for the measurements behind all of this.
+The measurements behind each version are in the [validation notes](docs/VALIDATION.md).
 
 <a id="compatibility"></a>
 
@@ -24,7 +21,7 @@ See the [validation notes](docs/VALIDATION.md) for the measurements behind all o
 | Model | Status in this project |
 | --- | --- |
 | **a5100 / ILCE-5100, firmware 1.10** | Tested; see "Evidence and limits" below for the feature and version range |
-| **a7R II / ILCE-7RM2, Android 4.1.2 / API 16** | Install, startup and the "centre button opens the chooser → MENU returns to shooting" round trip were tested (2026-09-14). The body reports **no support** for the RGB matrix and the extended gamma table, but measurement shows **it applies both**: feeding its own STD JPEG into the matrix+curve model matches the photographs to −1.3%, which is impossible if the curve were skipped. What it **ignores** is every Creative Style and Picture Effect write (the symptom was "all the looks render the same, and even ACROS is in colour"). The matrix and its curve are therefore now written **together, unconditionally**; an earlier build skipped the gamma table on the capability query alone, which left half a look applied on its own and tinted the image cyan-green (a blue-green sky, a green cast on a sunlit wall, gone again after leaving the app) - now fixed |
+| **a7R II / ILCE-7RM2, Android 4.1.2 / API 16** | Install, startup and the "centre button opens the chooser → MENU returns to shooting" round trip were tested (2026-09-14). The body's `isRGBMatrixSupported()` and `isExtendedGammaTableSupported()` both return false, but measurement shows **both are honoured**; the app therefore writes the RGB matrix and the extended gamma table **unconditionally**, as the upstream Ricoh mod does. It does **not** accept `setColorMode()` or `setPictureEffect()` writes, so `applyNative()`, which asks the camera to apply its own style, has no effect on this body. Photograph/video saving and colour were not verified item by item on this model |
 | a6000, a6300, a6500 | PMCA candidates listed upstream; this version is untested |
 | a7, a7R, a7S, a7 II, a7S II | PMCA candidates listed upstream; this version is untested |
 | RX100 III/IV/V, RX10 II/III, RX1R II, HX90 | PMCA candidates listed upstream; this version is untested |
@@ -68,7 +65,7 @@ The full procedure is in the [English installation guide](docs/INSTALL.en.md): i
 - Five upstream Ricoh/street styles: GR Positive Film, Negative Film, High Contrast B&W, Moriyama Daido Style and Cross Process. Community presets, not official Ricoh LUTs.
 - Two Leica Look reference styles: Classic and Natural, fitted from Leica's official SL2-S L-Log LUTs. **Leica publishes no neutral reference LUT**, so the baseline rendering is constructed by this project from the L-Log specification rather than taken from Leica.
 - Press the centre button to select a look in still preview or movie standby.
-- MENU page 1 「滤镜强度」 (filter strength): **30%, 50%, 70%, 100%**. Starts at 70%; shared by stills and video and saved through normal app exit. **100% is the look's own full strength.**
+- MENU page 1 「滤镜强度」 (filter strength): **30%, 50%, 70%, 100%**. Starts at 70%; shared by stills and video, saved through normal app exit. **100% is the look's own full strength**; lower settings reduce colour and tone together.
 - MENU page 1 →「拍照／录像模式」 (still/movie mode) → movie P/A/S/M, then 「录像文件格式」 (format) and 「录像帧率／画质」 (frame rate/quality). Choices follow the camera's supported XAVC S, AVCHD and MP4 profiles and the current PAL/NTSC system.
 - MOVIE starts/stops recording. Look and strength stay fixed during recording.
 - White balance remains available on MENU page 4. The app uses STD/Standard with contrast, saturation and sharpness at zero as its baseline; native Portrait/Vivid Creative Styles are not stacked in this app.
@@ -78,23 +75,30 @@ For portraits, compare 30% and 70% first. On colour looks the strength reduces b
 
 **ACROS, Ricoh High Contrast B&W and Moriyama style never carry colour at any strength**: the strength only lowers contrast, and 100% is the look's own contrast.
 
+## Colour mechanism
+
+- Each look is **one 3×3 colour matrix plus a 1024-point tone curve**, written into the camera's RGB matrix and extended gamma table. **The two only work as a pair**: the matrix is calibrated against the curve it was fitted with, and applying it alone does not reproduce the look.
+- The parameters are fitted from Fujifilm's published LUTs. Those LUTs take F-Log2 / F-Gamut input, which cannot be applied to ordinary Sony imagery, so **WDR-709 serves as a substitute neutral reference** and the matrix and curve are fitted for ordinary footage.
+- The Fujifilm **chroma** response is calibrated separately against real a7R II shots: five scenes, each shot three times (camera Neutral, camera STD, app output), which corrects the matrix's chroma response so that 100% strength sits closer to the official look.
+- Leica publishes look LUTs with no neutral reference, so its baseline rendering is constructed by this project from the L-Log specification. The Ricoh parameters come from the upstream project and are unchanged.
+
 ## Evidence and limits
 
 Hardware testing covers two bodies; neither promises compatibility with other models.
 
 - **a5100 / ILCE-5100, firmware 1.10, Android 2.3.7 / API 10**: the body supports the 3×3 RGB matrix and the extended gamma table, so this project's fitted hardware-colour parameters are used.
-- **a7R II / ILCE-7RM2, Android 4.1.2 / API 16**: the body reports no support for either, but measurement shows both **are applied**, so the fitted parameters are used here too. What is ignored is the Creative Style and Picture Effect writes - see the [live-preview notes](docs/LIVE-PREVIEW.zh-CN.md).
+- **a7R II / ILCE-7RM2, Android 4.1.2 / API 16**: the body's capability query reports no support for either, but measurement shows both are honoured, so the fitted parameters are used here too. The Creative Style and Picture Effect writes are not accepted - see the [live-preview notes](docs/LIVE-PREVIEW.zh-CN.md).
 
 Version history:
 
 - 0.1.1: all ten look selections applied; PROVIA color and ACROS monochrome JPEGs saved; an ACROS XAVC S 1080p59.94 clip saved and fully decoded.
 - 0.1.2: the user confirmed the format/quality menus were usable. Every encoded format has not been inspected.
 - 0.1.3: installation, startup and default-look application verified; the user gave general confirmation of the new controls. Every look/strength/format combination has not been tested in saved media.
-- 2026-09-14 (a7R II): installation, startup and dozens of "centre button opens the chooser → MENU returns to shooting" round trips all behaved correctly. That path used to wedge the state machine - the layout closed while the menu state stayed on the stack, after which no key responded and only a power cycle recovered the camera; it is now fixed. The same day saw the Fujifilm chroma calibration completed from five shot triples (see the [validation notes](docs/VALIDATION.md)). Neither fix was re-tested on the a5100, and saved media and colour remain unverified on both bodies for this version.
+- 0.2.2 (a7R II, 2026-09-14): installation, startup and dozens of "centre button opens the chooser → MENU returns to shooting" round trips all behaved correctly. The Fujifilm chroma calibration was completed the same day from five shot triples. The a5100 has not been re-tested item by item, and saved media and colour remain unverified on both bodies for this version.
 
 **In-app playback currently lists photographs only.** Exit to native playback and choose the appropriate XAVC S, AVCHD or MP4 view to see movies.
 
-**Where the approximation stops:** this is not a complete port of Fujifilm's in-camera Film Simulation - F-Log2/F-Gamut LUTs cannot be applied directly to ordinary Sony imagery. The tool fits a 3×3 colour matrix and a shared 1024-point curve against WDR-709 as a substitute neutral reference, and **the chroma response has been calibrated against five real a7R II scenes, each with a camera Neutral, a camera STD and an app shot, two of them at 100% strength**. Beyond chroma the limits stand: the a5100 is still uncalibrated, grain and sensor response are not simulated, some looks keep a visible error, and **the correction is still the wrong way round for the desaturating looks, REALA ACE above all**.
+**Where the approximation stops:** this is not a complete port of Fujifilm's in-camera Film Simulation, and grain or sensor response is not simulated. The a5100 has not had the same real-shot chroma calibration as the a7R II; individual looks deviate from the official LUT more visibly than others.
 
 ## License, ownership and sources
 
