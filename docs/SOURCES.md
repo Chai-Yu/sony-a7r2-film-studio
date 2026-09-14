@@ -61,6 +61,34 @@ English: F-Log2 coordinates are used to sample paired LUTs, not to apply a log t
 
 日本語：F-Log2 の同一座標で2つの LUT を参照し、ソニーの通常映像へ Log 用 LUT を直接適用する方法ではありません。WDR-709 は未校正の代替基準です。公式の元 LUT と単独の出力 LUT は配布しません。近似パラメータは公開 APK に内蔵し、Git に事前計算表として掲載しません。[権利関係](../LICENSING.md)と[富士フイルムの利用条件](https://global.fujifilm.com/en/terms)も参照してください。
 
+## 徕卡 Look 参考 / Leica Look reference / ライカ Look 参考
+
+**Leica SL2-S Leica Look Up Tables (LUT)** — `Classic_Rec709.cube`、`Natural_Rec709.cube`，以及定义 L-Log
+曲线与色域的 **L-Log Reference Manual V1.6**（`pm-118912`）。
+
+中文：徕卡只提供 look LUT，**不提供中性参照渲染**，因此拟合基准由本项目按手册的 L-Log 规范构造：场景反射率经
+BT.709 传输函数（漫反射白处截断）。这个选择有实测依据：gamma 2.4、gamma 2.2 与线性三种候选会让 look 相对中性
+的偏差随亮度摆动 3.6–5.1 倍，而 BT.709 OETF 只有 1.34 倍——偏差平缓才是基准正确的特征。**它不是徕卡的参考渲染。**
+L-Log 使用 ITU-R BT.2020 色域，`Rec709` 变体已包含 BT.2020→BT.709 转换。手册明确说明这批 LUT 不适用于
+SL (Typ 601)。**原始 LUT 与手册不随本仓库分发**；拟合参数编入发行 APK。许可与商标见[许可范围](../LICENSING.md)。
+
+English: Leica ships the look LUTs only and **no neutral reference rendering**, so the baseline used for
+fitting is constructed here from the L-Log curve in Leica's own manual: scene reflection through the BT.709
+transfer function, clamped at diffuse white. The choice is evidence-based — gamma 2.4, gamma 2.2 and plain
+linear each make the look's deviation from neutral swing 3.6-5.1x with level, against 1.34x for BT.709 OETF,
+and a flat deviation is what a correct baseline looks like. **It is not Leica's reference rendering.** L-Log
+is ITU-R BT.2020, and the Rec709 variant already contains the BT.2020 to BT.709 conversion. The manual states
+these LUTs do not apply to the SL (Typ 601). **Neither the original LUTs nor the manual are redistributed
+here**; the fitted parameters are compiled into the release APK. See [license scope](../LICENSING.md).
+
+日本語：ライカは look LUT のみで、**中性参照レンダリングは提供していません**。そのためフィッティング基準は、
+ライカ自身のマニュアルにある L-Log 曲線から本プロジェクトが構成します（シーン反射率→BT.709 伝達関数、
+拡散白でクリップ）。根拠は実測です — gamma 2.4／2.2／リニアでは look の中性からの偏差が明度により 3.6–5.1 倍
+振れますが、BT.709 OETF は 1.34 倍に収まります。偏差が平坦であることが正しい基準の特徴です。
+**これはライカの参照レンダリングではありません。** L-Log は ITU-R BT.2020 で、Rec709 版には
+BT.2020→BT.709 変換が含まれます。マニュアルは本 LUT を SL (Typ 601) に適用できないと明記しています。
+**原本 LUT とマニュアルは再配布しません**。近似パラメータは公開 APK に内蔵されます。
+
 ## 安装与开发资料 / Tools and references / 導入・開発資料
 
 These are external tools or reference documents, not bundled dependencies.

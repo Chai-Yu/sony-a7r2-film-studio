@@ -10,7 +10,7 @@ import struct
 import xml.etree.ElementTree as ET
 from axml_strings import strings as manifest_strings
 from build_apk import ANDROID_VERSION, ORIGINAL_ANDROID_VERSION, read_icon_map
-from film_profiles import read_array, ricoh_profiles
+from film_profiles import FUJIFILM_PRESETS, PRESET_COUNT, read_array, ricoh_profiles
 from filter_strength import DEFAULT_STRENGTH, STRENGTHS, blend_profile
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -85,10 +85,12 @@ def main():
                          'the filter chooser; it must match what the builder wrote into '
                          'onCreateView (0 = fully transparent, the default)')
     args = ap.parse_args()
-    profiles = json.loads((ROOT/'profiles/film_studio.json').read_text(encoding='utf-8'))['presets']
+    build = json.loads((ROOT/'profiles/film_studio.json').read_text(encoding='utf-8'))
+    profiles = build['presets']
     hook = (args.decoded/HOOK_PATH).read_text(encoding='utf-8')
     arrays = fields(hook)
-    assert len(profiles) == 15 and len(arrays) == 120
+    assert len(profiles) == PRESET_COUNT
+    assert len(arrays) == PRESET_COUNT * len(STRENGTHS) * 2
     for i, p in enumerate(profiles):
         for strength in STRENGTHS:
             expected = blend_profile(p, strength)
@@ -316,19 +318,26 @@ def main():
     # regression to a byte substitution would corrupt the manifest instead of
     # failing loudly; this is the check that notices.
     announced = manifest_strings(args.decoded/'AndroidManifest.xml')
-    assert ANDROID_VERSION in announced, \
-        f'manifest does not announce version {ANDROID_VERSION}'
+    expected_version = build.get('android_version', ANDROID_VERSION)
+    assert expected_version in announced, \
+        f'manifest does not announce version {expected_version}'
     assert ORIGINAL_ANDROID_VERSION not in announced, \
         'manifest still carries the base APK version string'
     previous_count = None
     if args.previous_decoded:
         previous = fields((args.previous_decoded/HOOK_PATH).read_text(encoding='utf-8'))
-        assert len(previous) == 80
-        for field, values in previous.items():
-            assert arrays[field] == values, field
-        previous_count = len(previous)
+        # Compare only the Fujifilm arrays: that family's fitted parameters must
+        # survive a rebuild bit for bit. Naming them explicitly keeps this check
+        # working when the previous build carried a different number of presets.
+        shared = [f'sFuji{kind}{i}_{s}' for i in range(FUJIFILM_PRESETS)
+                  for s in STRENGTHS for kind in ('matrix', 'gamma')]
+        missing = [name for name in shared if name not in previous]
+        assert not missing, f'previous build lacks {missing[:4]}'
+        for name in shared:
+            assert arrays[name] == previous[name], name
+        previous_count = len(shared)
     report = dict(
-        profiles=15, strengths=list(STRENGTHS), compiled_arrays_checked=len(arrays),
+        profiles=len(profiles), strengths=list(STRENGTHS), compiled_arrays_checked=len(arrays),
         upstream_ricoh_full_strength_exact=True, previous_fuji_arrays_unchanged=previous_count,
         menu_and_lookup_ids_match=True, preset_thumbnails=len(ids),
         base_thumbnails_kept=kept, placeholder_drawables=placeholders, renamed_resources=True,
@@ -339,7 +348,7 @@ def main():
         native_style_fallback=('runtime capability gate' if auto_gate else 'forced'),
         extended_gamma_table=('capability-gated' if args.extended_gamma == 'auto' else 'forced'),
         native_effect_ids_checked_against_input=bool(effect_ids),
-        manifest_version=ANDROID_VERSION,
+        manifest_version=expected_version,
         live_filter_chooser=(args.live_menu == 'on'),
         menu_scrim_alpha=args.menu_scrim,
         hardware_verified=False,

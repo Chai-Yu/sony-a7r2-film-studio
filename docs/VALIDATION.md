@@ -136,6 +136,100 @@ English: Independent training and validation use the unclipped region of the neu
 
 日本語：学習と検証には独立した標本を用い、中性 LUT のクリップされていない領域を評価しています。表は 0–1 の RGB 絶対誤差であり、一致率や実写の ΔE ではありません。特に REALA ACE の平均誤差など、無視できない差があります。3×3 行列と共通カーブでは複雑な LUT を完全には表現できず、ソニー側の処理順序や伝達特性も未校正です。
 
+## 0.2.2-alpha / 徕卡 Look / Leica Look
+
+`FilmStudio-0.2.2-alpha-movie.apk`（faithful，默认）— SHA-256:
+
+```text
+72fa73e3a3010a59b841fde15a3f664f5272e826aedd51b1cc280fff7cd5b265
+```
+
+`FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`（anchor）— SHA-256:
+
+```text
+0cff1053a42b08330121ff4ce3be801bb761893b61e8914a0072f0bb6b60c89d
+```
+
+中文：本版新增 2 个徕卡 Look 参考风格（经典 Classic、自然 Natural），预设总数 15 → 17。新增内容只影响新预设：
+与 0.2.1 的反编译结果逐字段比对，**原有 80 组富士数组逐位未变**；理光 5 组仍取自固定版本上游；签名证书不变，
+可 `install -r` 覆盖；相机内版本名 `0.2.2`（anchor 变体为 `0.2.2a`，因此两个变体在机内可区分）。
+
+**基准渲染是本项目构造的，不是徕卡的。** 徕卡只发布 look LUT，没有中性参照；拟合基准按徕卡 L-Log 参考手册 V1.6
+的曲线构造（场景反射率 → BT.709 传输函数，漫反射白处截断）。手册自带的 LSR/DV 对照表被用作实现的验收依据，
+6 个点全部吻合（最大偏差 0.33 DV）。显示编码不是猜的：四个候选里只有 BT.709 OETF 让 look 相对中性的偏差保持平缓
+（全程 1.34 倍），gamma 2.4／2.2 与线性分别摆动 5.05／4.13／5.02 倍，而偏差剧烈摆动正是基准取错的特征。
+
+拟合精度（独立验证集 24,000 点，0–1 尺度上的 RGB 绝对误差，**不是 ΔE 或相似度**）：
+
+| Look | 平均绝对误差 | 95 分位 |
+| --- | ---: | ---: |
+| 徕卡 经典 | 0.0315 | 0.0878 |
+| 徕卡 自然 | 0.0219 | 0.0689 |
+
+**两个变体只差一件事：光影调输出是否归一化。** 徕卡 LUT 把漫反射白渲染在约 0.75，为 log 高光预留约 25% 余量。
+`faithful` 保留该行为，整张照片会偏暗约 25%；`anchor` 把同一条曲线的输出按约 1.30/1.34 缩放，使 `输入 1.0 → 输出 1.0`，
+只保留色彩与中调特征。两者**共用同一个矩阵**：先按 faithful 拟合出最优矩阵与曲线，再只缩放曲线；若改为缩放目标后
+重拟合，精度会掉约 3 倍（已实测）。那 25% 余量既无法在已被截断的相机信号上复现，也不属于"look"本身，因此采用哪种
+处理取决于实拍观感——这正是同时提供两个变体的原因。
+
+尚未验证：本版照片／录像保存、全部强度、两个变体在实机上的观感对比，以及 a7R II 上的降级表现（徕卡两个风格会与
+既有风格合并：自然→`standard`，经典→`neutral` + `retro-photo`）。
+
+English: This version adds two Leica Look reference styles (Classic, Natural), taking the preset count from 15 to
+17. Only the new presets are affected: comparing against the decompiled 0.2.1 build field by field, **all 80
+existing Fujifilm arrays are unchanged bit for bit**, the five Ricoh presets still come from the pinned upstream
+revision, the signing certificate is unchanged so `install -r` still updates in place, and the on-camera version
+reads `0.2.2` (`0.2.2a` for the anchor variant, which is how the two are told apart on the camera).
+
+**The baseline rendering is this project's construction, not Leica's.** Leica publishes look LUTs with no neutral
+reference, so the baseline follows the L-Log curve in Leica's reference manual V1.6 (scene reflection through the
+BT.709 transfer function, clamped at diffuse white). The manual's own LSR/DV table is used as the acceptance test
+for that implementation: all six points match, worst deviation 0.33 DV. The display encoding was not guessed —
+of four candidates only BT.709 OETF keeps the look's deviation from neutral flat (1.34x end to end), while gamma
+2.4, gamma 2.2 and linear swing 5.05/4.13/5.02x, and a wild swing is the signature of the wrong baseline.
+
+Fit quality (independent 24,000-point validation set, pooled absolute RGB error on a 0-1 scale, **not ΔE and not a
+similarity score**): Classic MAE 0.0315 / p95 0.0878; Natural MAE 0.0219 / p95 0.0689.
+
+**The two variants differ in exactly one thing: whether the tone curve's output is normalised.** The Leica LUTs
+render diffuse white at about 0.75, reserving roughly a quarter of the range for log highlights. `faithful` keeps
+that behaviour and the image comes out about 25% darker; `anchor` rescales the same curve's output by about
+1.30/1.34 so input 1.0 still maps to 1.0, keeping only the colour and mid-tone character. Both share one matrix:
+the fit is done as `faithful` first and only the curve is rescaled. Scaling the target before fitting instead
+costs about 3x accuracy (measured). That quarter of headroom can neither be reproduced on a camera signal that is
+already clipped there, nor is it part of the look itself, so which treatment to use is a judgement call on real
+footage — hence shipping both.
+
+Not yet verified: saved photographs/video for this version, all strengths, how the two variants compare on real
+footage, and the fallback on the a7R II, where the Leica looks collapse onto existing styles (Natural to
+`standard`, Classic to `neutral` + `retro-photo`).
+
+日本語：本版はライカ Look 参考スタイルを 2 種（クラシック、ナチュラル）追加し、プリセット総数は 15→17 になります。
+影響は新規プリセットのみです。0.2.1 の逆コンパイル結果と項目ごとに比較して、**既存の富士 80 配列はビット単位で
+不変**、リコー 5 種は指定リビジョンの上流のまま、署名証明書も変わらず `install -r` で上書き可能、カメラ内表示は
+`0.2.2`（anchor 版は `0.2.2a`、これが両者の区別方法です）。
+
+**基準レンダリングは本プロジェクトの構成物であり、ライカのものではありません。** ライカは中性参照を伴わない
+look LUT のみを公開しているため、基準はライカのリファレンスマニュアル V1.6 の L-Log 曲線に従って構成します
+（シーン反射率→BT.709 伝達関数、拡散白でクリップ）。マニュアル自身の LSR/DV 表を実装の合格判定に使用し、
+6 点すべて一致（最大偏差 0.33 DV）。表示エンコードは推測ではありません — 4 候補のうち BT.709 OETF だけが
+look の中性からの偏差を平坦に保ち（全区間で 1.34 倍）、gamma 2.4／2.2／リニアは 5.05／4.13／5.02 倍振れます。
+偏差が大きく振れるのは基準が誤っている徴候です。
+
+近似精度（独立検証 24,000 点、0–1 スケールの RGB 絶対誤差。**ΔE でも一致率でもありません**）：
+クラシック MAE 0.0315 / p95 0.0878、ナチュラル MAE 0.0219 / p95 0.0689。
+
+**2 つの版の違いはただ一つ、トーンカーブ出力を正規化するかどうかです。** ライカの LUT は拡散白を約 0.75 で
+描画し、log ハイライト用に約 25% の余裕を確保します。`faithful` はこの挙動を保つため画像は約 25% 暗くなり、
+`anchor` は同じカーブの出力を約 1.30/1.34 倍して `入力 1.0 → 出力 1.0` にし、色と中間調の特徴だけを残します。
+両者は**同一の行列を共有**します（faithful で最適な行列とカーブを先に求め、カーブだけを再スケール）。
+目標側をスケールしてから再フィットすると精度が約 3 倍悪化します（実測済み）。この 25% の余裕は、
+すでにクリップされたカメラ信号では再現できず、また look そのものではないため、どちらを採るかは実写の見ての
+判断になります。両版を提供する理由はそこにあります。
+
+未検証：本版の写真／動画保存、全強度、実写での両版の比較、a7R II での降格挙動（ライカの 2 種は既存スタイルに
+統合されます：ナチュラル→`standard`、クラシック→`neutral` + `retro-photo`）。
+
 ## 安装方式验证 / Install-route verification / 導入経路の検証
 
 中文：两条安装路径都做过实机验证。**方法 A（pmca-gui，USB）**：相机 USB 连接模式设为 **MTP**、连上电脑后，
@@ -152,7 +246,7 @@ English: Both installation routes were exercised on hardware. **Method A (pmca-g
 Optional compiled-payload regression check after decompiling the signed APK:
 
 ```sh
-java -jar inputs/apktool.jar d -r output/FilmStudio-0.2.1-alpha-movie.apk -o build-local/verify-021
+java -jar inputs/apktool.jar d -r output/FilmStudio-0.2.2-alpha-movie.apk -o build-local/verify-022
 python tools/check_combined.py --decoded build-local/verify-021 --input-apk inputs/base.apk \
     --upstream-hook inputs/upstream/src/smali/RicohHook.smali
 ```
@@ -171,7 +265,7 @@ python tools/check_build.py
 
 Run these after a local build, which creates `profiles/film_studio.json` from the existing fitted profiles and pinned upstream hook. They do not connect to the camera. They verify:
 
-- Fifteen profiles, four strengths, 3×3 dimensions, 1024-point monotonic curves and 10-bit bounds. Neutral rows remain neutral; intentional Ricoh tints retain their original row sums at 100%.
+- Seventeen profiles, four strengths, 3×3 dimensions, 1024-point monotonic curves and 10-bit bounds. Neutral rows remain neutral; intentional Ricoh tints retain their original row sums at 100%.
 - A bit-identical 100% endpoint and mathematical 0% identity endpoint; 0% is not an app menu choice.
 - `.cube` red/green/blue ordering and exported-grid round trips.
 - APK archive integrity, file and manifest digests, and the detached signature against the embedded certificate. This is integrity checking, not trust in the signer or proof of device compatibility.

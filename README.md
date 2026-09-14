@@ -4,9 +4,9 @@
 
 面向 **Sony a5100 / ILCE-5100 与 a7R II / ILCE-7RM2** 的非官方胶片风格实验工具。参考 [bonyback1 的 Ricoh 模组](https://github.com/bonyback1/sony-pmca-ricoh-mod) 的硬件色彩处理方法，并以 [富士公开的 GFX ETERNA 55 LUT](https://www.fujifilm-x.com/global/support/download/lut/) 为色彩研究参考，提供照片与实验性录像效果。
 
-**当前版本：0.2.1-alpha（发行标签 `v0.2.1-alpha`，相机内版本名同为 0.2.1）；应用名称：胶片工坊。** 文档提供三种语言，当前相机应用界面主要为中文。
+**当前版本：0.2.2-alpha（发行标签 `v0.2.2-alpha`，相机内版本名同为 0.2.2）；应用名称：胶片工坊。** 文档提供三种语言，当前相机应用界面主要为中文。
 
-**本版更名为「胶片工坊」，合并 10 个富士参考风格与 5 个上游理光／街头风格，共 15 个。** 相机菜单以「富士」「理光」前缀区分。包名与签名沿用旧版「富士风格」，可覆盖更新；新合并版已在 a5100 上安装、启动，并观察到部分滤镜参数应用成功；本版照片／录像保存尚待验证。更早的 [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha)（上游仓库）仍保留供回退。
+**0.2.2 在原有 10 个富士参考与 5 个上游理光／街头风格之外，新增 2 个徕卡 Look 参考风格，共 17 个。** 相机菜单以「富士」「理光」「徕卡」前缀区分。包名与签名沿用旧版「富士风格」，可覆盖更新；新合并版已在 a5100 上安装、启动，并观察到部分滤镜参数应用成功；本版照片／录像保存尚待验证。更早的 [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha)（上游仓库）仍保留供回退。
 
 **当前下载版另含 2026-09-14 的修复**：从确认键打开的滤镜菜单再按 MENU 会卡死 —— 界面已关闭、菜单状态却留在状态栈上，之后任何按键都不再响应，只能关机恢复。现已修正，并在 a7R II 上连续数十次往返验证。滤镜选择界面保持完全透明，实时预览不被罩层遮挡。
 
@@ -32,10 +32,11 @@
 
 ## 下载与安装
 
-**[直接下载 APK：0.2.1-alpha（含 2026-09-14 修复）](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.1-alpha-movie.apk)** · [发行说明](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.1-alpha)
+**[直接下载 APK：0.2.2-alpha（含徕卡风格）](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)** · [发行说明](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha)
 
-- 文件：`FilmStudio-0.2.1-alpha-movie.apk`（3,785,492 字节）
-- SHA-256：`6a43ccaf73f181aa167e262d587b03c0ebc471df7d6b4fc4d05ae9d44cc6bf0f`
+- 文件：`FilmStudio-0.2.2-alpha-movie.apk`（3,789,374 字节）——默认的 faithful 影调处理
+- SHA-256：`72fa73e3a3010a59b841fde15a3f664f5272e826aedd51b1cc280fff7cd5b265`
+- 另有**白点锚定**变体 `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`（3,790,410 字节，SHA-256 `0cff1053a42b08330121ff4ce3be801bb761893b61e8914a0072f0bb6b60c89d`）：保留白点、不做全局压暗。**两者只差徕卡风格的影调输出**，矩阵相同；选哪个看实拍观感。
 
 下载后按照[中文安装教程](docs/INSTALL.zh-CN.md)安装，无需自己编译。**只想装来用的走「方法 A」**：相机 USB 模式设为 MTP，用 pmca-gui 选中 APK 直接安装，不需要开发者模式，也不需命令行。**Code → Download ZIP 是源码，不是安装包。**
 
@@ -47,7 +48,7 @@
 
 ```sh
 adb connect CAMERA_IP:5555
-adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.1-alpha-movie.apk
+adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.2-alpha-movie.apk
 ```
 
 **IP 与隐私：** `CAMERA_IP` 只是占位符，必须替换为你自己的相机在 Tweak → Developer 中当前显示的 IP；不要原样输入，也不要照抄他人的地址。保留后面的 `:5555` 端口。公开教程使用占位符；分享截图或日志时，请遮住或删除真实 IP。
@@ -62,6 +63,7 @@ adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.1-alpha-movie.apk
 
 - 10 种富士官方 LUT 参考风格：PROVIA、Velvia、ASTIA、CLASSIC CHROME、REALA ACE、PRO Neg. Std、CLASSIC Neg.、ETERNA、ETERNA BLEACH BYPASS、ACROS。
 - 5 种上游理光／街头风格：GR 正片、负片、高反差黑白、森山风、正负逆冲。来自社区模组，非理光官方 LUT。
+- 2 种徕卡 Look 参考风格：经典（Classic）、自然（Natural）。由 SL2-S 官方 L-Log LUT 拟合；但**徕卡不提供中性参照 LUT**，基准渲染由本项目按 L-Log 规范构造，因此不是徕卡官方预设。
 - 拍照及录像待机时，按中心键进入滤镜选择。
 - MENU 首页 →「滤镜强度」：**30% / 50% / 70% / 100%**。初始为 70%，拍照与录像共用，正常退出后保存选择。
 - MENU 首页 →「拍照／录像模式」→ 动态影像 P/A/S/M，再设置「录像文件格式」及「录像帧率／画质」。显示相机支持的 XAVC S / AVCHD / MP4 组合，不强行开放另一 PAL/NTSC 制式。

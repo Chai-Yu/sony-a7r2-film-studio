@@ -27,17 +27,17 @@ Android 只会从两者中选一个：屏幕被判为 `long` 的机身拿到占�
 
 ## 2. 0.2.x 的已知脆弱点（已修复）
 
-1. **硬编码 `0x7f020054`**：15 个预设全部指向这一个写死的 ID。它取自制作 a5100 版本时所用基础包；换基础包后可能为空或指向错误资源。
+1. **硬编码 `0x7f020054`**：全部预设都指向这一个写死的 ID。它取自制作 a5100 版本时所用基础包；换基础包后可能为空或指向错误资源。
 2. **整表覆盖**：`initializeIconMap()` 被整段替换，基础包原有的 itemId → 图标映射被丢弃。菜单里其他键（如强度、录像项）会失去原图标。
-3. **继承模板图标**：15 个新菜单项直接复制基础包 `ApplicationTop` 第一项的 `IconRes`，若该项没有该属性，新增项就没有图标名可解析。
+3. **继承模板图标**：每个新菜单项都直接复制基础包 `ApplicationTop` 第一项的 `IconRes`，若该项没有该属性，新增项就没有图标名可解析。
 
 现在的构建行为：
 
 - 构建时**从基础 APK 自己的 `initializeIconMap()` 读出真实图标 ID**，不再写死。
-- 生成的新映射 = **基础包原有条目 + 15 个预设条目**，原行为保持不变。
+- 生成的新映射 = **基础包原有条目 + 每个预设一条**，原行为保持不变。
 - 每个预设按其类型取图标：彩色取 `pop-color`，ACROS 取 `richtone-mono`，理光 5 款分别对应 `pop-color` / `retro-photo` / `richtone-mono` / `rough-mono` / `watercolor`；取不到时回退到该基础包里存在的第一个来源，并打印警告。
 - 读不到任何图标 ID 时**直接终止构建**，而不是静默生成坏 ID。
-- `tools/check_combined.py` 增加校验：15 个预设都必须有非零缩略图，菜单项必须带 `IconRes` 与 `SelectedIconRes`。
+- `tools/check_combined.py` 增加校验：每个预设都必须有非零缩略图，菜单项必须带 `IconRes` 与 `SelectedIconRes`。
 
 ## 3. 在相机上取证
 
@@ -75,16 +75,16 @@ adb -s CAMERA_IP:5555 shell dumpsys package com.yuki.imaging.app.pictureeffectpl
 
 ```sh
 # 1) 反编译回来，核对图标映射与数组
-java -jar inputs/apktool.jar d -r output/FilmStudio-0.2.1-alpha-movie.apk -o build-local/verify
+java -jar inputs/apktool.jar d -r output/FilmStudio-0.2.2-alpha-movie.apk -o build-local/verify
 python tools/check_combined.py --decoded build-local/verify --input-apk inputs/base.apk \
     --upstream-hook inputs/upstream/src/smali/RicohHook.smali
 
 # 2) 该 ID 到底是什么（需要 Android build-tools 的 aapt2；仅本地检查）
-aapt2 dump resources output/FilmStudio-0.2.1-alpha-movie.apk | findstr /i "drawable"
-aapt2 dump resources output/FilmStudio-0.2.1-alpha-movie.apk | findstr /i "0x7f020054"
+aapt2 dump resources output/FilmStudio-0.2.2-alpha-movie.apk | findstr /i "drawable"
+aapt2 dump resources output/FilmStudio-0.2.2-alpha-movie.apk | findstr /i "0x7f020054"
 
 # 3) 对齐与压缩（Android 4.1 机型建议核对）
-zipalign -c -v 4 output/FilmStudio-0.2.1-alpha-movie.apk
+zipalign -c -v 4 output/FilmStudio-0.2.2-alpha-movie.apk
 ```
 
 用 `aapt2` 找到该 ID 的**资源名与密度配置**：若只有低密度版本，较新机型上可能被拉伸成异常外观。
@@ -121,7 +121,7 @@ python tools/build_apk.py --input inputs/base.apk --apktool inputs/apktool.jar \
   --work build-local/decoded-debug --movie --debug
 ```
 
-产出 `output/FilmStudio-0.2.1-alpha-movie-debug.apk`：行为与正式版完全一致，只多打日志。装到相机后打开应用、按中心键进一次滤镜菜单、逐项切换，然后：
+产出 `output/FilmStudio-0.2.2-alpha-movie-debug.apk`：行为与正式版完全一致，只多打日志。装到相机后打开应用、按中心键进一次滤镜菜单、逐项切换，然后：
 
 ```sh
 adb -s CAMERA_IP:5555 logcat -c

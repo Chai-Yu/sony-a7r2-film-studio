@@ -21,20 +21,21 @@ from axml_strings import replace_string as axml_replace_string
 from sign_apk import sign_apk, ensure_pem
 from movie_menu import LABELS as MOVIE_LABELS, patch_movie_menu
 from filter_strength import STRENGTHS, LABELS as STRENGTH_LABELS, blend_profile, patch_strength_menu, strength_methods
-from film_profiles import EXPECTED_HOOK, NATIVE_EFFECTS, NATIVE_MODES, combined_profiles
+from film_profiles import (EXPECTED_HOOK, LEICA_FILE, NATIVE_EFFECTS, NATIVE_MODES,
+                           combined_profiles, leica_profiles)
 
 OLD = 'com.sony.imaging.app.pictureeffectplus'
 NEW = 'com.yuki.imaging.app.pictureeffectplus'
 HOOK = 'L'+OLD.replace('.','/')+'/shooting/camera/RicohHook;'
 CTRL = 'L'+OLD.replace('.','/')+'/shooting/camera/PictureEffectPlusController;'
 EXPECTED = '80cb4a541f5f3dd49e8f53ffb1905048097fec17209fc9cb595a00681e65e8ea'
-VERSION = '0.2.1-alpha'
+VERSION = '0.2.2-alpha'
 # versionName carried by the Sony base APK. It is replaced with ANDROID_VERSION
 # below, and the two differ in length: a byte substitution would silently
 # invalidate every string offset after it, so the manifest goes through
 # axml_strings instead.
 ORIGINAL_ANDROID_VERSION = '1.31'
-ANDROID_VERSION = '0.2.1'
+ANDROID_VERSION = '0.2.2'
 APP_NAME = '胶片工坊'
 # Alpha of the optional dark background behind the filter chooser's list panel.
 # Default 0 = fully transparent, which is what the live view needs: the text
@@ -699,6 +700,12 @@ RICOH_ICON_SOURCE = {
     'ricoh-cross': 'watercolor',
 }
 ICON_SOURCE_ORDER = ('pop-color', 'retro-photo', 'richtone-mono', 'rough-mono', 'watercolor')
+# Leica looks take the thumbnails that read closest to them. Nothing else is
+# available: a thumbnail is a resource ID of the base APK's own picture effects.
+LEICA_ICON_SOURCE = {
+    'leica-classic': 'retro-photo',
+    'leica-natural': 'watercolor',
+}
 
 
 def read_icon_map(text):
@@ -736,6 +743,8 @@ def icon_source(profile):
     """Which base-APK effect supplies this profile's thumbnail."""
     if profile.get('family') == 'ricoh':
         return RICOH_ICON_SOURCE.get(profile['id'])
+    if profile.get('family') == 'leica':
+        return LEICA_ICON_SOURCE.get(profile['id'])
     return 'richtone-mono' if 'ACROS' in profile.get('official_film', '').upper() else 'pop-color'
 
 
@@ -1113,7 +1122,7 @@ def restore_stub_drawables(base):
     print(f'Restored {restored} placeholder drawables from drawable-notlong-nodpi')
     return restored
 
-def rename_package(base):
+def rename_package(base,android_version):
     assert len(OLD)==len(NEW)
     for path in base.rglob('*'):
         if not path.is_file():continue
@@ -1128,7 +1137,7 @@ def rename_package(base):
             if path.suffix=='.smali':
                 data=data.replace(b'\\u7406\\u5149\\u76f8\\u673a',APP_NAME.encode('unicode_escape'))
             if path.name=='AndroidManifest.xml' and path.parent==base:
-                data=axml_replace_string(data,ORIGINAL_ANDROID_VERSION,ANDROID_VERSION)
+                data=axml_replace_string(data,ORIGINAL_ANDROID_VERSION,android_version)
             path.write_bytes(data)
     source=base/'smali'/OLD.replace('.','/')
     dest=base/'smali'/NEW.replace('.','/')
@@ -1160,6 +1169,12 @@ def main():
                     help='Alpha of the dark scrim behind the filter chooser (0x00 keeps the '
                          'menu transparent, 0xff is opaque black and hides the live view). '
                          f'Default 0x{DEFAULT_MENU_SCRIM:02x}')
+    ap.add_argument('--leica-white',choices=('faithful','anchor'),default='faithful',
+                    help='Leica tone treatment. faithful keeps the LUT\'s own tone, so '
+                         'diffuse white renders near 0.75; anchor rescales the fitted tone '
+                         'curve output so input 1.0 still maps to 1.0. Both share one matrix.')
+    ap.add_argument('--no-leica',action='store_true',
+                    help='Leave the Leica family out, for comparing against the previous release')
     args=ap.parse_args()
     root=Path(__file__).resolve().parents[1]
     if hashlib.sha256(args.input.read_bytes()).hexdigest()!=EXPECTED:
@@ -1173,7 +1188,17 @@ def main():
     if not (root/'profiles/fuji_official_approx.json').exists():
         raise SystemExit('No local profiles. Follow the rights/input checks and fit_luts.py step in docs/INSTALL.en.md.')
     fuji=json.loads((root/'profiles/fuji_official_approx.json').read_text(encoding='utf-8'))['presets']
-    profiles=combined_profiles(fuji,args.upstream_hook)
+    leica=[]
+    if not args.no_leica:
+        if not (root/LEICA_FILE).exists():
+            raise SystemExit('No fitted Leica profiles. Run tools/fit_leica.py first, as in '
+                             'docs/INSTALL.en.md.')
+        leica=leica_profiles(root/LEICA_FILE,args.leica_white)
+    profiles=combined_profiles(fuji,args.upstream_hook,leica)
+    # The two Leica treatments must be distinguishable on the camera, because the
+    # whole point of building both is to install one, shoot, then install the other.
+    android_version=ANDROID_VERSION+('a' if (leica and args.leica_white=='anchor') else '')
+    leica_suffix='' if not leica else ('-leica-anchor' if args.leica_white=='anchor' else '')
     # A probe build only exists to ask one camera body whether it accepts a
     # style or effect token. It swaps the look of the first preset, which the
     # app applies at every start, so no dialing is needed to reach it.
@@ -1193,7 +1218,7 @@ def main():
     patch_menu(args.work,build_profiles,args.debug,not args.keep_sample_image,args.menu_scrim)
     if args.movie:patch_movie(args.work,args.debug)
     restore_stub_drawables(args.work)
-    rename_package(args.work)
+    rename_package(args.work,android_version)
     # Keep attribution and license scope with the installable artifact itself.
     legal=args.work/'assets/legal'
     legal.mkdir(parents=True,exist_ok=True)
@@ -1213,6 +1238,7 @@ def main():
         shutil.move(generated,key)
         key.chmod(0o600)
     output=root/'output'/('FilmStudio-'+VERSION+('-movie' if args.movie else '-photo')
+                          +leica_suffix
                           +('-native-forced' if args.native_preview else '')
                           +('-gamma-forced' if args.force_extended_gamma else '')
                           +probe+('-debug' if args.debug else '')+'.apk')
@@ -1229,10 +1255,13 @@ def main():
                   menu_scrim_alpha=args.menu_scrim,
                   camera_tested=False,encoded_video_filter_verified=False,
                   source_apk_sha256=EXPECTED,profiles=len(profiles),
-                  app_name=APP_NAME,android_version=ANDROID_VERSION,
-                  profile_families={'fujifilm':10,'ricoh':5})
+                  app_name=APP_NAME,android_version=android_version,
+                  leica_white=(args.leica_white if leica else None),
+                  profile_families={'fujifilm':10,'ricoh':5,'leica':len(leica)})
     (root/'profiles/film_studio.json').write_text(json.dumps(dict(
-        version=VERSION,presets=profiles),ensure_ascii=False,indent=2),encoding='utf-8')
+        version=VERSION,android_version=android_version,
+        leica_white=(args.leica_white if leica else None),
+        presets=profiles),ensure_ascii=False,indent=2),encoding='utf-8')
     (root/'validation'/(output.stem+'.json')).write_text(json.dumps(metadata,indent=2),encoding='utf-8')
     print('Built:',output)
 

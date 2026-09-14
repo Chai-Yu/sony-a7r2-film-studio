@@ -4,9 +4,9 @@
 
 **Sony a5100 / ILCE-5100 と a7R II / ILCE-7RM2** 向けの非公式フィルム調実験ツールです。[bonyback1 の Ricoh MOD](https://github.com/bonyback1/sony-pmca-ricoh-mod) のハードウェア色処理を参考にし、[富士フイルムが公開する GFX ETERNA 55 LUT](https://www.fujifilm-x.com/global/support/download/lut/) を色彩研究の参照資料として、写真と実験的な動画撮影に対応します。
 
-**バージョン：0.2.1-alpha（リリースタグ `v0.2.1-alpha`／カメラ内表示も 0.2.1）／アプリ名：胶片工坊。** 説明書は3言語対応ですが、カメラのアプリ画面は現在主に中国語です。
+**バージョン：0.2.2-alpha（リリースタグ `v0.2.2-alpha`／カメラ内表示も 0.2.2）／アプリ名：胶片工坊。** 説明書は3言語対応ですが、カメラのアプリ画面は現在主に中国語です。
 
-**アプリ名を Film Studio（胶片工坊）に変更し、富士参照10種と上流のリコー／ストリート風5種、合計15種類を統合しました。** メニューは「富士」「理光」の接頭辞で区別します。パッケージと署名証明書は維持し、旧「富士风格」へ上書き更新できます。統合版は a5100 で導入・起動し、一部プリセットの適用成功ログを確認しました。本版の写真／動画保存は未検証です。戻すための [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha)（上流リポジトリ）も引き続き公開しています。
+**0.2.2 でライカ Look 参照スタイル2種を追加し、富士参照10種と上流のリコー／ストリート風5種と合わせて合計17種類になりました。** メニューは「富士」「理光」「ライカ」の接頭辞で区別します。パッケージと署名証明書は維持し、旧「富士风格」へ上書き更新できます。統合版は a5100 で導入・起動し、一部プリセットの適用成功ログを確認しました。本版の写真／動画保存は未検証です。戻すための [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha)（上流リポジトリ）も引き続き公開しています。
 
 **現在のダウンロード版には 2026-09-14 の修正も含みます**：中央ボタンで開いたフィルター選択画面で MENU を押すとアプリの状態管理が固まり、画面は閉じたのにメニュー状態がスタックに残り、以降どのキーにも反応せず電源再投入が必要でした。修正済みで、a7R II で数十回の往復動作を確認しています。フィルター選択画面は完全に透明のままで、ライブプレビューを覆いません。
 
@@ -32,10 +32,11 @@
 
 ## ダウンロードとインストール
 
-**[APK を直接ダウンロード：0.2.1-alpha（2026-09-14 の修正を含む）](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.1-alpha-movie.apk)** · [リリース説明](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.1-alpha)
+**[APK を直接ダウンロード：0.2.2-alpha（ライカスタイルを追加）](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)** · [リリース説明](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha)
 
-- ファイル：`FilmStudio-0.2.1-alpha-movie.apk`（3,785,492 バイト）
-- SHA-256：`6a43ccaf73f181aa167e262d587b03c0ebc471df7d6b4fc4d05ae9d44cc6bf0f`
+- ファイル：`FilmStudio-0.2.2-alpha-movie.apk`（3,789,374 バイト）— 既定の `faithful` 処理
+- SHA-256：`72fa73e3a3010a59b841fde15a3f664f5272e826aedd51b1cc280fff7cd5b265`
+- **白点アンカー**版 `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`（3,790,410 バイト、SHA-256 `0cff1053a42b08330121ff4ce3be801bb761893b61e8914a0072f0bb6b60c89d`）も同ページにあります。白を白のまま保ち、全体を暗くしません。**両版の違いはライカのトーン出力のみ**で、行列は共通です。
 
 [日本語の導入手順](docs/INSTALL.ja.md)に沿って導入してください。自分でビルドする必要はありません。**入れて使うだけの人は「方法 A」**：カメラの USB モードを MTP にし、pmca-gui で APK を選んで導入します。開発者モードもコマンド操作も不要です。**Code → Download ZIP はソースであり、インストーラーではありません。**
 
@@ -47,7 +48,7 @@
 
 ```sh
 adb connect CAMERA_IP:5555
-adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.1-alpha-movie.apk
+adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.2-alpha-movie.apk
 ```
 
 **IP アドレスとプライバシー：** `CAMERA_IP` は仮の表記です。Tweak → Developer で自分のカメラに現在表示されている IP アドレスに置き換えてください。仮の表記をそのまま入力したり、他人のアドレスをコピーしたりしないでください。末尾のポート `:5555` はそのままにします。公開手順には仮の表記を使い、スクリーンショットやログを共有する際は実際の IP アドレスを隠すか削除してください。
@@ -62,6 +63,7 @@ adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.1-alpha-movie.apk
 
 - 富士フイルム公式 LUT を参照した10種類：PROVIA、Velvia、ASTIA、CLASSIC CHROME、REALA ACE、PRO Neg. Std、CLASSIC Neg.、ETERNA、ETERNA BLEACH BYPASS、ACROS。
 - 上流のリコー／ストリート風5種：GR ポジ、ネガ、ハイコントラスト白黒、森山風、クロスプロセス。コミュニティのスタイルであり、リコー公式 LUT ではありません。
+- ライカ Look 参照スタイル2種：クラシック（Classic）、ナチュラル（Natural）。SL2-S 公式 L-Log LUT から近似しましたが、**ライカは中性参照 LUT を提供していない**ため、基準レンダリングは本プロジェクトが L-Log 仕様に沿って構成したもので、ライカ公式プリセットではありません。
 - 写真プレビューと動画待機中に、中央ボタンでフィルターを選択。
 - MENU 1ページ目 →「滤镜强度」（強度）：**30% / 50% / 70% / 100%**。初期値は70%。写真と動画で共通、通常終了時に設定を保存します。
 - MENU 1ページ目 →「拍照／录像模式」→ 動画 P/A/S/M を選び、「录像文件格式」（形式）と「录像帧率／画质」（フレームレート／画質）を設定。機種が対応する XAVC S / AVCHD / MP4 と現在の PAL/NTSC 設定に従います。

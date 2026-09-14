@@ -2,15 +2,15 @@
 
 [项目首页](../README.md) · [English](INSTALL.en.md) · [日本語](INSTALL.ja.md)
 
-本指南对应 **0.2.1-alpha / 机内 0.2.1**。实机环境为 a5100（固件 1.10、Android 2.3.7）与 a7R II（Android 4.1.2）；macOS 构建、Wi-Fi ADB 安装（方法 B）与 pmca-gui 的 USB／MTP 安装（方法 A）均已实机验证。Windows/Linux 的命令行构建未做相同的实机全流程验证。
+本指南对应 **0.2.2-alpha / 机内 0.2.2**。实机环境为 a5100（固件 1.10、Android 2.3.7）与 a7R II（Android 4.1.2）；macOS 构建、Wi-Fi ADB 安装（方法 B）与 pmca-gui 的 USB／MTP 安装（方法 A）均已实机验证。Windows/Linux 的命令行构建未做相同的实机全流程验证。
 
 **自 0.2.0-alpha 起更名为「胶片工坊」，保留旧版包名与签名，可用 `install -r` 覆盖更新。新增理光风格使用上游原参数，100% 不重新调色；四档强度、拍照和录像菜单共用。新合并版已在 a5100 上安装、启动，并有部分滤镜参数应用成功日志；旧版记录不代表本版所有照片／录像组合已验证。**
 
 ## 0. 直接安装发行版 APK
 
 1. 先看[机型兼容性](../README.md#compatibility)，确认你的机型和预期功能在说明范围内。
-2. 在[Releases](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.1-alpha)的 Assets 中下载 **[FilmStudio-0.2.1-alpha-movie.apk](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.1-alpha-movie.apk)**（3,785,492 字节）；不要下载 Source code ZIP 当作安装包。
-3. 核对 APK 的 SHA-256（macOS 用 `shasum -a 256`、Linux 用 `sha256sum`、PowerShell 用 `Get-FileHash -Algorithm SHA256`），应为 `6a43ccaf73f181aa167e262d587b03c0ebc471df7d6b4fc4d05ae9d44cc6bf0f`。校验的是文件一致性，不是法律许可或兼容保证。
+2. 在[Releases](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha)的 Assets 中下载 **[FilmStudio-0.2.2-alpha-movie.apk](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)**（3,789,374 字节）；不要下载 Source code ZIP 当作安装包。同页还有白点锚定变体 `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`，两者只差偷卡风格的影调输出。
+3. 核对 APK 的 SHA-256（macOS 用 `shasum -a 256`、Linux 用 `sha256sum`、PowerShell 用 `Get-FileHash -Algorithm SHA256`），应为 `72fa73e3a3010a59b841fde15a3f664f5272e826aedd51b1cc280fff7cd5b265`。校验的是文件一致性，不是法律许可或兼容保证。
 4. 选一种安装方式：**方法 A** 用图形界面、不需要开发者模式，适合只想装来用的人；**方法 B** 用命令行，需先按第 4 节开启 Wi-Fi ADB。
 
 **现成 APK 不需要 Python、Java、Apktool 或签名私钥。** 第 1～3 节供希望自行构建的读者使用。
@@ -22,7 +22,7 @@
 1. 到 [Sony-PMCA-RE Releases](https://github.com/ma1co/Sony-PMCA-RE/releases/latest) 下载 pmca-gui 预编译版本（Windows／macOS 都有现成二进制；Linux 需 Python 3 + libusb，克隆仓库后运行 `./pmca-gui.py`）。
 2. 用 USB 数据线连接相机与电脑，并把相机的 USB 连接模式设为 **MTP**。
 3. 打开 pmca-gui，切到 **`Install app`** 标签页。
-4. 勾选 **`Select an apk`**（**不是** `Select an app from the app list`），点 **`Open apk...`**，选中第 2 步下载的 `FilmStudio-0.2.1-alpha-movie.apk`。
+4. 勾选 **`Select an apk`**（**不是** `Select an app from the app list`），点 **`Open apk...`**，选中第 2 步下载的 `FilmStudio-0.2.2-alpha-movie.apk`。
 5. 点 **`Install selected app`**，等待完成；之后按第 6 节在机身应用列表打开「胶片工坊」。
 
 **验证情况：** 相机 USB 模式设为 MTP、连上电脑后即可直接安装本地 APK，**无需先装 OpenMemories: Tweak，也不需要命令行**；本项目已实机验证这条路径（方法与 Wi-Fi ADB 无关，互不影响）。若第 4 节已用 pmca-gui 装过 Tweak，同一个界面按上面的步骤即可安装本应用。
@@ -42,7 +42,7 @@
 
 ```sh
 adb connect CAMERA_IP:5555
-adb -s CAMERA_IP:5555 install -r FilmStudio-0.2.1-alpha-movie.apk
+adb -s CAMERA_IP:5555 install -r FilmStudio-0.2.2-alpha-movie.apk
 ```
 
 将 `CAMERA_IP` 换成相机当前地址，安装完成显示 `Success`，然后在机身应用列表打开「胶片工坊」。第 5 节中的 `output/` 路径是本地构建输出目录；直接下载的用户请使用实际下载路径。
@@ -107,16 +107,17 @@ java -jar inputs/apktool.jar --version
 ## 3. 在本地生成 APK
 
 ```sh
-python tools/fit_luts.py inputs/luts/gfx-eterna-55-3d-lut-v110/33Grid/F-Log2 .
+python tools/fit_luts.py inputs/gfx-eterna-55-3d-lut-v110/33Grid/F-Log2 .
+python tools/fit_leica.py "inputs/Leica SL2-S - Leica Look Up Tables (LUT)" .
 python tools/build_apk.py --input inputs/base.apk --apktool inputs/apktool.jar --upstream-hook inputs/upstream/src/smali/RicohHook.smali --work build-local/decoded-021 --movie
 python tools/check_strength.py
 python tools/check_build.py
 ```
 
-第一步生成本地 `profiles/` 参数、`output/` 预览 LUT 和 `validation/` 拟合报告；然后构建、签名并检查 APK。结果为：
+第一步生成本地 `profiles/` 参数、`output/` 预览 LUT 和 `validation/` 拟合报告；`fit_luts.py` 处理富士家族，`fit_leica.py` 处理偷卡家族（基准渲染由本项目构造，见[参考来源](SOURCES.md)）；然后构建、签名并检查 APK。结果为：
 
 ```text
-output/FilmStudio-0.2.1-alpha-movie.apk
+output/FilmStudio-0.2.2-alpha-movie.apk
 ```
 
 `build-local/decoded-021` 必须为空或不存在。重复构建请指定一个新的工作目录。`--movie` 表示启用本指南的拍照和录像功能；省略它会生成仅拍照版本。
@@ -142,7 +143,7 @@ macOS 发生 USB 占用时先关闭照片、图像捕捉及会访问相机的同
 ```sh
 adb connect CAMERA_IP:5555
 adb devices
-adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.1-alpha-movie.apk
+adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.2-alpha-movie.apk
 ```
 
 预期 `adb devices` 中目标状态为 `device`，安装末尾显示 `Success`。相机应用程序列表 → **胶片工坊**。安装名称及大部分菜单为中文。
@@ -159,7 +160,7 @@ adb -s CAMERA_IP:5555 shell am start -W -n com.yuki.imaging.app.pictureeffectplu
 
 ## 6. 相机操作与首次自检
 
-1. 拍照预览或录像待机按**中心键**选择风格。按 MENU 也可从首页进入「胶片风格」。列表包含「富士」与「理光」两组前缀，共 15 项。
+1. 拍照预览或录像待机按**中心键**选择风格。按 MENU 也可从首页进入「胶片风格」。列表包含「富士」「徕卡」「理光」三组前缀，共 17 项。
 2. MENU 首页 →「滤镜强度」选拣30/50/70/100%。初始70%，正常退出后保存。人像先对比30%与70%。
 3. 录像：MENU 首页 →「拍照／录像模式」→ 动态影像 P/A/S/M，然后设置「录像文件格式」及「录像帧率／画质」。拍照模式中这两项呈灰色时，先切到录像待机。按 MOVIE 开始，再按一次停止。
 4. MENU 第4页 →「白平衡」。原机创意风格在应用内固定为 STD，滤镜不会锁定白平衡。

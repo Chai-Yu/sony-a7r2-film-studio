@@ -4,6 +4,7 @@
 """Verify strength endpoints, neutral preservation and curve safety."""
 import json
 from pathlib import Path
+from film_profiles import PRESET_COUNT
 from filter_strength import blend_profile, is_monochrome, STRENGTHS
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -11,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main():
     profiles = json.loads((ROOT/'profiles/film_studio.json').read_text(encoding='utf-8'))['presets']
-    assert len(profiles) == 15
+    assert len(profiles) == PRESET_COUNT
     for p in profiles:
         assert blend_profile(p, 100) == {k: p[k] for k in ('matrix', 'gamma')}, p['id']
         identity = {'matrix': [[1024, 0, 0], [0, 1024, 0], [0, 0, 1024]],

@@ -4,9 +4,9 @@
 
 An unofficial film-look experiment for the **Sony a5100 / ILCE-5100 and a7R II / ILCE-7RM2**. It references the hardware color-processing approach in [bonyback1's Ricoh mod](https://github.com/bonyback1/sony-pmca-ricoh-mod) and uses [Fujifilm's publicly available GFX ETERNA 55 LUTs](https://www.fujifilm-x.com/global/support/download/lut/) as color-research references for photographs and experimental video.
 
-**Version: 0.2.1-alpha (release tag `v0.2.1-alpha`; the on-camera version string is 0.2.1 as well); app name: 胶片工坊.** Documentation is available in three languages; the camera UI is currently primarily Chinese.
+**Version: 0.2.2-alpha (release tag `v0.2.2-alpha`; the on-camera version string is 0.2.2 as well); app name: 胶片工坊.** Documentation is available in three languages; the camera UI is currently primarily Chinese.
 
-**Renamed to Film Studio (胶片工坊), combining ten Fujifilm-reference and five upstream Ricoh/street-style presets, fifteen in total.** Menu labels use 富士 / 理光 prefixes. The package and signing certificate are retained for an in-place update from 富士风格. The combined build installed and launched on the a5100, with successful parameter-application logs for selected presets; saved photographs/video from this version remain unverified. The earlier [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha) (upstream repository) remains available for rollback.
+**0.2.2 adds two Leica Look reference styles to the ten Fujifilm-reference and five upstream Ricoh/street-style presets, seventeen in total.** Menu labels use 富士 / 理光 / 徕卡 prefixes. The package and signing certificate are retained for an in-place update from 富士风格. The combined build installed and launched on the a5100, with successful parameter-application logs for selected presets; saved photographs/video from this version remain unverified. The earlier [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha) (upstream repository) remains available for rollback.
 
 **This download also contains the 2026-09-14 fix:** pressing MENU on the chooser that the center button opened used to wedge the app's state machine — the layout closed while the menu state stayed on the stack, after which no key responded and only a power cycle recovered the camera. It is fixed and was verified on an a7R II across dozens of round trips. The chooser stays fully transparent so the live preview is not covered.
 
@@ -32,10 +32,11 @@ Candidates come from the [upstream model list](https://github.com/bonyback1/sony
 
 ## Download and installation
 
-**[Download APK: 0.2.1-alpha (includes the 2026-09-14 fix)](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.1-alpha-movie.apk)** · [Release notes](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.1-alpha)
+**[Download APK: 0.2.2-alpha (adds the Leica styles)](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)** · [Release notes](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha)
 
-- File: `FilmStudio-0.2.1-alpha-movie.apk` (3,785,492 bytes)
-- SHA-256: `6a43ccaf73f181aa167e262d587b03c0ebc471df7d6b4fc4d05ae9d44cc6bf0f`
+- File: `FilmStudio-0.2.2-alpha-movie.apk` (3,789,374 bytes) - the default `faithful` tone treatment
+- SHA-256: `72fa73e3a3010a59b841fde15a3f664f5272e826aedd51b1cc280fff7cd5b265`
+- A **white-anchored** companion, `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk` (3,790,410 bytes, SHA-256 `0cff1053a42b08330121ff4ce3be801bb761893b61e8914a0072f0bb6b60c89d`), keeps white at white instead of darkening globally. **The two differ only in the Leica tone output**; they share one matrix, so which to use is a judgement on real footage.
 
 Then follow the [English installation guide](docs/INSTALL.en.md) to install it; no local compilation is required. **If you only want to install and shoot, take "Method A"**: set the camera's USB mode to MTP and install the APK with pmca-gui — no developer mode and no command line. **Code → Download ZIP contains source, not the installer.**
 
@@ -47,7 +48,7 @@ With your own lawfully built APK and Wi-Fi ADB already enabled:
 
 ```sh
 adb connect CAMERA_IP:5555
-adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.1-alpha-movie.apk
+adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.2-alpha-movie.apk
 ```
 
 **IP address and privacy:** `CAMERA_IP` is a placeholder. Replace it with the current IP shown on your own camera in Tweak → Developer; do not type the placeholder literally or copy someone else's address. Keep the `:5555` port. Public instructions use a placeholder; hide or remove actual IP addresses before sharing screenshots or logs.
@@ -62,6 +63,7 @@ First-time users also need the preparation steps in the guide.
 
 - Ten Fujifilm official-LUT reference looks: PROVIA, Velvia, ASTIA, CLASSIC CHROME, REALA ACE, PRO Neg. Std, CLASSIC Neg., ETERNA, ETERNA BLEACH BYPASS and ACROS.
 - Five upstream Ricoh/street styles: GR Positive Film, Negative Film, High Contrast B&W, Moriyama Daido Style and Cross Process. Community presets, not official Ricoh LUTs.
+- Two Leica Look reference styles: Classic and Natural, fitted from Leica's official SL2-S L-Log LUTs. **Leica publishes no neutral reference LUT**, so the baseline rendering is constructed by this project from the L-Log specification rather than taken from Leica.
 - Press the center button to select a look in still preview or movie standby.
 - MENU page 1 「滤镜强度」(filter strength): **30%, 50%, 70%, 100%**. Starts at 70%; shared by stills and video and saved through normal app exit.
 - MENU page 1 →「拍照／录像模式」(still/movie mode) → movie P/A/S/M, then「录像文件格式」(format) and「录像帧率／画质」(frame rate/quality). Choices follow the camera's supported XAVC S, AVCHD and MP4 profiles and current PAL/NTSC system.

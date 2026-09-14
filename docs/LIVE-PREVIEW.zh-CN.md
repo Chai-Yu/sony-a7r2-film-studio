@@ -120,12 +120,12 @@ adb 无法覆盖的部分（需要人眼看相机屏幕）：
 python tools/build_apk.py --input inputs/base.apk --apktool inputs/apktool.jar \
     --upstream-hook inputs/upstream/src/smali/RicohHook.smali \
     --work build-local/decoded-check --movie
-java -jar inputs/apktool.jar d -r output/FilmStudio-0.2.1-alpha-movie.apk -o build-local/verify-check
+java -jar inputs/apktool.jar d -r output/FilmStudio-0.2.2-alpha-movie.apk -o build-local/verify-check
 python tools/check_combined.py --decoded build-local/verify-check --input-apk inputs/base.apk \
     --upstream-hook inputs/upstream/src/smali/RicohHook.smali --native-fallback auto
 ```
 
-`check_combined.py` 会断言：15 个滤镜在编译后的 `applyNative` 里各有风格（和效果）token、
+`check_combined.py` 会断言：17 个滤镜在编译后的 `applyNative` 里各有风格（和效果）token、
 token 必须真实存在于输入 APK、`resetHook` 会清除原生效果、自动降级必须带能力查询。
 
 机身上（需要有人在相机前切换滤镜，相机屏幕不是触摸屏，adb 无法模拟其拨轮）：

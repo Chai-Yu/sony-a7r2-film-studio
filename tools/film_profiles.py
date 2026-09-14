@@ -3,6 +3,8 @@
 """Read the pinned upstream's exact matrix/curve arrays without executing it."""
 import copy
 import hashlib
+import json
+from pathlib import Path
 import re
 
 EXPECTED_HOOK = '2db88c8e42311c587ca8304c2c8ed7d70592ee988ee154327ed5503b107723ae'
@@ -85,6 +87,11 @@ NATIVE_LOOK = {
     'ricoh-hcbw': ('mono', 'richtone-mono'),
     'ricoh-daido': ('mono', 'rough-mono'),
     'ricoh-cross': ('vivid', 'pop-color'),
+    # Leica looks. Only this camera generation's tokens can be used, so several
+    # presets necessarily share one live-view look: leica-natural joins the
+    # standard-style group and leica-classic the neutral + retro-photo group.
+    'leica-classic': ('neutral', 'retro-photo'),
+    'leica-natural': ('standard', None),
 }
 NATIVE_MODES = {'standard', 'vivid', 'neutral', 'portrait', 'mono'}
 NATIVE_EFFECTS = {'pop-color', 'retro-photo', 'richtone-mono', 'rough-mono'}
@@ -100,8 +107,33 @@ def native_look(preset_id):
     return mode, effect
 
 
-def combined_profiles(fuji, upstream_hook):
-    if len(fuji) != 10:
+FUJIFILM_PRESETS = 10
+RICOH_PRESETS = 5
+LEICA_PRESETS = 2
+# Every preset needs an id and a live-view look, and the total is derived so a
+# new family cannot leave a stale count behind in this file or in the checks.
+PRESET_COUNT = FUJIFILM_PRESETS + RICOH_PRESETS + LEICA_PRESETS
+LEICA_FILE = 'profiles/leica_look_approx.json'
+
+
+def leica_profiles(path, white):
+    """The fitted Leica looks for one white-point treatment.
+
+    The package ships no neutral reference, so the fit is against a baseline this
+    project constructs; the two treatments differ only in the fitted tone
+    curve's output scale (see tools/fit_leica.py).
+    """
+    if white not in ('faithful', 'anchor'):
+        raise ValueError('Unknown Leica white-point treatment: ' + str(white))
+    data = json.loads(Path(path).read_text(encoding='utf-8'))
+    presets = copy.deepcopy(data['variants'][white])
+    if len(presets) != LEICA_PRESETS:
+        raise ValueError(f'Expected {LEICA_PRESETS} Leica presets, found {len(presets)}')
+    return presets
+
+
+def combined_profiles(fuji, upstream_hook, leica=None):
+    if len(fuji) != FUJIFILM_PRESETS:
         raise ValueError('Expected the existing ten Fujifilm-reference profiles')
     profiles = copy.deepcopy(fuji)
     for p in profiles:
@@ -109,8 +141,9 @@ def combined_profiles(fuji, upstream_hook):
         p['name'] = '富士 ' + p['name']
         p['guide'] = p['official_film'] + ' / 富士官方LUT近似；需实拍校准。'
     profiles += ricoh_profiles(upstream_hook)
-    if len({p['id'] for p in profiles}) != 15:
-        raise ValueError('Preset IDs must be unique; keep existing Fujifilm IDs for upgrades')
+    profiles += leica or []
+    if len({p['id'] for p in profiles}) != PRESET_COUNT:
+        raise ValueError('Preset IDs must be unique; keep existing preset IDs for upgrades')
     if {p['id'] for p in profiles} != set(NATIVE_LOOK):
         raise ValueError('Every preset needs a live-view fallback look')
     for p in profiles:
