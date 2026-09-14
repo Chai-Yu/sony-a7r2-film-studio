@@ -2,7 +2,7 @@
 
 [项目首页](../README.md) · [English](INSTALL.en.md) · [日本語](INSTALL.ja.md)
 
-本指南对应 **0.2.1-alpha / 机内 0.2a**。实机环境为 a5100（固件 1.10、Android 2.3.7）与 a7R II（Android 4.1.2）；macOS 构建与 Wi-Fi 安装已验证，Windows/Linux 命令与 pmca-gui 流程未做相同的实机全流程验证。
+本指南对应 **0.2.1-alpha / 机内 0.2a**。实机环境为 a5100（固件 1.10、Android 2.3.7）与 a7R II（Android 4.1.2）；macOS 构建、Wi-Fi ADB 安装（方法 B）与 pmca-gui 的 USB／MTP 安装（方法 A）均已实机验证。Windows/Linux 的命令行构建未做相同的实机全流程验证。
 
 **自 0.2.0-alpha 起更名为「胶片工坊」，保留旧版包名与签名，可用 `install -r` 覆盖更新。新增理光风格使用上游原参数，100% 不重新调色；四档强度、拍照和录像菜单共用。新合并版已在 a5100 上安装、启动，并有部分滤镜参数应用成功日志；旧版记录不代表本版所有照片／录像组合已验证。**
 
@@ -17,13 +17,15 @@
 
 ### 方法 A：用 pmca-gui 安装（图形界面，无需开发者模式）
 
-[pmca-gui](https://github.com/ma1co/Sony-PMCA-RE) 是 Sony-PMCA-RE 的图形界面，通过 USB 直接安装 APK：**不需要机内 ADB，也不需要敲命令**。
+[pmca-gui](https://github.com/ma1co/Sony-PMCA-RE) 是 Sony-PMCA-RE 的图形界面，通过 USB 直接安装 APK：**不需要机内 ADB，也不需要敲命令**。把相机 USB 连接模式设为 **MTP**，安装就是点几下的事。
 
 1. 到 [Sony-PMCA-RE Releases](https://github.com/ma1co/Sony-PMCA-RE/releases/latest) 下载 pmca-gui 预编译版本（Windows／macOS 都有现成二进制；Linux 需 Python 3 + libusb，克隆仓库后运行 `./pmca-gui.py`）。
-2. 用 USB 线连接相机与电脑，相机选可传输数据的 USB 连接模式。
+2. 用 USB 数据线连接相机与电脑，并把相机的 USB 连接模式设为 **MTP**。
 3. 打开 pmca-gui，切到 **`Install app`** 标签页。
 4. 勾选 **`Select an apk`**（**不是** `Select an app from the app list`），点 **`Open apk...`**，选中第 2 步下载的 `FilmStudio-0.2.0-alpha-movie.apk`。
 5. 点 **`Install selected app`**，等待完成；之后按第 6 节在机身应用列表打开「胶片工坊」。
+
+**验证情况：** 相机 USB 模式设为 MTP、连上电脑后即可直接安装本地 APK，**无需先装 OpenMemories: Tweak，也不需要命令行**；本项目已实机验证这条路径（方法与 Wi-Fi ADB 无关，互不影响）。若第 4 节已用 pmca-gui 装过 Tweak，同一个界面按上面的步骤即可安装本应用。
 
 限制与风险：
 
@@ -153,7 +155,7 @@ adb -s CAMERA_IP:5555 shell am start -W -n com.yuki.imaging.app.pictureeffectplu
 
 原生拍摄界面可能阻止这条启动命令；这时在机身上手动打开应用即可。不要仅凭 `am start` 提示判断安装失败。
 
-pmca-gui 的「Select an apk → Open apk... → Install selected app」可作为本地 APK 的 USB 安装尝试，但本项目更新路径以 Wi-Fi ADB 为已验证方式；无法保证每个 USB 安装器/签名组合都被接受。
+更新也可以走方法 A：pmca-gui 的「Select an apk → Open apk... → Install selected app」同样已实机验证，USB 模式设为 MTP 即可，不需要 Wi-Fi。它和 Wi-Fi ADB 是两条独立通道，任一条安装成功即可。
 
 ## 6. 相机操作与首次自检
 

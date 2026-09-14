@@ -37,11 +37,11 @@ Candidates come from the [upstream model list](https://github.com/bonyback1/sony
 - File: `FilmStudio-0.2.0-alpha-movie.apk` (3,785,488 bytes)
 - SHA-256: `2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120`
 
-Then follow the [English installation guide](docs/INSTALL.en.md) to connect and install. No local compilation is required. **Code → Download ZIP contains source, not the installer.**
+Then follow the [English installation guide](docs/INSTALL.en.md) to install it; no local compilation is required. **If you only want to install and shoot, take "Method A"**: set the camera's USB mode to MTP and install the APK with pmca-gui — no developer mode and no command line. **Code → Download ZIP contains source, not the installer.**
 
 This is an unofficial experimental release with only the a5100 and a7R II evidence described above. The APK contains Sony base-app material and parameters fitted from publicly available Fujifilm LUTs. A separate grant to adapt and redistribute those third-party materials has not been established. Publication does not represent Sony/FUJIFILM permission or guarantee immunity; [license scope](LICENSING.md) distinguishes the rights in each part. Original official LUT files and signing private keys are not distributed.
 
-→ **[Complete English installation guide](docs/INSTALL.en.md)**: inputs → local build → first-time connection → Wi-Fi ADB installation → camera controls → updates and troubleshooting.
+→ **[Complete English installation guide](docs/INSTALL.en.md)**: inputs → local build → USB (pmca-gui) / Wi-Fi ADB installation → camera controls → updates and troubleshooting.
 
 With your own lawfully built APK and Wi-Fi ADB already enabled:
 

@@ -130,6 +130,17 @@ English: Independent training and validation use the unclipped region of the neu
 
 日本語：学習と検証には独立した標本を用い、中性 LUT のクリップされていない領域を評価しています。表は 0–1 の RGB 絶対誤差であり、一致率や実写の ΔE ではありません。特に REALA ACE の平均誤差など、無視できない差があります。3×3 行列と共通カーブでは複雑な LUT を完全には表現できず、ソニー側の処理順序や伝達特性も未校正です。
 
+## 安装方式验证 / Install-route verification / 導入経路の検証
+
+中文：两条安装路径都做过实机验证。**方法 A（pmca-gui，USB）**：相机 USB 连接模式设为 **MTP**、连上电脑后，
+用 pmca-gui 的 `Install app` 页安装本地 APK，流程顺利，无需机内 ADB 或命令行。
+**方法 B（Wi-Fi ADB）**：按第 4 节用 OpenMemories: Tweak 开启 ADB 后 `adb install -r`。
+两条路径各自独立，任一条成功即可；本记录未逐机型区分，也不据此推断 pmca-gui 在其他机型或固件上的行为。
+
+English: Both installation routes were exercised on hardware. **Method A (pmca-gui over USB)**: with the camera's USB mode set to **MTP**, the local APK installed from the `Install app` tab without needing on-camera ADB or a command line. **Method B (Wi-Fi ADB)**: enable ADB with OpenMemories: Tweak as in section 4, then `adb install -r`. The routes are independent and either is sufficient. The record does not separate the two bodies, and it says nothing about pmca-gui behaviour on other models or firmware.
+
+日本語：2 つの導入経路はいずれも実機で確認しました。**方法 A（pmca-gui・USB）**：カメラの USB 接続モードを **MTP** にして PC とつなげば、`Install app` タブからローカル APK を導入でき、機内 ADB もコマンドも不要でした。**方法 B（Wi-Fi ADB）**：第4節のとおり OpenMemories: Tweak で ADB を有効化し `adb install -r`。両経路は独立でどちらか一方で十分です。本記録は機種別に区別しておらず、他機種・他ファームウェアでの pmca-gui の挙動を示すものではありません。
+
 ## 本地检查 / Local checks / ローカル検査
 
 Optional compiled-payload regression check after decompiling the signed APK:

@@ -2,7 +2,7 @@
 
 [プロジェクト](../README.ja.md) · [中文](INSTALL.zh-CN.md) · [English](INSTALL.en.md)
 
-対象は **0.2.1-alpha／カメラ内表示0.2a**。実機は a5100（ファームウェア1.10、Android 2.3.7）と a7R II（Android 4.1.2）です。macOS でのビルドと Wi-Fi インストールを確認しました。Windows/Linux の同等手順と pmca-gui の手順は、同じ実機で全工程を検証していません。
+対象は **0.2.1-alpha／カメラ内表示0.2a**。実機は a5100（ファームウェア1.10、Android 2.3.7）と a7R II（Android 4.1.2）です。macOS でのビルド、Wi-Fi ADB での導入（方法 B）、pmca-gui による USB／MTP 導入（方法 A）はいずれも実機で確認しました。Windows/Linux のコマンドラインによるビルドは、同じ実機で全工程を検証していません。
 
 **0.2.0-alpha では「胶片工坊 / Film Studio」に改名し、同じパッケージと署名で `install -r` 更新ができます。追加したリコー風は100%で上流の値を維持し、15種類すべてが4段階の強度と写真／動画メニューを共有します。統合版は a5100 で導入・起動と一部の適用ログを確認しました。本版の保存ファイルは未検証で、旧版の記録は新しい全組み合わせの検証を意味しません。**
 
@@ -17,13 +17,15 @@
 
 ### 方法 A：pmca-gui で導入する（GUI・開発者モード不要）
 
-[pmca-gui](https://github.com/ma1co/Sony-PMCA-RE) は Sony-PMCA-RE の GUI です。USB 経由で APK を導入でき、**機内 ADB もコマンド操作も不要**です。
+[pmca-gui](https://github.com/ma1co/Sony-PMCA-RE) は Sony-PMCA-RE の GUI です。USB 経由で APK を導入でき、**機内 ADB もコマンド操作も不要**です。カメラの USB 接続モードを **MTP** にすれば、導入は数回のクリックで済みます。
 
 1. [Sony-PMCA-RE Releases](https://github.com/ma1co/Sony-PMCA-RE/releases/latest) から pmca-gui のビルド済み版を入手します（Windows／macOS はバイナリあり。Linux は Python 3 + libusb で、クローン後に `./pmca-gui.py` を実行）。
-2. USB ケーブルでカメラと PC を接続し、データ転送できる USB 接続モードにします。
+2. USB ケーブルでカメラと PC を接続し、カメラの USB 接続モードを **MTP** にします。
 3. pmca-gui を起動し、**`Install app`** タブに切り替えます。
 4. **`Select an apk`** のラジオボタンを選び（`Select an app from the app list` ではありません）、**`Open apk...`** を押して手順 2 でダウンロードした `FilmStudio-0.2.0-alpha-movie.apk` を選びます。
 5. **`Install selected app`** を押して完了を待ちます。その後、第6節のとおりカメラのアプリ一覧から「胶片工坊」を開きます。
+
+**検証状況：** カメラの USB モードを MTP にして PC とつなげば、ローカル APK をそのまま導入できます。**OpenMemories: Tweak を先に入れる必要も、コマンド操作も不要**です。本プロジェクトは実機でこの経路を確認しており、Wi-Fi ADB の経路とは独立しています。第4節で pmca-gui から Tweak を入れた場合も、同じ画面で上記の手順により本アプリを導入できます。
 
 制限とリスク：
 
@@ -153,7 +155,7 @@ adb -s CAMERA_IP:5555 shell am start -W -n com.yuki.imaging.app.pictureeffectplu
 
 標準の撮影画面が起動要求を拒否する場合は、カメラで手動起動してください。この警告だけでインストール失敗とは判断できません。
 
-pmca-gui の **Select an apk → Open apk... → Install selected app** でローカル APK を USB インストールする方法もあります。ただし本プロジェクトで確認した更新経路は Wi-Fi ADB であり、すべての USB インストーラーと署名の組み合わせを保証しません。
+更新は方法 A でも行えます。pmca-gui の **Select an apk → Open apk... → Install selected app** も実機で確認済みで、USB モードを MTP にすれば Wi-Fi は不要です。2 つは独立した経路で、どちらか一方が完了すれば成功です。
 
 ## 6. 操作と最初の確認
 

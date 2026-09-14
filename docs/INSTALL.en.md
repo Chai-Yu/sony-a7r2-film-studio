@@ -2,7 +2,7 @@
 
 [Project](../README.en.md) · [中文](INSTALL.zh-CN.md) · [日本語](INSTALL.ja.md)
 
-For **0.2.1-alpha / on-camera 0.2a**. Tested devices are an a5100 (firmware 1.10, Android 2.3.7) and an a7R II (Android 4.1.2). Building on macOS and installing over Wi-Fi were exercised; the equivalent Windows/Linux commands and the pmca-gui route have not had the same end-to-end hardware test.
+For **0.2.1-alpha / on-camera 0.2a**. Tested devices are an a5100 (firmware 1.10, Android 2.3.7) and an a7R II (Android 4.1.2). Building on macOS, installing over Wi-Fi ADB (Method B) and installing with pmca-gui over USB/MTP (Method A) have all been exercised on hardware. The equivalent Windows/Linux command-line builds have not had the same end-to-end hardware test.
 
 **From 0.2.0-alpha the app is renamed to 胶片工坊 / Film Studio while retaining the package and certificate for `install -r` updates. Added Ricoh styles preserve upstream parameters at 100%; all fifteen styles share the four strengths and still/movie menus. The combined build installed and launched on the a5100 with selected parameter-application logs; saved media from this version remain unverified, and older evidence does not validate every new combination.**
 
@@ -17,13 +17,15 @@ For **0.2.1-alpha / on-camera 0.2a**. Tested devices are an a5100 (firmware 1.10
 
 ### Method A: install with pmca-gui (graphical, no developer mode)
 
-[pmca-gui](https://github.com/ma1co/Sony-PMCA-RE) is the graphical front end of Sony-PMCA-RE. It installs the APK over USB and needs **no on-camera ADB and no command line**.
+[pmca-gui](https://github.com/ma1co/Sony-PMCA-RE) is the graphical front end of Sony-PMCA-RE. It installs the APK over USB and needs **no on-camera ADB and no command line**. Set the camera's USB connection mode to **MTP** and installing is a matter of a few clicks.
 
 1. Download a prebuilt pmca-gui from [Sony-PMCA-RE Releases](https://github.com/ma1co/Sony-PMCA-RE/releases/latest) (Windows and macOS binaries are provided; on Linux use Python 3 + libusb and run `./pmca-gui.py` from a clone).
-2. Connect the camera to the computer over USB and choose a USB connection mode that transfers data.
+2. Connect the camera to the computer with a USB data cable and set the camera's USB connection mode to **MTP**.
 3. Open pmca-gui and switch to the **`Install app`** tab.
 4. Select the **`Select an apk`** radio button (not `Select an app from the app list`), click **`Open apk...`** and choose the `FilmStudio-0.2.0-alpha-movie.apk` downloaded in step 2.
 5. Click **`Install selected app`** and wait for it to finish. Then open 胶片工坊 from the camera's app list as described in section 6.
+
+**Verification status:** with the camera's USB mode set to MTP, a local APK installs straight from the computer — **no OpenMemories: Tweak needed first, and no command line**. This project has exercised that route on hardware, and it is independent of the Wi-Fi ADB route. If you already installed Tweak through pmca-gui in section 4, the same window installs this app by the steps above.
 
 Limits and risk:
 
@@ -153,7 +155,7 @@ adb -s CAMERA_IP:5555 shell am start -W -n com.yuki.imaging.app.pictureeffectplu
 
 The native camera screen may block this command. Open the app manually instead; an `am start` warning alone does not establish installation failure.
 
-pmca-gui also offers **Select an apk → Open apk... → Install selected app** for a local APK. You may try that USB route, but Wi-Fi ADB is the update method verified for this project. Acceptance of every USB installer/signature combination is not guaranteed.
+Updates can also go through Method A: pmca-gui's **Select an apk → Open apk... → Install selected app** is likewise hardware-verified — set the USB mode to MTP and no Wi-Fi is needed. The two routes are independent channels; either one completing is enough.
 
 ## 6. Controls and first test
 

@@ -37,11 +37,11 @@
 - 文件：`FilmStudio-0.2.0-alpha-movie.apk`（3,785,488 字节）
 - SHA-256：`2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120`
 
-下载后按照[中文安装教程](docs/INSTALL.zh-CN.md)连接相机并安装，无需自己编译。**Code → Download ZIP 是源码，不是安装包。**
+下载后按照[中文安装教程](docs/INSTALL.zh-CN.md)安装，无需自己编译。**只想装来用的走「方法 A」**：相机 USB 模式设为 MTP，用 pmca-gui 选中 APK 直接安装，不需要开发者模式，也不需命令行。**Code → Download ZIP 是源码，不是安装包。**
 
 本发行版为非官方实验版本，仅有上文所列的 a5100 与 a7R II 实机验证。APK 包含 Sony 基础应用内容和由富士公开 LUT 拟合出的参数；未确认针对这些第三方材料改编、再分发的独立授权。发布不表示获得 Sony 或 FUJIFILM 许可，也不保证免责；[版权与许可范围](LICENSING.md)单独说明各部分的权利。官方原始 LUT 和签名私钥不提供下载。
 
-→ **[中文完整安装教程](docs/INSTALL.zh-CN.md)**：准备输入 → 本地构建 → 首次启用连接 → Wi-Fi ADB 安装 → 相机操作 → 更新与故障排查。
+→ **[中文完整安装教程](docs/INSTALL.zh-CN.md)**：准备输入 → 本地构建 → USB（pmca-gui）／Wi-Fi ADB 安装 → 相机操作 → 更新与故障排查。
 
 已有自行合法构建的 APK、且相机已启用 Wi-Fi ADB 时：
 
