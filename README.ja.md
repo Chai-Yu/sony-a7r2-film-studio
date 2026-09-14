@@ -34,9 +34,9 @@
 
 **[APK を直接ダウンロード：0.2.2-alpha（ライカスタイルを追加）](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)** · [リリース説明](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha)
 
-- ファイル：`FilmStudio-0.2.2-alpha-movie.apk`（3,789,810 バイト）— 既定の `faithful` 処理
-- SHA-256：`e03d9c1132e72c54c74dd829783b48c12ebb390e8feb904cb829d833a7ea68b9`
-- **白点アンカー**版 `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`（3,790,920 バイト、SHA-256 `4bdcab263a7050d6f6c2bc1d1b5d6fcd3bdc5b7139832b01e292e802eb2254c3`）も同ページにあります。白を白のまま保ち、全体を暗くしません。**両版の違いはライカのトーン出力のみ**で、行列は共通です。
+- ファイル：`FilmStudio-0.2.2-alpha-movie.apk`（3,789,785 バイト）— 既定の `faithful` 処理
+- SHA-256：`c4df639f1f7250d302aac3f4ad617b61c484bc579da61422acde5585a7a57d94`
+- **白点アンカー**版 `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`（3,790,886 バイト、SHA-256 `01a87172ef3918dfde9b248454cc670fad29c5612069a33a7cf43ee6b4a7d0ee`）も同ページにあります。白を白のまま保ち、全体を暗くしません。**両版の違いはライカのトーン出力のみ**で、行列は共通です。
 
 [日本語の導入手順](docs/INSTALL.ja.md)に沿って導入してください。自分でビルドする必要はありません。**入れて使うだけの人は「方法 A」**：カメラの USB モードを MTP にし、pmca-gui で APK を選んで導入します。開発者モードもコマンド操作も不要です。**Code → Download ZIP はソースであり、インストーラーではありません。**
 
@@ -87,7 +87,7 @@ adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.2-alpha-movie.apk
 
 **アプリ内の再生画面には現在、写真だけが表示されます。** 動画はアプリを終了し、カメラ標準の再生画面で対応する XAVC S / AVCHD / MP4 の表示モードを選んでください。[検証記録](docs/VALIDATION.md)も参照してください。
 
-富士フイルムのフィルムシミュレーションを完全移植したものではありません。F-Log2/F-Gamut LUT を通常のソニー映像へ直接適用せず、WDR-709 を代替の中性基準として3×3行列と1024点の共通カーブに近似します。a5100 実写による色彩校正は未実施で、粒状感やセンサー特性は再現しません。近似誤差が大きいスタイルもあります。
+富士フイルムのフィルムシミュレーションを完全移植したものではありません。F-Log2/F-Gamut LUT を通常のソニー映像へ直接適用せず、WDR-709 を代替の中性基準として3×3行列と1024点の共通カーブに近似します。**彩度特性は a7R II の実写 3 枚（機体 Neutral／機体 STD／アプリ出力、同一シーン）で一度校正しており、100% 強度が参照 look に一致します。** a5100 は未校正で、粒状感やセンサー特性は再現しません。近似誤差が大きいスタイルもあります。
 
 ## ライセンス・著作権・出典
 

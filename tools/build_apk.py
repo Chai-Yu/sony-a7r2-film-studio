@@ -1202,7 +1202,17 @@ def main():
         (root/folder).mkdir(parents=True, exist_ok=True)
     if not (root/'profiles/fuji_official_approx.json').exists():
         raise SystemExit('No local profiles. Follow the rights/input checks and fit_luts.py step in docs/INSTALL.en.md.')
-    fuji=json.loads((root/'profiles/fuji_official_approx.json').read_text(encoding='utf-8'))['presets']
+    fuji_data=json.loads((root/'profiles/fuji_official_approx.json').read_text(encoding='utf-8'))
+    # The fitted matrices assume the neutral reference as their input, but the
+    # camera feeds its own rendered Standard image, which is about 26% more
+    # chromatic. Shipping the raw fit therefore overshoots saturation by ~41% at
+    # 100% strength. tools/calibrate_camera.py scales the chroma response; refuse
+    # to build parameters that were never calibrated.
+    if 'domain_calibration' not in fuji_data:
+        raise SystemExit('profiles/fuji_official_approx.json has no domain_calibration block: '
+                         'the Fujifilm matrices would overshoot saturation on the camera. '
+                         'Run tools/calibrate_camera.py . first.')
+    fuji=fuji_data['presets']
     leica=[]
     if not args.no_leica:
         if not (root/LEICA_FILE).exists():

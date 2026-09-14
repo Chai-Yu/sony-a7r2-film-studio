@@ -141,18 +141,20 @@ English: Independent training and validation use the unclipped region of the neu
 `FilmStudio-0.2.2-alpha-movie.apk`（faithful，默认）— SHA-256:
 
 ```text
-e03d9c1132e72c54c74dd829783b48c12ebb390e8feb904cb829d833a7ea68b9
+c4df639f1f7250d302aac3f4ad617b61c484bc579da61422acde5585a7a57d94
 ```
 
 `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`（anchor）— SHA-256:
 
 ```text
-4bdcab263a7050d6f6c2bc1d1b5d6fcd3bdc5b7139832b01e292e802eb2254c3
+01a87172ef3918dfde9b248454cc670fad29c5612069a33a7cf43ee6b4a7d0ee
 ```
 
-中文：本版新增 2 个徕卡 Look 参考风格（经典 Classic、自然 Natural），预设总数 15 → 17。新增内容只影响新预设：
-与 0.2.1 的反编译结果逐字段比对，**原有 80 组富士数组逐位未变**；理光 5 组仍取自固定版本上游；签名证书不变，
-可 `install -r` 覆盖；相机内版本名 `0.2.2`（anchor 变体为 `0.2.2a`，因此两个变体在机内可区分）。
+中文：本版新增 2 个徕卡 Look 参考风格（经典 Classic、自然 Natural），预设总数 15 → 17。徕卡参数只影响新预设；
+理光 5 组仍取自固定版本上游；签名证书不变，可 `install -r` 覆盖；相机内版本名 `0.2.2`（anchor 变体为 `0.2.2a`，
+因此两个变体在机内可区分）。
+**注意：本版同时修正了富士家族的色度标定（见下文「三张对照实测」一节），因此 10 个富士滤镜的矩阵与 0.2.1
+有意不再逐位一致**；徕卡与理光的参数不受该修正影响。
 
 **基准渲染是本项目构造的，不是徕卡的。** 徕卡只发布 look LUT，没有中性参照；拟合基准按徕卡 L-Log 参考手册 V1.6
 的曲线构造（场景反射率 → **BT.2020→BT.709 色域转换** → BT.709 传输函数，漫反射白处截断）。手册自带的 LSR/DV 对照表
@@ -194,12 +196,15 @@ e03d9c1132e72c54c74dd829783b48c12ebb390e8feb904cb829d833a7ea68b9
 `applyNative()` 保留，但不再影响矩阵（实测该机身不采纳风格／效果写入，所以它只是尽力而为）。
 要复现旧的「按能力查询跳过 Gamma 表」行为做对比，用 `--gate-extended-gamma` 构建。
 
-**第二轮实机反馈（同日，已安装上一版修复）：** 偏色消失，但**所有滤镜画面完全相同，连 ACROS 黑白都是彩色的**。
+**第二轮实机反馈（同日，已安装上一轮修复）：** 偏色消失，但**所有滤镜画面完全相同，连 ACROS 黑白都是彩色的**。
 这说明该机身**不采纳 `setColorMode()` / `setPictureEffect()` 的写入**（矩阵被移除后什么都剩不下），
-所以上一轮「改用机身自己的风格／效果」在这类机身上行不通，已回退。
-当前版本把矩阵与曲线一起写回，**待本轮实机确认**：若曲线生效，徒卡（faithful）应明显比其他滤镜暗约 25%
-（LUT 把漫反射白渲染在 0.75）；若徒卡不比别人暗，说明该机身连扩展 Gamma 表也不采纳，
-下一步改用「只用矩阵拟合」的参数集（把整条曲线折进矩阵）。
+所以「改用机身自己的风格／效果」在这类机身上行不通，已回退。这条证据仍然成立，
+它也是下面 `applyNative()` 只作尽力而为的依据。
+
+**第三轮实机确认：** 用户确认滤镜全部恢复、徕卡不再偏色、亮度如预期略低。
+随后 2026-09-14 的三张对照实测进一步**证明了扩展 Gamma 表确实被采纳**：把机身自己的 STD JPEG 送进
+「矩阵 + 曲线」的完整模型，预测出的色度比在 70% 强度上与实拍吻合到 −1.3%（见下文），
+若曲线被跳过就不可能对上。因此**不需要**改用「只用矩阵拟合」的参数集。
 a5100 未受影响是依据它报告支持矩阵，本版未在 a5100 上重测。
 
 同版修复的第二个缺陷：`tools/fit_leica.py` 的拟合基准漏掉了 L-Log 的 **BT.2020→BT.709** 色域转换。
@@ -233,46 +238,70 @@ a5100 未受影响是依据它报告支持矩阵，本版未在 a5100 上重测�
 实现没问题，但拟合基准是否选对，仍需一次带**场景参考**的拍摄才能判定。
 
 尚未完成：用带场景参考的拍摄（RAW+JPEG 或色卡）重拟富士家族参数。
+**2026-09-14 更新：** 这个量随后由用户拍摄的**三张对照**测出（见下节），并据此完成了色度标定。
 
-### 2026-09-14 三张对照实测：富士家族确实把饱和度多给了约 14%
+### 2026-09-14 三张对照实测：富士家族确实把饱和度多给了约 41%（已修正）
 
-用户按同一场景拍摄三张（a7R II）：机身 **Neutral**（扁平渲染，A）、机身 **STD**（矩阵真正的输入，B）、
-应用内「富士 PROVIA 标准」（C）。全部为**直接测得的统计量**，不依赖任何模型假设：
+用户按同一场景拍摄三张（a7R II）：机身 **Neutral**（扁平渲染）、机身 **STD**（矩阵真正的输入）、
+应用内「富士 PROVIA 标准」。全部为**直接测得的统计量**，不依赖任何模型假设：
 
 | 量 | 值 |
 | --- | ---: |
-| 机身 STD 的色度 ÷ 机身 Neutral 的色度（同场景同像素） | **1.253** |
-| 官方 PROVIA 相对官方中性参照的色度增益（近中性／中等彩度） | **1.693 / 1.688** |
-| 应用输出色度 ÷ 机身 STD 色度 | **1.538** |
+| 机身 STD 的色度 ÷ 机身 Neutral 的色度（同场景同像素） | **1.260**（三次独立测得 1.253 / 1.256 / 1.260） |
+| 官方 PROVIA 相对官方中性参照的色度增益（真实场景，非合成） | **1.608** |
+| 应用输出色度 ÷ 机身 STD 色度（本次用默认 70% 强度） | **1.535** |
 
-若机身的 Neutral 渲染可以代表官方那支扁平中性参照，则**滤镜相对机身 STD 应有的增益是
-1.693 ÷ 1.253 = 1.354**，而应用实际给到 **1.538** ——**多给了 1.136 倍（约 +14%）**。
-另一条独立路径给出同样结果：1.538 × 1.253 ÷ 1.693 = 1.138。
+**判据必须锚在 100% 上。** 强度滑杆的含义是「100% 渲染官方 look，向下按比例减弱」，所以
+**100% 时滤镜的输出色度应当等于官方 look 的色度**。相对机身 STD，这个目标是
+**1.608 ÷ 1.260 = 1.276**；而拟合模型在 100% 时给出 **1.802** ——**多给了 1.41 倍（+41%）**。
+（本次实拍用的是默认 70%，对应 1.535；把它和「官方 look 全强度」直接相比会低估误差，
+这正是先前记下的 +14% 的来源。）
 
-**机制已量化，不再是推测：** 机身 STD 比扁平参照饱和 25.3%，而拟合时的色度增益是按扁平参照标定的。
-矩阵的色度增益与输入的色度基本无关，所以这份增益被叠加到**已经更饱和**的输入上，结果整体超出约 14%。
+**机制已量化，不再是推测：** 机身 STD 比扁平参照饱和 26%，而拟合时的色度增益是按扁平参照标定的；
+矩阵的色度增益与输入色度基本无关，于是这份增益被叠加到**已经更饱和**的输入上。
 这也解释了为什么同一个机制在**理光**上看不到：理光参数取自上游、本来就按真机标定。
+
+**修法与验收：** `tools/calibrate_camera.py` 把每个矩阵的色度响应按
+$M' = A + \rho (M - A)$ 缩放（$A$ 为投影到中性方向的投影算子，行元素 $1/3$）。
+**必须用这个形式**：向单位阵插值会**抬高**去饱和 look 的增益，并把 ACROS 从黑白变成彩色（实测 0.000 → 0.347）。
+$\rho$ 是**数值求解**的：色度对该因子基本线性（同一组照片上 `1.768·ρ + 0.07`），
+取 $\rho = 0.680$ 使 100% 时的实测增益落在 **1.2756**，目标 1.2757，偏差 **0.0%**。
+
+| 滤镜 | 拟合模型 | 标定后 |
+| --- | ---: | ---: |
+| 富士 PROVIA 标准 (`pop-color`) | 1.409 | 0.958 |
+| 富士 Velvia | 1.598 | 1.087 |
+| 富士 Astia | 1.407 | 0.957 |
+| 富士 Classic Chrome | 1.015 | 0.690 |
+| 富士 Eterna | 0.976 | 0.663 |
+| 富士 Pro Neg. Std | 1.048 | 0.712 |
+| 富士 Classic Negative | 0.883 | 0.601 |
+| 富士 Reala Ace | 0.615 | 0.418 |
+| 富士 Eterna Bleach Bypass | 0.398 | 0.270 |
+| 富士 ACROS | 0.000 | **0.000**（黑白保持黑白） |
+
+**未动理光**（参数来自上游、已按真机标定），也**未用同样方法实测徕卡**——徕卡的基准是本项目自行构造的
+（见下节），因此它不在这条实测链上；是否要按同样思路修正，仍是一个开放的判断题。
 
 **顺带发现的结构性缺陷：** 富士家族用作输入基准的 `FLog2_to_WDR-709` 中性 LUT **两端都会截断**
 （code > 0.85 全部压到 1.0，code < 0.1 全部压到 0.0）。用它当模型输入会丢失高光／阴影信息，
 逆问题病态——这正是富士拟合误差（MAE 0.065、p95 0.228）远大于徕卡（0.014–0.016，同一模型形式）的原因之一。
 
-**尚未证实的一点：** 「机身 Neutral ≈ 官方中性参照」这一步无法由这三张照片证明（反解该 LUT 的残差落到网格分辨率，
-只能说明与其**相容**）。若机身 Neutral 本身也比官方参照饱和，则 +14% 只是**下界**。
-
-**修法（待执行）：** 用这条实测的「扁平 → 机身 STD」变换修正拟合的输入域，重拟 10 个富士滤镜与 2 个徕卡滤镜。
-预期效果：色度增益从 1.538 降到约 1.354，而影调曲线的强度保持不变（这才是与「把强度调低」的区别——
-调低强度会连对比度一起削弱）。
-
-**临时缓解：** 把强度从 70% 调到 **50%**，实测色度增益约为 1.36，已落在应有值附近。
+**未完全证实的一点：** 「机身 Neutral ≈ 官方中性参照」这一步无法被证明（该 LUT 多对一）。
+但支持它的证据不弱：把机身 Neutral 反解回该 LUT 的输入空间，**99.7% 的像素残差低于 2e-3**，
+中位可达残差 5.3e-4——即机身 Neutral 渲染与该 LUT **相容**。若它本身仍更饱和，则 +41% 只是**下界**。
+本次标定也建立在一张场景上，不同题材的色度构成不同，$\rho$ 因此带有场景依赖；
+`fuji_official_approx.json` 的 `domain_calibration` 块记录了全部测得的量，便于日后增补场景后复算。
 
 尚未验证：本版照片／录像保存、全部强度、两个变体在实机上的观感对比。
 
 English: This version adds two Leica Look reference styles (Classic, Natural), taking the preset count from 15 to
-17. Only the new presets are affected: comparing against the decompiled 0.2.1 build field by field, **all 80
-existing Fujifilm arrays are unchanged bit for bit**, the five Ricoh presets still come from the pinned upstream
+17. The Leica parameters affect only the two new presets; the five Ricoh presets still come from the pinned upstream
 revision, the signing certificate is unchanged so `install -r` still updates in place, and the on-camera version
-reads `0.2.2` (`0.2.2a` for the anchor variant, which is how the two are told apart on the camera).
+reads `0.2.2` (`0.2.2a` for the anchor variant, which is how the two are told apart on the camera). **Note that this
+build also corrects the Fujifilm chroma calibration (see the triple-shot measurement below), so the ten Fujifilm
+matrices deliberately no longer match 0.2.1 bit for bit.** Neither the Leica nor the Ricoh parameters are affected
+by that correction.
 
 **The baseline rendering is this project's construction, not Leica's.** Leica publishes look LUTs with no neutral
 reference, so the baseline follows the L-Log curve in Leica's reference manual V1.6 (scene reflection through the
@@ -298,9 +327,10 @@ footage, and the fallback on the a7R II, where the Leica looks collapse onto exi
 `standard`, Classic to `neutral` + `retro-photo`).
 
 日本語：本版はライカ Look 参考スタイルを 2 種（クラシック、ナチュラル）追加し、プリセット総数は 15→17 になります。
-影響は新規プリセットのみです。0.2.1 の逆コンパイル結果と項目ごとに比較して、**既存の富士 80 配列はビット単位で
-不変**、リコー 5 種は指定リビジョンの上流のまま、署名証明書も変わらず `install -r` で上書き可能、カメラ内表示は
-`0.2.2`（anchor 版は `0.2.2a`、これが両者の区別方法です）。
+ライカのパラメータは新規プリセットのみに影響します。リコー 5 種は指定リビジョンの上流のまま、署名証明書も変わらず
+`install -r` で上書き可能、カメラ内表示は `0.2.2`（anchor 版は `0.2.2a`、これが両者の区別方法です）。
+**なお本版は富士の彩度校正も修正しているため（後述の「三枚比較実測」を参照）、富士 10 種の行列は 0.2.1 と
+意図的にビット単位では一致しません。** ライカとリコーのパラメータはこの修正の影響を受けません。
 
 **基準レンダリングは本プロジェクトの構成物であり、ライカのものではありません。** ライカは中性参照を伴わない
 look LUT のみを公開しているため、基準はライカのリファレンスマニュアル V1.6 の L-Log 曲線に従って構成します
