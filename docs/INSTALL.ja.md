@@ -9,8 +9,8 @@
 ## 0. 公開 APK をそのまま導入する
 
 1. [対応機種](../README.ja.md#compatibility)で機種と利用予定の機能を確認します。
-2. [Releases の Assets](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha)から **[FilmStudio-0.2.2-alpha-movie.apk](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)**（3,789,775 バイト）をダウンロードします。Source code ZIP はインストーラーではありません。
-3. APK の SHA-256 を確認します（macOS は `shasum -a 256`、Linux は `sha256sum`、PowerShell は `Get-FileHash -Algorithm SHA256`）。値は `494191f4c29550a21e2a1ff57eceb439626e4befe2c5810d41743219cd69f681` です。確認できるのはファイルの一致で、許諾や互換性ではありません。
+2. [Releases の Assets](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha)から **[FilmStudio-0.2.2-alpha-movie.apk](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)**（3,789,785 バイト）をダウンロードします。Source code ZIP はインストーラーではありません。
+3. APK の SHA-256 を確認します（macOS は `shasum -a 256`、Linux は `sha256sum`、PowerShell は `Get-FileHash -Algorithm SHA256`）。値は `1270f7d9dbed2f3b5d82f6c0ce93d5844c512e7b00108eb1c5c8c20c3ec50199` です。確認できるのはファイルの一致で、許諾や互換性ではありません。
 4. 導入方法を選びます：**方法 A** は GUI で開発者モード不要、入れて使うだけの人向けです。**方法 B** はコマンドラインで、第4節の Wi-Fi ADB が必要です。
 
 **公開 APK の導入だけなら Python、Java、Apktool、署名秘密鍵は不要です。** 第1～3節は自分でビルドしたい人向けです。

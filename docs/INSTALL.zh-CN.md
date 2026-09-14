@@ -9,8 +9,8 @@
 ## 0. 直接安装发行版 APK
 
 1. 先看[机型兼容性](../README.md#compatibility)，确认你的机型和预期功能在说明范围内。
-2. 在[Releases](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha)的 Assets 中下载 **[FilmStudio-0.2.2-alpha-movie.apk](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)**（3,789,775 字节）；不要下载 Source code ZIP 当作安装包。同页还有白点锚定变体 `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`，两者只差偷卡风格的影调输出。
-3. 核对 APK 的 SHA-256（macOS 用 `shasum -a 256`、Linux 用 `sha256sum`、PowerShell 用 `Get-FileHash -Algorithm SHA256`），应为 `494191f4c29550a21e2a1ff57eceb439626e4befe2c5810d41743219cd69f681`。校验的是文件一致性，不是法律许可或兼容保证。
+2. 在[Releases](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha)的 Assets 中下载 **[FilmStudio-0.2.2-alpha-movie.apk](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)**（3,789,785 字节）；不要下载 Source code ZIP 当作安装包。同页还有白点锚定变体 `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`，两者只差偷卡风格的影调输出。
+3. 核对 APK 的 SHA-256（macOS 用 `shasum -a 256`、Linux 用 `sha256sum`、PowerShell 用 `Get-FileHash -Algorithm SHA256`），应为 `1270f7d9dbed2f3b5d82f6c0ce93d5844c512e7b00108eb1c5c8c20c3ec50199`。校验的是文件一致性，不是法律许可或兼容保证。
 4. 选一种安装方式：**方法 A** 用图形界面、不需要开发者模式，适合只想装来用的人；**方法 B** 用命令行，需先按第 4 节开启 Wi-Fi ADB。
 
 **现成 APK 不需要 Python、Java、Apktool 或签名私钥。** 第 1～3 节供希望自行构建的读者使用。

@@ -141,13 +141,13 @@ English: Independent training and validation use the unclipped region of the neu
 `FilmStudio-0.2.2-alpha-movie.apk`（faithful，默认）— SHA-256:
 
 ```text
-494191f4c29550a21e2a1ff57eceb439626e4befe2c5810d41743219cd69f681
+1270f7d9dbed2f3b5d82f6c0ce93d5844c512e7b00108eb1c5c8c20c3ec50199
 ```
 
 `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`（anchor）— SHA-256:
 
 ```text
-3b0e43cd0364b16b9b5f5104247d9c38f342e8801080dbe09b89e9636252f2a9
+18c6f068d253edf5d0fd417da9db160551a1ed43566626fa53e7dbe9702f98e4
 ```
 
 中文：本版新增 2 个徕卡 Look 参考风格（经典 Classic、自然 Natural），预设总数 15 → 17。徕卡参数只影响新预设；
@@ -262,58 +262,86 @@ a5100 未受影响是依据它报告支持矩阵，本版未在 a5100 上重测�
 矩阵的色度增益与输入色度基本无关，于是这份增益被叠加到**已经更饱和**的输入上。
 这也解释了为什么同一个机制在**理光**上看不到：理光参数取自上游、本来就按真机标定。
 
-**第一版修法（已废弃）：缩放色度响应。** `tools/calibrate_camera.py` 曾把每个矩阵按
-$M' = A + \rho (M - A)$ 缩放（$A$ 为投影到中性方向的投影算子，行元素 $1/3$）。
-**这个形式是必要的**——向单位阵插值会**抬高**去饱和 look 的增益，并把 ACROS 从黑白变成彩色（实测 0.000 → 0.347）。
-但用第二批两组照片检验后，它暴露出两个自身缺陷：
+### 2026-09-14 两组 100% 实拍：直接量出「应用离官方 look 有多远」
 
-1. **逐场景不成立。** 三个场景各自要求的 $\rho$ 是 **0.68 / 0.70 / 0.90**。（这个散布有一部分来自指标本身：
-   均值类色度指标被最饱和的少数像素带跑，中位数类指标给出 0.750 / 0.747 / 0.813，散布从 0.227 降到 0.065。
-   但即使按稳健指标，出厂值 0.680 仍然偏激进。）
-2. **逐滤镜不成立，且会损伤去饱和系。** `fuji-reala` 的色度误差被它从原始的 26.0% **恶化到 50.5%**。
+用户又拍了**两组三连照**（1403 / 1406），这次应用内强度是 **100%** ——正好就是判据锚定的那个强度。
+于是五组照片第一次可以**不带模型**直接回答「应用离官方 look 多远」：把应用照片与官方 look 在同一场景上相比，
+**色度 ÷ 官方色度**（1.0 为理想）：
 
-在 10 个滤镜 × 3 个场景上（留一场景验证，见下）的汇总：
+| 场景 | 五个色度指标下的 应用 ÷ 官方 | 均值 |
+| --- | --- | ---: |
+| 1403 | 1.320 / 1.228 / 1.347 / 1.217 / 1.373 | **+32%** |
+| 1406 | 1.248 / 0.893 / 1.292 / 1.392 / 1.317 | **+25%** |
 
-| 方案 | RGB 平均误差 | RGB p90 | 色度 RMS | 色度最差 |
-| --- | ---: | ---: | ---: | ---: |
-| 未修正 | 0.0710 | 0.1037 | 38.3% | 59.8% |
-| $\rho = 0.68$ | 0.0665 | 0.0926 | 26.4% | 57.3% |
-| $\rho = 0.75$ | 0.0669 | 0.0938 | 23.6% | 52.9% |
-| **域重拟（现行）** | **0.0647** | **0.0892** | 23.7% | **47.4%** |
+而「原始矩阵模型在 100%」的预测是 1403 = 1.312、1406 = 1.209，与实测仅差 **+0.6% / +3.2%**。
+这一致同时**证实了三件事**：(1) 机身上跑的是**从未标定的原始版**；(2) 照片确实是 100% 强度；
+(3) 整条测量链（反解 + 对齐 + 模型）是准的。
 
-### 2026-09-14 最终修法：在相机真正的输入域里重拟矩阵
+### 2026-09-14 第一版修法与第二版修法的取舍
 
-用户随后又拍了**两组**同场景三连照（共三个场景 1394 / 1397 / 1400，各含机身 Neutral、机身 STD、应用输出），
-于是每个场景都能独立反解、独立求解。`tools/calibrate_camera.py --scenes` 现在直接把每个矩阵对
-**机身 STD 的真实像素**重新拟合，**只动矩阵、不动曲线**——依据是曲线取自灰轴，
-而机身 Neutral 与 STD 在灰轴上一致（两个域的中性轴相同），所以域错配影响不到曲线。
+**第一版（标量缩放色度响应）：** 把每个矩阵按 $M' = A + \rho (M - A)$ 缩放
+（$A$ 为投影到中性方向的投影算子，行元素 $1/3$）。**这个形式是必要的**——向单位阵插值会**抬高**
+去饱和 look 的增益，并把 ACROS 从黑白变成彩色（实测 0.000 → 0.347）。
 
-**三个场景一致确认了前提：** 机身 STD ÷ 机身 Neutral 的色度比 = **1.2309 / 1.2667 / 1.2839**（均值 1.2605），
-即域错配是**场景稳定**的，与早先三次独立测得的 1.253 / 1.256 / 1.260 相符。
+**第二版（在相机输入域里重拟矩阵）：** 把每个矩阵直接对机身 STD 的真实像素重新拟合。
+只动矩阵、不动曲线——曲线取自灰轴，而机身 Neutral 与 STD 在灰轴上一致，域错配影响不到它。
+按 RGB 误差它与留一场景验证都最优（0.0647，未修正 0.0710）。
 
-**留一场景验证**（拟合两个场景、在第三个上评分，因此不是自证）：每个滤镜在每个留出场景上，
-重拟的 RGB 误差都是四种方案里最低或并列最低的；汇总见表。
+**但两组 100% 照片把它否决了。**它在色度判据上**系统性偏低 15–20%**：
+重拟优化的是 RGB 误差，而 RGB 误差被占多数的近中性像素主导，它用**拉低色度**换来了 RGB 精度。
+在拟合场景上选定参数、在 1403 / 1406 上样本外评分：
 
-**矩阵色度增益的变化（拟合 → 重拟）：**
+| 方案 | 样本外 RGB 误差 | 色度 \|比值−1\| | 色度最差 | 两场景色度均值 |
+| --- | ---: | ---: | ---: | --- |
+| 未修正（机上现状） | 0.0402 | 26.96% | 40.55% | 1.312 / 1.209 |
+| **原始 + 0.75（现行）** | 0.0321 | **7.51%** | **27.47%** | **1.026 / 0.930** |
+| 域重拟 | 0.0297 | 22.22% | 41.51% | 0.835 / 0.720 |
+| 重拟 + 1.15 | **0.0285** | 11.68% | 32.78% | 0.946 / 0.821 |
+| **应用照片实测** | 0.0576 | 28.41% | 39.20% | 1.297 / 1.228 |
 
-| 滤镜 | 拟合 | 重拟 |
+$\rho = 0.75$ 是**在拟合场景（1394/1397/1400）上选出来的**
+（均值 \|比值−1\| 8.17%，原始 28.06%，域重拟 13.35%），
+再看 1403/1406 独立确认（7.51%）。重拟那一列虽然在 RGB 上仍略优，但在**用户抱怨的那个维度**上更差，
+因此不采纳；`--scenes` 重拟模式保留在工具里，但默认不启用。
+
+**已知未解决的一类问题：** 标量修法对**去饱和系**滤镜是**反号的**：
+它的输出来自「减饱和」，输入变饱和后应该**更使劲去饱和**，而 $A + \rho(M - A)$ 是**削弱**去饱和。
+所以 `fuji-reala` 的色度误差从原始的 26.0% 被恶化到 45–53%。
+要修它需要**逐滤镜**定 $\rho$，而目前只有 PROVIA 有 100% 的实拍可以验证——这是下一步最值钱的照片。
+
+**五个场景一致确认了前提。** 全部为直接测得（五个色度指标的均值）：
+
+| 场景 | 应用强度 | 域错配（机身 STD ÷ 机身 Neutral） | 官方 look ÷ 机身 STD | 应用 ÷ 机身 STD |
+| --- | --- | ---: | ---: | ---: |
+| 1394 | 70% | 1.2424 | 1.2842 | 1.5130 |
+| 1397 | 70% | 1.2559 | 1.2032 | 1.3062 |
+| 1400 | 70% | 1.2067 | 1.2490 | 1.2812 |
+| **1403** | **100%** | 1.2727 | 1.2636 | **1.6413** |
+| **1406** | **100%** | 1.3466 | 1.3889 | **1.6872** |
+
+域错配在五个场景上是 **1.207 – 1.347（均值 1.2649）**，即**场景稳定**，与早先三次独立测得的 1.253 / 1.256 / 1.260 相符。
+而 100% 的两行直接把问题摆出来了：官方 look 只要 1.26 / 1.39，应用却给了 **1.64 / 1.69**。
+
+**矩阵色度增益的变化（拟合 → 现行）：**
+
+| 滤镜 | 拟合 | 现行（×0.75） |
 | --- | ---: | ---: |
-| 富士 PROVIA 标准 (`pop-color`) | 1.408 | 0.975 |
-| 富士 Velvia | 1.597 | 1.116 |
-| 富士 Astia | 1.407 | 0.926 |
-| 富士 Classic Chrome | 1.013 | 0.677 |
-| 富士 Eterna | 0.974 | 0.692 |
-| 富士 Pro Neg. Std | 1.048 | 0.740 |
-| 富士 Classic Negative | 0.882 | 0.599 |
-| **富士 Reala Ace** | **0.614** | **0.878** |
-| 富士 Eterna Bleach Bypass | 0.397 | 0.329 |
+| 富士 PROVIA 标准 (`pop-color`) | 1.408 | 1.056 |
+| 富士 Velvia | 1.597 | 1.197 |
+| 富士 Astia | 1.407 | 1.055 |
+| 富士 Classic Chrome | 1.013 | 0.760 |
+| 富士 Eterna | 0.974 | 0.731 |
+| 富士 Pro Neg. Std | 1.048 | 0.786 |
+| 富士 Classic Negative | 0.882 | 0.661 |
+| 富士 Reala Ace | 0.614 | **0.460** |
+| 富士 Eterna Bleach Bypass | 0.397 | 0.299 |
 | 富士 ACROS | 0.000 | **0.000**（黑白保持黑白） |
 
-**注意 Reala Ace 的方向是反的**（0.614 → 0.878，即**减弱**去饱和），与标量修法刚好相反——
-这正是标量修法损伤它的直接原因，也是重拟方向正确的旁证。
+**注意 Reala Ace 的方向仍然是错的**：0.614 → 0.460 是**进一步去饱和**，而它需要的恰好相反
+（见上面「已知未解决的一类问题」）。这是标量修法唯一尚未解决的**系统性**缺陷，而不是随机误差。
 
-**重拟所用像素与反解质量：** 三个场景分别有 **99.7% / 98.8% / 97.2%** 的像素反解残差低于 2e-3
-（中位可达残差 5.3e-4 / 4.8e-4 / 5.2e-4），即机身 Neutral 渲染与官方中性 LUT **相容**。
+**反解质量（五个场景）：** 1403 / 1406 分别有 **99.0% / 99.8%** 的像素反解残差低于 2e-3
+（中位可达残差 5.1e-4 / 4.4e-4）——**1406 是迄今最好的**，即机身 Neutral 渲染与官方中性 LUT 相当**相容**。
 
 **未动理光**（参数来自上游、已按真机标定），也**未用同样方法实测徕卡**——徕卡的基准是本项目自行构造的
 （见下节），因此它不在这条实测链上；是否要按同样思路修正，仍是一个开放的判断题。
@@ -323,11 +351,12 @@ $M' = A + \rho (M - A)$ 缩放（$A$ 为投影到中性方向的投影算子，�
 逆问题病态——这正是富士拟合误差（MAE 0.065、p95 0.228）远大于徕卡（0.014–0.016，同一模型形式）的原因之一。
 
 **残留局限（重要）：** 「机身 Neutral ≈ 官方中性参照」这一步无法被证明（该 LUT 多对一），
-但支持它的证据不弱（见上面的反解残差）。若机身 Neutral 本身仍比官方参照饱和，则修正量只是**下界**。
+但支持它的证据不弱（见上面的反解残差，1406 达到 99.8%）。若机身 Neutral 本身仍比官方参照饱和，则修正量只是**下界**。
 其次，**「矩阵＋曲线」这一模型形式本身就表达不完全**：把「扁平 → 机身 STD」这个域变换拟成矩阵＋曲线时
-MAE 高达 0.29，所以剩下的 16–24% 色度残差里既有模型形式的天花板，也有场景覆盖不足
-（只有三个场景，且都不含纯色／色卡）。**再多几个场景——尤其是带色卡或已知参照的——能同时压住这两项。**
-`fuji_official_approx.json` 的 `domain_calibration` 块记录了全部测得的量与四种方案的评分。
+MAE 高达 0.29。这正是为什么标量修法只能把残留压到 **7.5%**：理想的修正量应当**随输入色度而变**（低彩度像素几乎不该修正，
+高彩度像素要压得更狠），而一个矩阵做不到这件事。真正解决它需要换参数形式（比如把「机身 STD → look」做成 3D LUT），
+而不是继续在矩阵上凑。目前五个场景均不含纯色／色卡，这是模型形式之外的第二个短板。
+`fuji_official_approx.json` 的 `domain_calibration` 块记录了全部测得的量、选定参数的依据与样本外评分。
 
 尚未验证：本版照片／录像保存、全部强度、两个变体在实机上的观感对比。
 
@@ -335,13 +364,13 @@ English: This version adds two Leica Look reference styles (Classic, Natural), t
 17. The Leica parameters affect only the two new presets; the five Ricoh presets still come from the pinned upstream
 revision, the signing certificate is unchanged so `install -r` still updates in place, and the on-camera version
 reads `0.2.2` (`0.2.2a` for the anchor variant, which is how the two are told apart on the camera). **Note that this
-build also corrects the Fujifilm chroma response: the ten matrices were refitted against the input the camera
-actually supplies, its own Standard rendering, instead of the flat reference the original fit assumed (see the
-triple-shot measurements below). They therefore deliberately no longer match 0.2.1 bit for bit.** Neither the Leica
-nor the Ricoh parameters are affected by that correction. Scored leave-one-scene-out over ten films and three real
-scenes, the refit gives a mean absolute RGB error of 0.0647 against 0.0710 for the old matrices, and its worst
-chroma deviation is 47% against 60%; the two scenes the factor patch handles well it keeps, and it fixes REALA ACE,
-which the factor patch made twice as bad.
+build also corrects the Fujifilm chroma response: each matrix's chroma response is scaled by
+M' = A + 0.75 (M - A), because the fits map the official flat neutral rendering while the camera supplies its own
+Standard rendering, about 26% more chromatic. The ten Fujifilm matrices therefore deliberately no longer match
+0.2.1 bit for bit.** Neither the Leica nor the Ricoh parameters are affected. The factor was chosen on three scenes
+and confirmed on two more shot at 100% afterwards, where the delivered chroma comes out within 7.5% of the official
+look on average, against 27% for the uncorrected matrices and 22% for a full domain refit - that refit minimises RGB
+error but buys it with 15-20% too little chroma, so it is not shipped.
 
 **The baseline rendering is this project's construction, not Leica's.** Leica publishes look LUTs with no neutral
 reference, so the baseline follows the L-Log curve in Leica's reference manual V1.6 (scene reflection through the
@@ -369,12 +398,12 @@ footage, and the fallback on the a7R II, where the Leica looks collapse onto exi
 日本語：本版はライカ Look 参考スタイルを 2 種（クラシック、ナチュラル）追加し、プリセット総数は 15→17 になります。
 ライカのパラメータは新規プリセットのみに影響します。リコー 5 種は指定リビジョンの上流のまま、署名証明書も変わらず
 `install -r` で上書き可能、カメラ内表示は `0.2.2`（anchor 版は `0.2.2a`、これが両者の区別方法です）。
-**なお本版は富士の色度応答も修正しています。10 種の行列は、元のフィットが前提としたフラット基準ではなく、
-機体が実際に供給する Standard レンダリングに対して再フィットしています（後述の三枚比較実測を参照）。
-そのため 0.2.1 と意図的にビット単位では一致しません。** ライカとリコーのパラメータはこの修正の影響を受けません。
-10 種 × 実写 3 シーンの leave-one-scene-out 評価で、再フィットは RGB 平均絶対誤差 0.0647（旧行列は 0.0710）、
-色度の最悪偏差 47%（同 60%）です。係数パッチが得意だった 2 シーンは維持しつつ、係数パッチが 2 倍悪化させていた
-REALA ACE を修正しています。
+**なお本版は富士の色度応答も修正しています。各行列の色度応答を M' = A + 0.75 (M - A) でスケールしています。
+フィットは公式のフラット中性レンダリングを前提としていますが、機体が供給するのは自前の Standard
+レンダリングで約 26% 彩度が高いためです。そのため 0.2.1 と意図的にビット単位では一致しません。**
+ライカとリコーのパラメータは影響を受けません。係数は 3 シーンで選び、後から 100% で撮影された 2 シーンで確認しました。
+平均して参照 look の 7.5% 以内に収まり、未修正の 27%、ドメイン再フィットの 22% を上回ります
+（再フィットは RGB 誤差を最小化しますが、その代償に彩度が 15–20% 低すぎるため採用していません）。
 
 **基準レンダリングは本プロジェクトの構成物であり、ライカのものではありません。** ライカは中性参照を伴わない
 look LUT のみを公開しているため、基準はライカのリファレンスマニュアル V1.6 の L-Log 曲線に従って構成します

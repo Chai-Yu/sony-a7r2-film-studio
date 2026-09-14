@@ -8,29 +8,41 @@ that is already saturated and every look over-delivers.
 
 Two ways to correct it, both driven by triples shot on an a7R II - camera
 Neutral, camera STD, and the app's own output - with the scene recovered by
-inverting the official neutral LUT (99.7 / 98.8 / 97.2% of pixels invert to below
-2e-3, median residual 5.3e-4, so the camera's flat rendering is consistent with
-the official neutral; it is not proof, the LUT is many-to-one):
+inverting the official neutral LUT (99.7 / 98.9 / 97.2 / 99.0 / 99.8% of pixels
+over five scenes invert to below 2e-3, median residual 5.3e-4, so the camera's
+flat rendering is consistent with the official neutral; it is not proof, the LUT
+is many-to-one):
 
-  --scenes FILE   (preferred) refit the matrix against the input the camera
-                  really supplies. Only the matrix moves: the tone curve comes
-                  from the grey axis and the two renderings agree on greys, so
-                  the domain mismatch does not touch it.
-  --factor X      scale each matrix's chroma response, M' = A + X (M - A) with A
-                  the projector onto the neutral direction. A one-parameter
-                  patch; kept for comparison and because it needs one scene.
+  --factor X      what ships. Scale each matrix's chroma response,
+                  M' = A + X (M - A) with A the projector onto the neutral
+                  direction. X = 0.75.
+  --scenes FILE   refit the matrix against the input the camera really supplies.
+                  Only the matrix moves: the tone curve comes from the grey axis
+                  and the two renderings agree on greys, so the domain mismatch
+                  does not touch it. KEPT BUT NOT SHIPPED - see below.
 
 BLENDING TOWARD THE IDENTITY IS WRONG: it raises the gain of the desaturating
 looks and turns ACROS into colour (measured 0.000 -> 0.347). The projector form
-moves every look the same way, but it still cannot be right everywhere - it is
-wrong per scene (0.68 to 0.90) and wrong per look (it damages REALA ACE, whose
-chroma error goes from 26% to 51%), which is why the refit is preferred.
+moves every look the same way, but it still cannot be right everywhere. It is
+wrong per scene (0.68 to 0.90) and wrong per look - it damages REALA ACE, whose
+chroma error goes from 26% to 51% against 45% at 0.75.
 
-Errors below are leave-one-scene-out over the ten Fujifilm looks: the matrix is
-fitted on two scenes and measured on the third. RGB error is the pooled absolute
-RGB difference to the official look on a 0-1 scale - not a delta-E, not a
-similarity score. 'chroma error' is the worst relative deviation of a delivered
-chroma over the same chroma of the official look, over five chroma definitions.
+THE REFIT WAS REJECTED OUT OF SAMPLE. It minimises RGB error, which is dominated
+by the many near-neutral pixels, and it buys that by pulling chroma 15-20% too
+low. Measured on 1403 and 1406 - shot at 100% afterwards and never fitted on -
+delivered over official chroma came out as:
+
+  raw            1.312  1.209        the camera today, 21-31% over
+  raw + 0.75     1.026  0.930        what ships
+  refit          0.835  0.720        10-28% under
+  refit + 1.15   0.946  0.821
+
+The parameter was chosen on the three fitting scenes (1394/1397/1400), where
+0.75 gives a mean |ratio-1| of 8.17% against 28.06% raw and 13.35% for the
+refit, and then confirmed on the two held-out scenes (7.51% / 27.47% worst).
+Error there is the mean and worst relative deviation of a delivered chroma from
+the official look's, over five chroma definitions; RGB error is the pooled
+absolute RGB difference on a 0-1 scale - not a delta-E, not a similarity score.
 """
 import argparse
 import json
@@ -46,11 +58,10 @@ CAMERA_STANDARD_OVER_FLAT = 1.260        # chroma, three independent measurement
 REFERENCE_GAIN_OVER_STANDARD = 1.2757    # sat(official PROVIA) / sat(camera Standard)
 FITTED_GAIN_OVER_STANDARD = 1.8016       # the model at 100%, verified against the camera
 TARGET_GAIN_OVER_STANDARD = REFERENCE_GAIN_OVER_STANDARD
-# Solved, not computed: gain = 1.768 * factor + 0.07, so the naive chroma ratio
-# 1.2757 / 1.8016 = 0.708 overshoots. 0.680 lands the 100% gain on 1.2756 on the
-# scene it was solved on - but it is too aggressive across three scenes (chroma
-# RMS 26.4% against 23.6% for 0.75 and 23.7% for the refit).
-DEFAULT_FACTOR = 0.680
+# Solved on 1394/1397/1400, then confirmed on 1403/1406 shot at 100% afterwards:
+# 0.75 beats 0.68 on both (8.17% against 8.98% mean |ratio-1| on the fitting
+# scenes, 7.51% against 10.52% on the held-out ones).
+DEFAULT_FACTOR = 0.75
 DEFAULT_LUT_DIR = 'inputs/gfx-eterna-55-3d-lut-v110/33Grid/F-Log2'
 NEUTRAL_ROW = [1024 / 3] * 3
 Q = np.linspace(0, 1, 1024)
@@ -280,12 +291,18 @@ def main():
             method=f'scalar chroma response scaling, M\' = A + {args.factor:.3f} (M - A)',
             reason='the fit baseline is a flat reference, the camera feeds a rendered '
                    'Standard image that is more chromatic',
-            measured_on='Sony a7R II, 2026-09-14, three shots of one scene',
+            measured_on='Sony a7R II, 2026-09-14, five scenes, each with a camera '
+                        'Neutral, a camera STD and an app shot',
             camera_standard_over_flat_chroma=CAMERA_STANDARD_OVER_FLAT,
             reference_gain_over_standard_chroma=REFERENCE_GAIN_OVER_STANDARD,
             fitted_gain_over_standard_chroma=FITTED_GAIN_OVER_STANDARD,
             target_gain_over_standard_chroma=round(TARGET_GAIN_OVER_STANDARD, 4),
             chroma_factor=round(args.factor, 6),
+            chosen_on='1394 / 1397 / 1400 (mean chroma error 8.17% at 0.75, 28.06% raw)',
+            held_out='1403 / 1406, shot at 100% afterwards (7.51% mean, 27.47% worst '
+                     'at 0.75; the domain refit gives 22.22% and is not shipped)',
+            known_limitation='still wrong per look: it exaggerates the correction for '
+                             'the desaturating looks, REALA ACE above all',
             applies_to='fujifilm (the Leica family uses a constructed baseline and has '
                        'not been measured this way; Ricoh comes from upstream)',
             detail='docs/VALIDATION.md, 2026-09-14')
