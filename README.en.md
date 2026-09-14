@@ -32,7 +32,7 @@ Candidates come from the [upstream model list](https://github.com/bonyback1/sony
 
 ## Download and installation
 
-**[Download APK: 0.2.1-alpha (includes the 2026-09-14 fix)](https://github.com/Chai-Yu/sony-a5100-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.0-alpha-movie.apk)** · [Release notes](https://github.com/Chai-Yu/sony-a5100-film-studio/releases/tag/v0.2.1-alpha)
+**[Download APK: 0.2.1-alpha (includes the 2026-09-14 fix)](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.0-alpha-movie.apk)** · [Release notes](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.1-alpha)
 
 - File: `FilmStudio-0.2.0-alpha-movie.apk` (3,785,488 bytes)
 - SHA-256: `2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120`

@@ -32,7 +32,7 @@
 
 ## 下载与安装
 
-**[直接下载 APK：0.2.1-alpha（含 2026-09-14 修复）](https://github.com/Chai-Yu/sony-a5100-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.0-alpha-movie.apk)** · [发行说明](https://github.com/Chai-Yu/sony-a5100-film-studio/releases/tag/v0.2.1-alpha)
+**[直接下载 APK：0.2.1-alpha（含 2026-09-14 修复）](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.0-alpha-movie.apk)** · [发行说明](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.1-alpha)
 
 - 文件：`FilmStudio-0.2.0-alpha-movie.apk`（3,785,488 字节）
 - SHA-256：`2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120`
