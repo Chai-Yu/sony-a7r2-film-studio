@@ -120,7 +120,7 @@ adb 无法覆盖的部分（需要人眼看相机屏幕）：
 python tools/build_apk.py --input inputs/base.apk --apktool inputs/apktool.jar \
     --upstream-hook inputs/upstream/src/smali/RicohHook.smali \
     --work build-local/decoded-check --movie
-java -jar inputs/apktool.jar d -r output/FilmStudio-0.2.0-alpha-movie.apk -o build-local/verify-check
+java -jar inputs/apktool.jar d -r output/FilmStudio-0.2.1-alpha-movie.apk -o build-local/verify-check
 python tools/check_combined.py --decoded build-local/verify-check --input-apk inputs/base.apk \
     --upstream-hook inputs/upstream/src/smali/RicohHook.smali --native-fallback auto
 ```

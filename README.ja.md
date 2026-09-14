@@ -4,7 +4,7 @@
 
 **Sony a5100 / ILCE-5100 と a7R II / ILCE-7RM2** 向けの非公式フィルム調実験ツールです。[bonyback1 の Ricoh MOD](https://github.com/bonyback1/sony-pmca-ricoh-mod) のハードウェア色処理を参考にし、[富士フイルムが公開する GFX ETERNA 55 LUT](https://www.fujifilm-x.com/global/support/download/lut/) を色彩研究の参照資料として、写真と実験的な動画撮影に対応します。
 
-**バージョン：0.2.1-alpha（リリースタグ `v0.2.1-alpha`／カメラ内表示は 0.2a のまま）／アプリ名：胶片工坊。** 説明書は3言語対応ですが、カメラのアプリ画面は現在主に中国語です。
+**バージョン：0.2.1-alpha（リリースタグ `v0.2.1-alpha`／カメラ内表示も 0.2.1）／アプリ名：胶片工坊。** 説明書は3言語対応ですが、カメラのアプリ画面は現在主に中国語です。
 
 **アプリ名を Film Studio（胶片工坊）に変更し、富士参照10種と上流のリコー／ストリート風5種、合計15種類を統合しました。** メニューは「富士」「理光」の接頭辞で区別します。パッケージと署名証明書は維持し、旧「富士风格」へ上書き更新できます。統合版は a5100 で導入・起動し、一部プリセットの適用成功ログを確認しました。本版の写真／動画保存は未検証です。戻すための [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha)（上流リポジトリ）も引き続き公開しています。
 
@@ -32,10 +32,10 @@
 
 ## ダウンロードとインストール
 
-**[APK を直接ダウンロード：0.2.1-alpha（2026-09-14 の修正を含む）](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.0-alpha-movie.apk)** · [リリース説明](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.1-alpha)
+**[APK を直接ダウンロード：0.2.1-alpha（2026-09-14 の修正を含む）](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.1-alpha-movie.apk)** · [リリース説明](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.1-alpha)
 
-- ファイル：`FilmStudio-0.2.0-alpha-movie.apk`（3,785,488 バイト）
-- SHA-256：`2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120`
+- ファイル：`FilmStudio-0.2.1-alpha-movie.apk`（3,785,492 バイト）
+- SHA-256：`6a43ccaf73f181aa167e262d587b03c0ebc471df7d6b4fc4d05ae9d44cc6bf0f`
 
 [日本語の導入手順](docs/INSTALL.ja.md)に沿って導入してください。自分でビルドする必要はありません。**入れて使うだけの人は「方法 A」**：カメラの USB モードを MTP にし、pmca-gui で APK を選んで導入します。開発者モードもコマンド操作も不要です。**Code → Download ZIP はソースであり、インストーラーではありません。**
 
@@ -47,7 +47,7 @@
 
 ```sh
 adb connect CAMERA_IP:5555
-adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.0-alpha-movie.apk
+adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.1-alpha-movie.apk
 ```
 
 **IP アドレスとプライバシー：** `CAMERA_IP` は仮の表記です。Tweak → Developer で自分のカメラに現在表示されている IP アドレスに置き換えてください。仮の表記をそのまま入力したり、他人のアドレスをコピーしたりしないでください。末尾のポート `:5555` はそのままにします。公開手順には仮の表記を使い、スクリーンショットやログを共有する際は実際の IP アドレスを隠すか削除してください。

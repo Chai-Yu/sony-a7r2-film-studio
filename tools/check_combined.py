@@ -8,7 +8,8 @@ from pathlib import Path
 import re
 import struct
 import xml.etree.ElementTree as ET
-from build_apk import read_icon_map
+from axml_strings import strings as manifest_strings
+from build_apk import ANDROID_VERSION, ORIGINAL_ANDROID_VERSION, read_icon_map
 from film_profiles import read_array, ricoh_profiles
 from filter_strength import DEFAULT_STRENGTH, STRENGTHS, blend_profile
 
@@ -309,6 +310,16 @@ def main():
     assert '胶片工坊'.encode() in resources
     for old in ['理光相机', '富士风格']:
         assert old.encode() not in resources and old.encode('utf-16-le') not in resources
+    # apktool decodes with -r, so AndroidManifest.xml stays binary here and the
+    # announced versionName has to be read out of its string pool. The base APK
+    # ships a different version string, and the replacement is longer, so a
+    # regression to a byte substitution would corrupt the manifest instead of
+    # failing loudly; this is the check that notices.
+    announced = manifest_strings(args.decoded/'AndroidManifest.xml')
+    assert ANDROID_VERSION in announced, \
+        f'manifest does not announce version {ANDROID_VERSION}'
+    assert ORIGINAL_ANDROID_VERSION not in announced, \
+        'manifest still carries the base APK version string'
     previous_count = None
     if args.previous_decoded:
         previous = fields((args.previous_decoded/HOOK_PATH).read_text(encoding='utf-8'))
@@ -328,6 +339,7 @@ def main():
         native_style_fallback=('runtime capability gate' if auto_gate else 'forced'),
         extended_gamma_table=('capability-gated' if args.extended_gamma == 'auto' else 'forced'),
         native_effect_ids_checked_against_input=bool(effect_ids),
+        manifest_version=ANDROID_VERSION,
         live_filter_chooser=(args.live_menu == 'on'),
         menu_scrim_alpha=args.menu_scrim,
         hardware_verified=False,

@@ -17,6 +17,7 @@ import struct
 import subprocess
 import xml.etree.ElementTree as ET
 import zipfile
+from axml_strings import replace_string as axml_replace_string
 from sign_apk import sign_apk, ensure_pem
 from movie_menu import LABELS as MOVIE_LABELS, patch_movie_menu
 from filter_strength import STRENGTHS, LABELS as STRENGTH_LABELS, blend_profile, patch_strength_menu, strength_methods
@@ -27,8 +28,13 @@ NEW = 'com.yuki.imaging.app.pictureeffectplus'
 HOOK = 'L'+OLD.replace('.','/')+'/shooting/camera/RicohHook;'
 CTRL = 'L'+OLD.replace('.','/')+'/shooting/camera/PictureEffectPlusController;'
 EXPECTED = '80cb4a541f5f3dd49e8f53ffb1905048097fec17209fc9cb595a00681e65e8ea'
-VERSION = '0.2.0-alpha'
-ANDROID_VERSION = '0.2a'
+VERSION = '0.2.1-alpha'
+# versionName carried by the Sony base APK. It is replaced with ANDROID_VERSION
+# below, and the two differ in length: a byte substitution would silently
+# invalidate every string offset after it, so the manifest goes through
+# axml_strings instead.
+ORIGINAL_ANDROID_VERSION = '1.31'
+ANDROID_VERSION = '0.2.1'
 APP_NAME = '胶片工坊'
 # Alpha of the optional dark background behind the filter chooser's list panel.
 # Default 0 = fully transparent, which is what the live view needs: the text
@@ -1122,8 +1128,7 @@ def rename_package(base):
             if path.suffix=='.smali':
                 data=data.replace(b'\\u7406\\u5149\\u76f8\\u673a',APP_NAME.encode('unicode_escape'))
             if path.name=='AndroidManifest.xml' and path.parent==base:
-                for encoding in ('utf-8','utf-16le'):
-                    data=data.replace('1.31'.encode(encoding),ANDROID_VERSION.encode(encoding))
+                data=axml_replace_string(data,ORIGINAL_ANDROID_VERSION,ANDROID_VERSION)
             path.write_bytes(data)
     source=base/'smali'/OLD.replace('.','/')
     dest=base/'smali'/NEW.replace('.','/')

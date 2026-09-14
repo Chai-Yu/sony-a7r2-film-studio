@@ -75,16 +75,16 @@ adb -s CAMERA_IP:5555 shell dumpsys package com.yuki.imaging.app.pictureeffectpl
 
 ```sh
 # 1) 反编译回来，核对图标映射与数组
-java -jar inputs/apktool.jar d -r output/FilmStudio-0.2.0-alpha-movie.apk -o build-local/verify
+java -jar inputs/apktool.jar d -r output/FilmStudio-0.2.1-alpha-movie.apk -o build-local/verify
 python tools/check_combined.py --decoded build-local/verify --input-apk inputs/base.apk \
     --upstream-hook inputs/upstream/src/smali/RicohHook.smali
 
 # 2) 该 ID 到底是什么（需要 Android build-tools 的 aapt2；仅本地检查）
-aapt2 dump resources output/FilmStudio-0.2.0-alpha-movie.apk | findstr /i "drawable"
-aapt2 dump resources output/FilmStudio-0.2.0-alpha-movie.apk | findstr /i "0x7f020054"
+aapt2 dump resources output/FilmStudio-0.2.1-alpha-movie.apk | findstr /i "drawable"
+aapt2 dump resources output/FilmStudio-0.2.1-alpha-movie.apk | findstr /i "0x7f020054"
 
 # 3) 对齐与压缩（Android 4.1 机型建议核对）
-zipalign -c -v 4 output/FilmStudio-0.2.0-alpha-movie.apk
+zipalign -c -v 4 output/FilmStudio-0.2.1-alpha-movie.apk
 ```
 
 用 `aapt2` 找到该 ID 的**资源名与密度配置**：若只有低密度版本，较新机型上可能被拉伸成异常外观。
@@ -121,7 +121,7 @@ python tools/build_apk.py --input inputs/base.apk --apktool inputs/apktool.jar \
   --work build-local/decoded-debug --movie --debug
 ```
 
-产出 `output/FilmStudio-0.2.0-alpha-movie-debug.apk`：行为与正式版完全一致，只多打日志。装到相机后打开应用、按中心键进一次滤镜菜单、逐项切换，然后：
+产出 `output/FilmStudio-0.2.1-alpha-movie-debug.apk`：行为与正式版完全一致，只多打日志。装到相机后打开应用、按中心键进一次滤镜菜单、逐项切换，然后：
 
 ```sh
 adb -s CAMERA_IP:5555 logcat -c

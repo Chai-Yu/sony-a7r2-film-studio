@@ -4,7 +4,7 @@
 
 An unofficial film-look experiment for the **Sony a5100 / ILCE-5100 and a7R II / ILCE-7RM2**. It references the hardware color-processing approach in [bonyback1's Ricoh mod](https://github.com/bonyback1/sony-pmca-ricoh-mod) and uses [Fujifilm's publicly available GFX ETERNA 55 LUTs](https://www.fujifilm-x.com/global/support/download/lut/) as color-research references for photographs and experimental video.
 
-**Version: 0.2.1-alpha (release tag `v0.2.1-alpha`; the on-camera version string is still 0.2a); app name: 胶片工坊.** Documentation is available in three languages; the camera UI is currently primarily Chinese.
+**Version: 0.2.1-alpha (release tag `v0.2.1-alpha`; the on-camera version string is 0.2.1 as well); app name: 胶片工坊.** Documentation is available in three languages; the camera UI is currently primarily Chinese.
 
 **Renamed to Film Studio (胶片工坊), combining ten Fujifilm-reference and five upstream Ricoh/street-style presets, fifteen in total.** Menu labels use 富士 / 理光 prefixes. The package and signing certificate are retained for an in-place update from 富士风格. The combined build installed and launched on the a5100, with successful parameter-application logs for selected presets; saved photographs/video from this version remain unverified. The earlier [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha) (upstream repository) remains available for rollback.
 
@@ -32,10 +32,10 @@ Candidates come from the [upstream model list](https://github.com/bonyback1/sony
 
 ## Download and installation
 
-**[Download APK: 0.2.1-alpha (includes the 2026-09-14 fix)](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.0-alpha-movie.apk)** · [Release notes](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.1-alpha)
+**[Download APK: 0.2.1-alpha (includes the 2026-09-14 fix)](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.1-alpha-movie.apk)** · [Release notes](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.1-alpha)
 
-- File: `FilmStudio-0.2.0-alpha-movie.apk` (3,785,488 bytes)
-- SHA-256: `2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120`
+- File: `FilmStudio-0.2.1-alpha-movie.apk` (3,785,492 bytes)
+- SHA-256: `6a43ccaf73f181aa167e262d587b03c0ebc471df7d6b4fc4d05ae9d44cc6bf0f`
 
 Then follow the [English installation guide](docs/INSTALL.en.md) to install it; no local compilation is required. **If you only want to install and shoot, take "Method A"**: set the camera's USB mode to MTP and install the APK with pmca-gui — no developer mode and no command line. **Code → Download ZIP contains source, not the installer.**
 
@@ -47,7 +47,7 @@ With your own lawfully built APK and Wi-Fi ADB already enabled:
 
 ```sh
 adb connect CAMERA_IP:5555
-adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.0-alpha-movie.apk
+adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.1-alpha-movie.apk
 ```
 
 **IP address and privacy:** `CAMERA_IP` is a placeholder. Replace it with the current IP shown on your own camera in Tweak → Developer; do not type the placeholder literally or copy someone else's address. Keep the `:5555` port. Public instructions use a placeholder; hide or remove actual IP addresses before sharing screenshots or logs.

@@ -2,15 +2,15 @@
 
 [Project](../README.en.md) · [中文](INSTALL.zh-CN.md) · [日本語](INSTALL.ja.md)
 
-For **0.2.1-alpha / on-camera 0.2a**. Tested devices are an a5100 (firmware 1.10, Android 2.3.7) and an a7R II (Android 4.1.2). Building on macOS, installing over Wi-Fi ADB (Method B) and installing with pmca-gui over USB/MTP (Method A) have all been exercised on hardware. The equivalent Windows/Linux command-line builds have not had the same end-to-end hardware test.
+For **0.2.1-alpha / on-camera 0.2.1**. Tested devices are an a5100 (firmware 1.10, Android 2.3.7) and an a7R II (Android 4.1.2). Building on macOS, installing over Wi-Fi ADB (Method B) and installing with pmca-gui over USB/MTP (Method A) have all been exercised on hardware. The equivalent Windows/Linux command-line builds have not had the same end-to-end hardware test.
 
 **From 0.2.0-alpha the app is renamed to 胶片工坊 / Film Studio while retaining the package and certificate for `install -r` updates. Added Ricoh styles preserve upstream parameters at 100%; all fifteen styles share the four strengths and still/movie menus. The combined build installed and launched on the a5100 with selected parameter-application logs; saved media from this version remain unverified, and older evidence does not validate every new combination.**
 
 ## 0. Install the released APK directly
 
 1. Read [camera compatibility](../README.en.md#compatibility) for your model and intended features.
-2. Download **[FilmStudio-0.2.0-alpha-movie.apk](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.0-alpha-movie.apk)** (3,785,488 bytes) from [Releases → Assets](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.1-alpha). The Source code ZIP is not an installer.
-3. Check the SHA-256 with `shasum -a 256` on macOS, `sha256sum` on Linux, or `Get-FileHash -Algorithm SHA256` in PowerShell. It must be `2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120`. A checksum verifies file identity, not permission or compatibility.
+2. Download **[FilmStudio-0.2.1-alpha-movie.apk](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.1-alpha-movie.apk)** (3,785,492 bytes) from [Releases → Assets](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.1-alpha). The Source code ZIP is not an installer.
+3. Check the SHA-256 with `shasum -a 256` on macOS, `sha256sum` on Linux, or `Get-FileHash -Algorithm SHA256` in PowerShell. It must be `6a43ccaf73f181aa167e262d587b03c0ebc471df7d6b4fc4d05ae9d44cc6bf0f`. A checksum verifies file identity, not permission or compatibility.
 4. Choose an installation route: **Method A** is a graphical tool that needs no developer mode and suits people who only want to install and use the app; **Method B** is the command line and requires Wi-Fi ADB from section 4.
 
 **Installing a released APK requires no Python, Java, Apktool or private signing key.** Sections 1–3 are for people who want to build it themselves.
@@ -22,7 +22,7 @@ For **0.2.1-alpha / on-camera 0.2a**. Tested devices are an a5100 (firmware 1.10
 1. Download a prebuilt pmca-gui from [Sony-PMCA-RE Releases](https://github.com/ma1co/Sony-PMCA-RE/releases/latest) (Windows and macOS binaries are provided; on Linux use Python 3 + libusb and run `./pmca-gui.py` from a clone).
 2. Connect the camera to the computer with a USB data cable and set the camera's USB connection mode to **MTP**.
 3. Open pmca-gui and switch to the **`Install app`** tab.
-4. Select the **`Select an apk`** radio button (not `Select an app from the app list`), click **`Open apk...`** and choose the `FilmStudio-0.2.0-alpha-movie.apk` downloaded in step 2.
+4. Select the **`Select an apk`** radio button (not `Select an app from the app list`), click **`Open apk...`** and choose the `FilmStudio-0.2.1-alpha-movie.apk` downloaded in step 2.
 5. Click **`Install selected app`** and wait for it to finish. Then open 胶片工坊 from the camera's app list as described in section 6.
 
 **Verification status:** with the camera's USB mode set to MTP, a local APK installs straight from the computer — **no OpenMemories: Tweak needed first, and no command line**. This project has exercised that route on hardware, and it is independent of the Wi-Fi ADB route. If you already installed Tweak through pmca-gui in section 4, the same window installs this app by the steps above.
@@ -42,7 +42,7 @@ First enable on-camera ADB with OpenMemories: Tweak as described in section 4. I
 
 ```sh
 adb connect CAMERA_IP:5555
-adb -s CAMERA_IP:5555 install -r FilmStudio-0.2.0-alpha-movie.apk
+adb -s CAMERA_IP:5555 install -r FilmStudio-0.2.1-alpha-movie.apk
 ```
 
 Replace `CAMERA_IP` with the camera's current address. Wait for `Success`, then open「胶片工坊」from the camera's app list. The `output/` path in section 5 refers to local build output; use your actual download path when installing a release.
@@ -108,7 +108,7 @@ java -jar inputs/apktool.jar --version
 
 ```sh
 python tools/fit_luts.py inputs/luts/gfx-eterna-55-3d-lut-v110/33Grid/F-Log2 .
-python tools/build_apk.py --input inputs/base.apk --apktool inputs/apktool.jar --upstream-hook inputs/upstream/src/smali/RicohHook.smali --work build-local/decoded-020 --movie
+python tools/build_apk.py --input inputs/base.apk --apktool inputs/apktool.jar --upstream-hook inputs/upstream/src/smali/RicohHook.smali --work build-local/decoded-021 --movie
 python tools/check_strength.py
 python tools/check_build.py
 ```
@@ -116,7 +116,7 @@ python tools/check_build.py
 The first command generates private local `profiles/`, preview LUTs in `output/`, and fitting metrics in `validation/`. The remaining commands check strengths, build/sign the APK, and verify the result:
 
 ```text
-output/FilmStudio-0.2.0-alpha-movie.apk
+output/FilmStudio-0.2.1-alpha-movie.apk
 ```
 
 The work directory must be absent or empty. Use a new work directory for another build. `--movie` enables the still/video features covered here; omitting it produces the still-only variant.
@@ -142,7 +142,7 @@ Replace every `CAMERA_IP` with the address currently shown by your camera.
 ```sh
 adb connect CAMERA_IP:5555
 adb devices
-adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.0-alpha-movie.apk
+adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.1-alpha-movie.apk
 ```
 
 The target should appear as `device`; installation should finish with `Success`. Open **胶片工坊** from the camera's application list. Its name and most menu labels are Chinese.

@@ -41,11 +41,17 @@ English: The clip demonstrates that monochrome processing reached saved video, n
 
 ## 2026-09-14 修订 / 2026-09-14 revision / 2026-09-14 改訂
 
-`FilmStudio-0.2.0-alpha-movie.apk` (release tag `v0.2.1-alpha`) — SHA-256:
+`FilmStudio-0.2.1-alpha-movie.apk` (release tag `v0.2.1-alpha`) — SHA-256:
 
 ```text
-2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120
+6a43ccaf73f181aa167e262d587b03c0ebc471df7d6b4fc4d05ae9d44cc6bf0f
 ```
+
+中文：**该资源于 2026-09-14 重新发行过一次。** 首个上传的文件名为 `FilmStudio-0.2.0-alpha-movie.apk`、相机内版本名 `0.2a`，与标签 `v0.2.1-alpha` 不一致；重建版只把 `versionName` 改成 `0.2.1` 并相应改名。除 `AndroidManifest.xml` 与三个签名文件外，**其余 683 个包内条目与已发布版逐字节相同**（逐条目 CRC 比对），签名证书不变，可继续 `install -r` 覆盖。旧文件的校验值 `2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120` 已从发行页撤下（该文件已被下载 3 次）。波形清单只多出一个字符串：索引 16 由 `0.2a` 变为 `0.2.1`。
+
+English: **This asset was re-issued on 2026-09-14.** The first upload was named `FilmStudio-0.2.0-alpha-movie.apk` and announced `0.2a` on the camera, which did not match tag `v0.2.1-alpha`. The rebuild changes only `versionName` to `0.2.1` and the file name accordingly. Apart from `AndroidManifest.xml` and the three signature files, **the other 683 entries are byte-identical to the published build** (per-entry CRC comparison), the signing certificate is unchanged, and `install -r` still updates in place. The old file's checksum `2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120` has been withdrawn from the release page (that file had been downloaded 3 times). Only one string differs in the manifest: index 16 goes from `0.2a` to `0.2.1`.
+
+日本語：**このアセットは 2026-09-14 に再発行しました。** 最初のアップロードは `FilmStudio-0.2.0-alpha-movie.apk` という名前でカメラ内表示も `0.2a` のままで、タグ `v0.2.1-alpha` と一致していませんでした。再ビルドは `versionName` を `0.2.1` に変え、それに合わせてファイル名を揃えただけです。`AndroidManifest.xml` と署名3ファイルを除く**他の 683 項目は公開済みビルドとバイト単位で同一**（項目ごとの CRC 比較）で、署名証明書も変わらず `install -r` で上書きできます。旧ファイルのチェックサム `2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120` は公開ページから取り下げました（当該ファイルは 3 回ダウンロードされていました）。マニフェストで異なる文字列は索引 16 の `0.2a` → `0.2.1` のみです。
 
 中文：**本条含实机验证记录（a7R II / ILCE-7RM2，Android 4.1.2 / API 16）。** 修了一个外表像整机死机、
 只能关机的缺陷：`PictureEffectPlusOptionMenuLayout.pushedMenuKey()` 在**没有菜单历史**时（用相机确认键从拍摄界面
@@ -87,11 +93,11 @@ artifact by sha256. Static checks (684 signed entries, menu and lookup maps, str
 静的検証（684 署名エントリ、メニューと参照マップ、強度端点）は `check_strength.py` / `check_build.py` /
 `check_combined.py` で引き続き合格しています。
 
-中文：本版把应用名改为「胶片工坊」，合并 10 个富士参考风格与 5 个上游理光／街头风格。对最终签名 APK 重新反编译后，核对了全部 120 组数组（15 风格 × 4 强度 × 矩阵／Gamma）、菜单与查询映射。与 0.1.3 比较，原有 80 组富士数组逐项一致；新增理光 100% 参数与固定版本上游一致。曲线边界、强度端点、684 个签名条目、同一签名证书及包内许可检查通过。相机内版本名为 `0.2a`，包名不变。**实机覆盖安装显示 Success，启动成功，已安装版本读回为 0.2a。运行日志观察到原有富士风格及理光正片、负片、高反差黑白、森山风的参数应用成功；正负逆冲仅有静态检查。尚未验证本版照片／录像保存、全部强度或录像待机下的全部切换，也未做新色彩校准。**
+中文：本版把应用名改为「胶片工坊」，合并 10 个富士参考风格与 5 个上游理光／街头风格。对最终签名 APK 重新反编译后，核对了全部 120 组数组（15 风格 × 4 强度 × 矩阵／Gamma）、菜单与查询映射。与 0.1.3 比较，原有 80 组富士数组逐项一致；新增理光 100% 参数与固定版本上游一致。曲线边界、强度端点、684 个签名条目、同一签名证书及包内许可检查通过。相机内版本名为 `0.2a`（重新发行的资源只把该字符串改为 `0.2.1`），包名不变。**实机覆盖安装显示 Success，启动成功，已安装版本读回为 0.2a。运行日志观察到原有富士风格及理光正片、负片、高反差黑白、森山风的参数应用成功；正负逆冲仅有静态检查。尚未验证本版照片／录像保存、全部强度或录像待机下的全部切换，也未做新色彩校准。**
 
-English: The app is renamed 胶片工坊 / Film Studio and combines ten Fujifilm-reference with five upstream Ricoh/street presets. Round-trip decompilation of the final signed APK verified all 120 arrays (15 looks × 4 strengths × matrix/gamma), menu IDs and lookups. All 80 existing Fujifilm arrays match 0.1.3 exactly; Ricoh at 100% matches the pinned upstream. Curve bounds, strength endpoints, 684 signed entries, the retained certificate and bundled legal files passed. The on-camera version is `0.2a`; the package is unchanged. **The in-place camera update returned Success, the app launched, and the installed version read back as 0.2a. Runtime logs showed successful application of existing Fujifilm profiles and Ricoh Positive, Negative, High Contrast B&W and Moriyama; Cross Process has only static checks. Saved photographs/video, all strengths and all movie-standby transitions remain unverified for this version. No new color calibration was performed.**
+English: The app is renamed 胶片工坊 / Film Studio and combines ten Fujifilm-reference with five upstream Ricoh/street presets. Round-trip decompilation of the final signed APK verified all 120 arrays (15 looks × 4 strengths × matrix/gamma), menu IDs and lookups. All 80 existing Fujifilm arrays match 0.1.3 exactly; Ricoh at 100% matches the pinned upstream. Curve bounds, strength endpoints, 684 signed entries, the retained certificate and bundled legal files passed. The on-camera version is `0.2a` (the re-issued asset changes only that string, to `0.2.1`); the package is unchanged. **The in-place camera update returned Success, the app launched, and the installed version read back as 0.2a. Runtime logs showed successful application of existing Fujifilm profiles and Ricoh Positive, Negative, High Contrast B&W and Moriyama; Cross Process has only static checks. Saved photographs/video, all strengths and all movie-standby transitions remain unverified for this version. No new color calibration was performed.**
 
-日本語：アプリ名を「胶片工坊 / Film Studio」に変更し、富士参照10種と上流リコー／ストリート風5種を統合。最終署名 APK を再展開し、120配列（15種類 × 4強度 × 行列／Gamma）、メニューと参照処理を確認しました。既存の富士80配列は0.1.3と完全一致し、リコー100%も指定版の上流と一致します。カーブ範囲、強度端点、684署名項目、継続する署名証明書、同梱ライセンスを確認。カメラ内表示は `0.2a`、パッケージ名は維持しています。**実機の上書き更新は Success、起動成功、インストール済み版は0.2aと確認しました。既存の富士参照と、リコーのポジ・ネガ・高反差白黒・森山風で適用成功ログを確認。クロスプロセスは静的検証のみです。本版の写真／動画保存、全強度、動画待機中の全切り替えは未検証で、新たな色彩校正も行っていません。**
+日本語：アプリ名を「胶片工坊 / Film Studio」に変更し、富士参照10種と上流リコー／ストリート風5種を統合。最終署名 APK を再展開し、120配列（15種類 × 4強度 × 行列／Gamma）、メニューと参照処理を確認しました。既存の富士80配列は0.1.3と完全一致し、リコー100%も指定版の上流と一致します。カーブ範囲、強度端点、684署名項目、継続する署名証明書、同梱ライセンスを確認。カメラ内表示は `0.2a`（再発行版はこの文字列のみ `0.2.1` に変更）、パッケージ名は維持しています。**実機の上書き更新は Success、起動成功、インストール済み版は0.2aと確認しました。既存の富士参照と、リコーのポジ・ネガ・高反差白黒・森山風で適用成功ログを確認。クロスプロセスは静的検証のみです。本版の写真／動画保存、全強度、動画待機中の全切り替えは未検証で、新たな色彩校正も行っていません。**
 
 ## 0.1.3-alpha 发布 APK / Previous release / 旧公開 APK
 
@@ -146,8 +152,8 @@ English: Both installation routes were exercised on hardware. **Method A (pmca-g
 Optional compiled-payload regression check after decompiling the signed APK:
 
 ```sh
-java -jar inputs/apktool.jar d -r output/FilmStudio-0.2.0-alpha-movie.apk -o build-local/verify-020
-python tools/check_combined.py --decoded build-local/verify-020 --input-apk inputs/base.apk \
+java -jar inputs/apktool.jar d -r output/FilmStudio-0.2.1-alpha-movie.apk -o build-local/verify-021
+python tools/check_combined.py --decoded build-local/verify-021 --input-apk inputs/base.apk \
     --upstream-hook inputs/upstream/src/smali/RicohHook.smali
 ```
 
