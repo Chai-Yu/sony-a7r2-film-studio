@@ -2,23 +2,26 @@
 
 **中文** · [English](README.en.md) · [日本語](README.ja.md)
 
-面向 **Sony a5100 / ILCE-5100** 的非官方胶片风格实验工具。参考 [bonyback1 的 Ricoh 模组](https://github.com/bonyback1/sony-pmca-ricoh-mod) 的硬件色彩处理方法，并以 [富士公开的 GFX ETERNA 55 LUT](https://www.fujifilm-x.com/global/support/download/lut/) 为色彩研究参考，提供照片与实验性录像效果。
+面向 **Sony a5100 / ILCE-5100 与 a7R II / ILCE-7RM2** 的非官方胶片风格实验工具。参考 [bonyback1 的 Ricoh 模组](https://github.com/bonyback1/sony-pmca-ricoh-mod) 的硬件色彩处理方法，并以 [富士公开的 GFX ETERNA 55 LUT](https://www.fujifilm-x.com/global/support/download/lut/) 为色彩研究参考，提供照片与实验性录像效果。
 
 **当前版本：0.2.0-alpha；相机内版本名：0.2a；应用名称：胶片工坊。** 文档提供三种语言，当前相机应用界面主要为中文。
 
-**本版更名为「胶片工坊」，合并 10 个富士参考风格与 5 个上游理光／街头风格，共 15 个。** 相机菜单以「富士」「理光」前缀区分。包名与签名沿用旧版「富士风格」，可覆盖更新；新合并版已在 a5100 上安装、启动，并观察到部分滤镜参数应用成功；本版照片／录像保存尚待验证。原版 [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha) 仍保留供回退。
+**本版更名为「胶片工坊」，合并 10 个富士参考风格与 5 个上游理光／街头风格，共 15 个。** 相机菜单以「富士」「理光」前缀区分。包名与签名沿用旧版「富士风格」，可覆盖更新；新合并版已在 a5100 上安装、启动，并观察到部分滤镜参数应用成功；本版照片／录像保存尚待验证。更早的 [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha)（上游仓库）仍保留供回退。
+
+**当前下载版另含 2026-09-14 的修复**：从确认键打开的滤镜菜单再按 MENU 会卡死 —— 界面已关闭、菜单状态却留在状态栈上，之后任何按键都不再响应，只能关机恢复。现已修正，并在 a7R II 上连续数十次往返验证。滤镜选择界面保持完全透明，实时预览不被罩层遮挡。
 
 <a id="compatibility"></a>
 
 ## 机型兼容性
 
-**目前只有 a5100 经过本项目实机验证，不是所有索尼相机都能使用。**
+**目前只有 a5100 与 a7R II 经过本项目实机验证，不是所有索尼相机都能使用。**
 
 | 机型 | 本项目状态 |
 | --- | --- |
 | **a5100 / ILCE-5100，固件 1.10** | 已实测；具体功能和版本范围见下方验证记录 |
 | a6000、a6300、a6500 | 上游列出的 PMCA 候选机型；本版本未实测 |
-| a7、a7R、a7S、a7 II、a7R II、a7S II | 上游列出的 PMCA 候选机型；本版本未实测 |
+| **a7R II / ILCE-7RM2，Android 4.1.2 / API 16** | 已实测安装、启动，以及「确认键打开滤镜菜单 → 按 MENU 返回拍摄」的往返操作（2026-09-14）。**该机型报告不支持 RGB 矩阵与扩展 Gamma 表**，成像自动降级为机身 Creative Style + 原生 Picture Effect 的近似（见[实时取景说明](docs/LIVE-PREVIEW.zh-CN.md)），**不是本项目拟合的富士／理光参数**；照片／录像保存与色彩未在该机型验证 |
+| a7、a7R、a7S、a7 II、a7S II | 上游列出的 PMCA 候选机型；本版本未实测 |
 | RX100 III／IV／V、RX10 II／III、RX1R II、HX90 | 上游列出的 PMCA 候选机型；本版本未实测 |
 | a6400、a6700、a7 III、a7C | 不支持本应用依赖的 PlayMemories Camera Apps 安装方式 |
 | 其他型号或固件 | 尚未评估，不能从相近型号推定兼容 |
@@ -29,11 +32,14 @@
 
 ## 下载与安装
 
-**[直接下载 APK：0.2.0-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.2.0-alpha/FilmStudio-0.2.0-alpha-movie.apk)** · [发行说明与校验文件](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.2.0-alpha)
+**[直接下载 APK：0.2.0-alpha（含 2026-09-14 修复）](https://github.com/Chai-Yu/sony-a5100-film-studio/releases/download/apk/FilmStudio-0.2.0-alpha-movie.apk)** · [发行说明](https://github.com/Chai-Yu/sony-a5100-film-studio/releases/tag/apk)
 
-下载 `FilmStudio-0.2.0-alpha-movie.apk` 后，按照[中文安装教程](docs/INSTALL.zh-CN.md)连接相机并安装，无需自己编译。**Code → Download ZIP 是源码，不是安装包。**
+- 文件：`FilmStudio-0.2.0-alpha-movie.apk`（3,785,488 字节）
+- SHA-256：`2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120`
 
-本发行版为非官方实验版本，仅有上文所列的 a5100 实机验证。APK 包含 Sony 基础应用内容和由富士公开 LUT 拟合出的参数；未确认针对这些第三方材料改编、再分发的独立授权。发布不表示获得 Sony 或 FUJIFILM 许可，也不保证免责；[版权与许可范围](LICENSING.md)单独说明各部分的权利。官方原始 LUT 和签名私钥不提供下载。
+下载后按照[中文安装教程](docs/INSTALL.zh-CN.md)连接相机并安装，无需自己编译。**Code → Download ZIP 是源码，不是安装包。**
+
+本发行版为非官方实验版本，仅有上文所列的 a5100 与 a7R II 实机验证。APK 包含 Sony 基础应用内容和由富士公开 LUT 拟合出的参数；未确认针对这些第三方材料改编、再分发的独立授权。发布不表示获得 Sony 或 FUJIFILM 许可，也不保证免责；[版权与许可范围](LICENSING.md)单独说明各部分的权利。官方原始 LUT 和签名私钥不提供下载。
 
 → **[中文完整安装教程](docs/INSTALL.zh-CN.md)**：准备输入 → 本地构建 → 首次启用连接 → Wi-Fi ADB 安装 → 相机操作 → 更新与故障排查。
 
@@ -67,11 +73,15 @@ adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.0-alpha-movie.apk
 
 ## 已验证范围与限制
 
-仅在一台 **a5100、固件 1.10、Android 2.3.7 / API 10** 上测试，不承诺其他机型兼容。
+实机测试在两类机身上进行，均不承诺其他机型兼容：
+
+- **a5100 / ILCE-5100，固件 1.10，Android 2.3.7 / API 10**：机身支持 3×3 RGB 矩阵与扩展 Gamma 表，使用本项目拟合的硬件色参数。
+- **a7R II / ILCE-7RM2，Android 4.1.2 / API 16**：机身报告不支持上述两项，成像自动降级为 Creative Style + 原生 Picture Effect 近似（见[实时取景说明](docs/LIVE-PREVIEW.zh-CN.md)），不使用本项目拟合的参数。
 
 - 0.1.1：10 个风格菜单成功切换；PROVIA 彩色与 ACROS 黑白 JPEG 正常保存；ACROS XAVC S 1080p59.94 视频成功保存并完整解码。
 - 0.1.2：录像格式和画质菜单获得用户可用性确认；尚未逐一分析所有格式生成的文件。
 - 0.1.3：安装、启动及默认滤镜应用已验证，中心键与强度操作得到用户总体确认；未逐一检验每种风格、强度、录像格式的最终文件。
+- 2026-09-14（a7R II）：安装、启动，以及「确认键打开滤镜菜单 → 按 MENU 返回拍摄界面」连续数十次往返全部正常。该路径此前会卡死应用状态机（界面已关闭，菜单状态却未弹出），之后任何按键都不再响应、只能关机恢复，现已修复。a5100 未重测这项修复；两机的照片／录像保存与色彩均未在本版验证。
 
 **应用内回放目前只显示照片。** 查看录像请退出应用，进入原机回放，并选择与文件对应的 XAVC S / AVCHD / MP4 观看模式。详情见 [验证说明](docs/VALIDATION.md)。
 

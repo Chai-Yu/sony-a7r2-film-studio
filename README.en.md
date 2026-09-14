@@ -2,23 +2,26 @@
 
 [中文](README.md) · **English** · [日本語](README.ja.md)
 
-An unofficial film-look experiment for the **Sony a5100 / ILCE-5100**. It references the hardware color-processing approach in [bonyback1's Ricoh mod](https://github.com/bonyback1/sony-pmca-ricoh-mod) and uses [Fujifilm's publicly available GFX ETERNA 55 LUTs](https://www.fujifilm-x.com/global/support/download/lut/) as color-research references for photographs and experimental video.
+An unofficial film-look experiment for the **Sony a5100 / ILCE-5100 and a7R II / ILCE-7RM2**. It references the hardware color-processing approach in [bonyback1's Ricoh mod](https://github.com/bonyback1/sony-pmca-ricoh-mod) and uses [Fujifilm's publicly available GFX ETERNA 55 LUTs](https://www.fujifilm-x.com/global/support/download/lut/) as color-research references for photographs and experimental video.
 
 **Version: 0.2.0-alpha; on-camera version: 0.2a; app name: 胶片工坊.** Documentation is available in three languages; the camera UI is currently primarily Chinese.
 
-**Renamed to Film Studio (胶片工坊), combining ten Fujifilm-reference and five upstream Ricoh/street-style presets, fifteen in total.** Menu labels use 富士 / 理光 prefixes. The package and signing certificate are retained for an in-place update from 富士风格. The combined build installed and launched on the a5100, with successful parameter-application logs for selected presets; saved photographs/video from this version remain unverified. [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha) remains available for rollback.
+**Renamed to Film Studio (胶片工坊), combining ten Fujifilm-reference and five upstream Ricoh/street-style presets, fifteen in total.** Menu labels use 富士 / 理光 prefixes. The package and signing certificate are retained for an in-place update from 富士风格. The combined build installed and launched on the a5100, with successful parameter-application logs for selected presets; saved photographs/video from this version remain unverified. The earlier [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha) (upstream repository) remains available for rollback.
+
+**This download also contains the 2026-09-14 fix:** pressing MENU on the chooser that the center button opened used to wedge the app's state machine — the layout closed while the menu state stayed on the stack, after which no key responded and only a power cycle recovered the camera. It is fixed and was verified on an a7R II across dozens of round trips. The chooser stays fully transparent so the live preview is not covered.
 
 <a id="compatibility"></a>
 
 ## Camera compatibility
 
-**Only the a5100 has been tested by this project. This app does not work with every Sony camera.**
+**Only the a5100 and the a7R II have been tested by this project. This app does not work with every Sony camera.**
 
 | Model | Status in this project |
 | --- | --- |
 | **a5100 / ILCE-5100, firmware 1.10** | Tested within the feature/version limits documented below |
 | a6000, a6300, a6500 | PMCA candidates listed upstream; this version is untested |
-| a7, a7R, a7S, a7 II, a7R II, a7S II | PMCA candidates listed upstream; this version is untested |
+| **a7R II / ILCE-7RM2, Android 4.1.2 / API 16** | Install, startup and the "center button opens the chooser → MENU returns to shooting" round trip were tested (2026-09-14). **This body reports no support for the RGB matrix or the extended gamma table**, so imaging falls back to the camera's own Creative Style + native Picture Effect approximation (see [live-preview notes](docs/LIVE-PREVIEW.zh-CN.md)) rather than this project's fitted Fujifilm/Ricoh parameters. Photograph/video saving and colour were not verified on this model |
+| a7, a7R, a7S, a7 II, a7S II | PMCA candidates listed upstream; this version is untested |
 | RX100 III/IV/V, RX10 II/III, RX1R II, HX90 | PMCA candidates listed upstream; this version is untested |
 | a6400, a6700, a7 III, a7C | Do not support the PlayMemories Camera Apps installation platform required here |
 | Other models or firmware | Not assessed; a similar model name does not establish compatibility |
@@ -29,11 +32,14 @@ Candidates come from the [upstream model list](https://github.com/bonyback1/sony
 
 ## Download and installation
 
-**[Download APK: 0.2.0-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/download/v0.2.0-alpha/FilmStudio-0.2.0-alpha-movie.apk)** · [Release notes and checksum files](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.2.0-alpha)
+**[Download APK: 0.2.0-alpha (includes the 2026-09-14 fix)](https://github.com/Chai-Yu/sony-a5100-film-studio/releases/download/apk/FilmStudio-0.2.0-alpha-movie.apk)** · [Release notes](https://github.com/Chai-Yu/sony-a5100-film-studio/releases/tag/apk)
 
-Download `FilmStudio-0.2.0-alpha-movie.apk`, then follow the [English installation guide](docs/INSTALL.en.md) to connect and install. No local compilation is required. **Code → Download ZIP contains source, not the installer.**
+- File: `FilmStudio-0.2.0-alpha-movie.apk` (3,785,488 bytes)
+- SHA-256: `2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120`
 
-This is an unofficial experimental release with only the a5100 evidence described above. The APK contains Sony base-app material and parameters fitted from publicly available Fujifilm LUTs. A separate grant to adapt and redistribute those third-party materials has not been established. Publication does not represent Sony/FUJIFILM permission or guarantee immunity; [license scope](LICENSING.md) distinguishes the rights in each part. Original official LUT files and signing private keys are not distributed.
+Then follow the [English installation guide](docs/INSTALL.en.md) to connect and install. No local compilation is required. **Code → Download ZIP contains source, not the installer.**
+
+This is an unofficial experimental release with only the a5100 and a7R II evidence described above. The APK contains Sony base-app material and parameters fitted from publicly available Fujifilm LUTs. A separate grant to adapt and redistribute those third-party materials has not been established. Publication does not represent Sony/FUJIFILM permission or guarantee immunity; [license scope](LICENSING.md) distinguishes the rights in each part. Original official LUT files and signing private keys are not distributed.
 
 → **[Complete English installation guide](docs/INSTALL.en.md)**: inputs → local build → first-time connection → Wi-Fi ADB installation → camera controls → updates and troubleshooting.
 
@@ -67,11 +73,15 @@ For portraits, compare 30% and 70% first. On colour looks the strength reduces b
 
 ## Evidence and limits
 
-Tested on one **a5100, firmware 1.10, Android 2.3.7 / API 10**. Other models are not promised to work.
+Hardware testing covers two bodies; neither promises compatibility with other models.
+
+- **a5100 / ILCE-5100, firmware 1.10, Android 2.3.7 / API 10**: the body supports the 3×3 RGB matrix and the extended gamma table, so this project's fitted hardware-colour parameters are used.
+- **a7R II / ILCE-7RM2, Android 4.1.2 / API 16**: the body reports no support for either, so imaging automatically falls back to Creative Style + native Picture Effect (see [live-preview notes](docs/LIVE-PREVIEW.zh-CN.md)) instead of the fitted parameters.
 
 - 0.1.1: all ten look selections applied; PROVIA color and ACROS monochrome JPEGs saved; an ACROS XAVC S 1080p59.94 clip saved and fully decoded.
 - 0.1.2: the user confirmed format/quality menus were usable. Every encoded format has not been inspected.
 - 0.1.3: installation, startup and default-look application verified; the user gave general confirmation of the new controls. Every look/strength/format combination has not been tested in saved media.
+- 2026-09-14 (a7R II): installation, startup and dozens of "center button opens the chooser → MENU returns to shooting" round trips all behaved correctly. That path used to wedge the state machine — the layout closed while the menu state stayed on the stack, after which no key responded and only a power cycle recovered the camera; it is now fixed. The fix was not re-tested on the a5100, and saved media and colour remain unverified on both bodies for this version.
 
 **In-app playback currently lists photographs only.** Exit to native playback and choose the appropriate XAVC S, AVCHD or MP4 view to see movies. See [validation notes](docs/VALIDATION.md).
 
