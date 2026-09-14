@@ -34,9 +34,9 @@ Candidates come from the [upstream model list](https://github.com/bonyback1/sony
 
 **[Download APK: 0.2.2-alpha (adds the Leica styles)](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)** · [Release notes](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha)
 
-- File: `FilmStudio-0.2.2-alpha-movie.apk` (3,789,785 bytes) - the default `faithful` tone treatment
-- SHA-256: `c4df639f1f7250d302aac3f4ad617b61c484bc579da61422acde5585a7a57d94`
-- A **white-anchored** companion, `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk` (3,790,886 bytes, SHA-256 `01a87172ef3918dfde9b248454cc670fad29c5612069a33a7cf43ee6b4a7d0ee`), keeps white at white instead of darkening globally. **The two differ only in the Leica tone output**; they share one matrix, so which to use is a judgement on real footage.
+- File: `FilmStudio-0.2.2-alpha-movie.apk` (3,789,775 bytes) - the default `faithful` tone treatment
+- SHA-256: `494191f4c29550a21e2a1ff57eceb439626e4befe2c5810d41743219cd69f681`
+- A **white-anchored** companion, `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk` (3,790,884 bytes, SHA-256 `3b0e43cd0364b16b9b5f5104247d9c38f342e8801080dbe09b89e9636252f2a9`), keeps white at white instead of darkening globally. **The two differ only in the Leica tone output**; they share one matrix, so which to use is a judgement on real footage.
 
 Then follow the [English installation guide](docs/INSTALL.en.md) to install it; no local compilation is required. **If you only want to install and shoot, take "Method A"**: set the camera's USB mode to MTP and install the APK with pmca-gui — no developer mode and no command line. **Code → Download ZIP contains source, not the installer.**
 
@@ -87,7 +87,7 @@ Hardware testing covers two bodies; neither promises compatibility with other mo
 
 **In-app playback currently lists photographs only.** Exit to native playback and choose the appropriate XAVC S, AVCHD or MP4 view to see movies. See [validation notes](docs/VALIDATION.md).
 
-This is not a complete port of Fujifilm's in-camera Film Simulation. F-Log2/F-Gamut LUTs cannot be applied directly to ordinary Sony imagery; the fitting process uses WDR-709 as a proxy neutral reference, producing a 3×3 matrix and a common 1024-point curve. **Its chroma response was calibrated once against real a7R II shots (camera Neutral / camera STD / app output, three shots of one scene), so that 100% strength matches the reference look**; the a5100 is still uncalibrated, grain and sensor response are not simulated, and some looks have substantial approximation error.
+This is not a complete port of Fujifilm's in-camera Film Simulation. F-Log2/F-Gamut LUTs cannot be applied directly to ordinary Sony imagery; the fitting process uses WDR-709 as a proxy neutral reference, producing a 3×3 matrix and a common 1024-point curve. **The chroma response was calibrated against three real a7R II scenes, each with a camera Neutral, a camera STD and an app shot, and the matrices were refitted against the camera's own Standard rendering**, so 100% strength is much closer to the reference look; the a5100 is still uncalibrated, grain and sensor response are not simulated, and some looks have substantial approximation error.
 
 ## License, ownership and sources
 

@@ -34,9 +34,9 @@
 
 **[直接下载 APK：0.2.2-alpha（含徕卡风格）](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)** · [发行说明](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha)
 
-- 文件：`FilmStudio-0.2.2-alpha-movie.apk`（3,789,785 字节）——默认的 faithful 影调处理
-- SHA-256：`c4df639f1f7250d302aac3f4ad617b61c484bc579da61422acde5585a7a57d94`
-- 另有**白点锚定**变体 `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`（3,790,886 字节，SHA-256 `01a87172ef3918dfde9b248454cc670fad29c5612069a33a7cf43ee6b4a7d0ee`）：保留白点、不做全局压暗。**两者只差徕卡风格的影调输出**，矩阵相同；选哪个看实拍观感。
+- 文件：`FilmStudio-0.2.2-alpha-movie.apk`（3,789,775 字节）——默认的 faithful 影调处理
+- SHA-256：`494191f4c29550a21e2a1ff57eceb439626e4befe2c5810d41743219cd69f681`
+- 另有**白点锚定**变体 `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`（3,790,884 字节，SHA-256 `3b0e43cd0364b16b9b5f5104247d9c38f342e8801080dbe09b89e9636252f2a9`）：保留白点、不做全局压暗。**两者只差徕卡风格的影调输出**，矩阵相同；选哪个看实拍观感。
 
 下载后按照[中文安装教程](docs/INSTALL.zh-CN.md)安装，无需自己编译。**只想装来用的走「方法 A」**：相机 USB 模式设为 MTP，用 pmca-gui 选中 APK 直接安装，不需要开发者模式，也不需命令行。**Code → Download ZIP 是源码，不是安装包。**
 
@@ -87,7 +87,7 @@ adb -s CAMERA_IP:5555 install -r output/FilmStudio-0.2.2-alpha-movie.apk
 
 **应用内回放目前只显示照片。** 查看录像请退出应用，进入原机回放，并选择与文件对应的 XAVC S / AVCHD / MP4 观看模式。详情见 [验证说明](docs/VALIDATION.md)。
 
-这不是富士机内胶片模拟的完整移植：官方 F-Log2 / F-Gamut LUT 不能直接套在普通索尼画面上。本工具以 WDR-709 为替代中性参考，拟合 3×3 颜色矩阵与 1024 点共同曲线；**色度已用 a7R II 实拍的「机身 Neutral／机身 STD／应用输出」三张对照做过一次标定**（100% 强度对齐官方 look），a5100 仍未实拍标定，也不模拟颗粒或传感器响应，某些风格误差较明显。
+这不是富士机内胶片模拟的完整移植：官方 F-Log2 / F-Gamut LUT 不能直接套在普通索尼画面上。本工具以 WDR-709 为替代中性参考，拟合 3×3 颜色矩阵与 1024 点共同曲线；**色度已用 a7R II 实拍的三个场景（每个都含机身 Neutral／机身 STD／应用输出）标定——矩阵改为直接对机身 STD 的真实像素重拟**，所以 100% 强度时更接近官方 look；a5100 仍未实拍标定，也不模拟颗粒或传感器响应，某些风格误差较明显。
 
 ## 许可、版权与参考
 
