@@ -116,12 +116,13 @@ def preset_ids(profiles):
                   '    invoke-virtual {v0, v1}, Ljava/util/ArrayList;->add(Ljava/lang/Object;)Z']
     return '\n'.join(lines+['    return-object v0','.end method'])
 
-# The RGB matrix and the extended gamma table are the *hardware* look: the
-# body applies them inside the ISP. Some bodies answer both capability
-# queries with false and then silently drop the writes, which leaves the
-# viewfinder untouched even though the hook reports success. The one look such
-# a body does render live is the Creative Style it owns itself, so applyNative
-# reroutes each filter to its nearest style. The mapping is emitted inline
+# The RGB matrix and the extended gamma table are the *hardware* look, and the
+# body applies them inside the ISP. Some bodies report no support for the
+# matrix, so applyHook leaves the matrix out and the camera's own Creative Style
+# is the only look such a body can be given - applyNative reroutes each filter to
+# its nearest style and picture effect. Whatever the fallback writes, it writes
+# the *whole* look: a style on its own, or an effect left over from the previous
+# filter, would add a colour that belongs to neither. The mapping is emitted inline
 # instead of calling a lookup helper: a helper call that fails would be
 # swallowed by this method's catch and the viewfinder would stay untouched,
 # which is exactly the failure this feature has to rule out.
@@ -149,13 +150,17 @@ def native_hook(hook,profiles,debug=False):
             lines+=['    const-string v1, "native style"',
                     f'    invoke-static {{v1, v0}}, {hook}->diagStr(Ljava/lang/String;Ljava/lang/String;)V']
         lines+=[f'    invoke-virtual {{p0, v0}}, {MODIFIER_DESC}->setColorMode(Ljava/lang/String;)V']
-        if p['native']['picture_effect']:
-            lines+=[f'    const-string v0, {quote(p["native"]["picture_effect"])}',
-                    f'    invoke-virtual {{p0, v0}}, {MODIFIER_DESC}->setPictureEffect(Ljava/lang/String;)V',
-                    # Remember that an effect of ours is on screen, so resetHook
-                    # only clears one that this hook actually set.
-                    '    const/4 v1, 0x1',
-                    f'    sput-boolean v1, {hook}->sNativeEffectActive:Z']
+        effect=p['native']['picture_effect']
+        # Every branch writes the effect, "off" included. A branch that wrote
+        # only the style would leave the previous filter's effect on screen, and
+        # that effect's own colour cast would then be read as part of the filter
+        # that was just selected.
+        lines+=[f'    const-string v0, {quote(effect or "off")}',
+                f'    invoke-virtual {{p0, v0}}, {MODIFIER_DESC}->setPictureEffect(Ljava/lang/String;)V',
+                # Record whether an effect of ours is on screen, so resetHook only
+                # clears one that this hook actually set.
+                f'    const/4 v1, {hex(1 if effect else 0)}',
+                f'    sput-boolean v1, {hook}->sNativeEffectActive:Z']
         if debug:
             # Read both values back: a token this body rejects is dropped by the
             # setter, and that must not look like a working live preview.
@@ -598,9 +603,26 @@ def patch_hook(path,profiles,upstream_hook,movie=False,debug=False,native_previe
     release='' if native_preview else '\n    :skip_native\n'
     mark=(f'    const-string v5, "after-native"\n\n'
           f'    invoke-static {{v5}}, {HOOK}->diag(Ljava/lang/String;)V\n\n') if debug else ''
-    apply=apply.replace(MATRIX_CALL, gate
-        +f'    invoke-static {{v2, p2}}, {HOOK}->applyNative({MODIFIER_DESC}Ljava/lang/String;)V\n'
-        +release+mark+MATRIX_CALL,1)
+    apply_native=(f'    invoke-static {{v2, p2}}, {HOOK}->applyNative({MODIFIER_DESC}'
+                  'Ljava/lang/String;)V\n')
+    # The RGB matrix and the extended gamma table are one look: the matrix is
+    # only defined together with the curve it was fitted against. A body that
+    # reports no RGB-matrix support also answers the extended-gamma query with
+    # false, so half of the pair would be dropped and the other half applied on
+    # its own - and a matrix applied without its curve rotates hue on saturated
+    # colour (a cyan sky, a green cast on a sunlit wall). Those bodies get the
+    # camera's own Creative Style + Picture Effect instead, which is what this
+    # fallback already promised; a body that reports support keeps the hardware
+    # look untouched. --native-preview is the case where the matrix does work
+    # and only the live view needs the style, so it keeps writing the matrix.
+    matrix_block=MATRIX_CALL if native_preview else (
+        f'    invoke-static {{v2}}, {HOOK}->needsNative({MODIFIER_DESC})Z\n'
+        '    move-result v4\n'
+        '    if-eqz v4, :skip_native_matrix\n\n'
+        +MATRIX_CALL+
+        '    :skip_native_matrix\n')
+    apply=apply.replace(MATRIX_CALL,
+        gate+apply_native+release+mark+matrix_block,1)
     # The extended gamma table is optional hardware: a body that reports no
     # support drops the write and the look never changes, yet creating and
     # clearing the table still enters the native camera path on every apply and

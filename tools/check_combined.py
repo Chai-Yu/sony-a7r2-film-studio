@@ -190,7 +190,13 @@ def main():
         effect = p['native']['picture_effect']
         if effect:
             assert '"' + effect + '"' in native_body, (p['id'], 'picture effect missing from applyNative')
-            assert '->setPictureEffect(' in native_body, 'applyNative never sets the effect'
+    assert '->setPictureEffect(' in native_body, 'applyNative never sets the effect'
+    # Every branch writes the effect, "off" included. A branch that wrote only
+    # the style would leave the previous filter's effect on screen, and that
+    # effect's own colour cast would be read as part of the filter just picked.
+    assert '"off"' in native_body, 'applyNative never turns the effect off'
+    assert native_body.count('->setPictureEffect(') == len(profiles), \
+        'every preset branch must write the picture effect, not only the ones with one'
     assert '->applyNative(' in hook, 'applyHook never calls applyNative'
     # The capability query sits in its own guarded helper: a body that throws
     # from it would otherwise abort applyHook and drop the hardware look.
@@ -220,6 +226,15 @@ def main():
                          r'if-eqz v\1, :\w+\s*\n\s*invoke-static \{[^}]*\}, [^\n]*->applyNative\(',
                          apply_hook.group()), \
             'applyHook must apply the camera style only when needsNative() answered true'
+        # The matrix and the curve are one look: a body that reports no support
+        # cannot be given the curve, so it must not be given the matrix either.
+        # Half of the pair rotates hue on saturated colour instead of rendering
+        # the look.
+        assert re.search(r'needsNative\([^)]*\)Z\s*\n\s*move-result v(\d+)\s*\n\s*'
+                         r'if-eqz v\1, :(\w+)[\s\S]{0,200}?'
+                         r'invoke-virtual \{[^}]*\}, [^\n]*->setRGBMatrix\(\[I\)V',
+                         apply_hook.group()), \
+            'applyHook must not write the RGB matrix on a body that reports no support'
     # The extended gamma table is hardware the body may not have: creating and
     # clearing it still enters the native camera path, and resetHook runs from
     # the shooting state's onPause, i.e. on every MENU press.

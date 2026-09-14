@@ -20,7 +20,7 @@
 | --- | --- |
 | **a5100 / ILCE-5100、ファームウェア1.10** | 下記の機能・バージョンの範囲で実機確認済み |
 | a6000、a6300、a6500 | 上流で挙げられた PMCA 対応候補。本バージョンは未検証 |
-| **a7R II / ILCE-7RM2、Android 4.1.2 / API 16** | 導入・起動、および「中央ボタンでフィルター選択を開く → MENU で撮影画面に戻る」の往復動作を確認（2026-09-14）。**本機は RGB 行列と拡張 Gamma テーブルに非対応と報告**するため、撮像はカメラ標準の Creative Style + ネイティブ Picture Effect による近似（[ライブビューの説明](docs/LIVE-PREVIEW.zh-CN.md)）へ自動的に降格し、本プロジェクトが近似した富士／リコーのパラメータは使われません。本機での写真／動画保存と色は未検証です |
+| **a7R II / ILCE-7RM2、Android 4.1.2 / API 16** | 導入・起動、および「中央ボタンでフィルター選択を開く → MENU で撮影画面に戻る」の往復動作を確認（2026-09-14）。**本機は RGB 行列と拡張 Gamma テーブルに非対応と報告**するため、撮像はカメラ標準の Creative Style + ネイティブ Picture Effect による近似（[ライブビューの説明](docs/LIVE-PREVIEW.zh-CN.md)）へ自動的に降格し、本プロジェクトが近似した富士／リコーのパラメータは使われません。本機での写真／動画保存と色は未検証です。2026-09-14 修正：行列に非対応と報告する本機には**行列を書き込まなくなりました** — 以前の版は対になるカーブなしで行列だけを書き込み、画面が青緑に傾いていました（空が青緑、日射の当たる壁が緑、アプリを終了すると戻る）。現在はカメラ標準のスタイルとエフェクトのみを使います |
 | a7、a7R、a7S、a7 II、a7S II | 上流で挙げられた PMCA 対応候補。本バージョンは未検証 |
 | RX100 III／IV／V、RX10 II／III、RX1R II、HX90 | 上流で挙げられた PMCA 対応候補。本バージョンは未検証 |
 | a6400、a6700、a7 III、a7C | 本アプリが必要とする PlayMemories Camera Apps の導入方式に非対応 |
@@ -34,9 +34,9 @@
 
 **[APK を直接ダウンロード：0.2.2-alpha（ライカスタイルを追加）](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)** · [リリース説明](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha)
 
-- ファイル：`FilmStudio-0.2.2-alpha-movie.apk`（3,789,374 バイト）— 既定の `faithful` 処理
-- SHA-256：`72fa73e3a3010a59b841fde15a3f664f5272e826aedd51b1cc280fff7cd5b265`
-- **白点アンカー**版 `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`（3,790,410 バイト、SHA-256 `0cff1053a42b08330121ff4ce3be801bb761893b61e8914a0072f0bb6b60c89d`）も同ページにあります。白を白のまま保ち、全体を暗くしません。**両版の違いはライカのトーン出力のみ**で、行列は共通です。
+- ファイル：`FilmStudio-0.2.2-alpha-movie.apk`（3,789,927 バイト）— 既定の `faithful` 処理
+- SHA-256：`54172822fe09af00e6900960f9730c5c58552331bd9cc9d981cb0fc796e5b50f`
+- **白点アンカー**版 `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`（3,790,960 バイト、SHA-256 `d8719da1de06782d08065524ffa6c7a847521f233a011d53c168071583ff10bf`）も同ページにあります。白を白のまま保ち、全体を暗くしません。**両版の違いはライカのトーン出力のみ**で、行列は共通です。
 
 [日本語の導入手順](docs/INSTALL.ja.md)に沿って導入してください。自分でビルドする必要はありません。**入れて使うだけの人は「方法 A」**：カメラの USB モードを MTP にし、pmca-gui で APK を選んで導入します。開発者モードもコマンド操作も不要です。**Code → Download ZIP はソースであり、インストーラーではありません。**
 

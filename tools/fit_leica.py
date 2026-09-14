@@ -6,10 +6,12 @@
 Unlike the Fujifilm family, the Leica package ships no neutral reference, so the
 baseline is constructed here instead of read from a second official LUT:
 
-  scene            LSR, linear scene reflection, from the L-Log curve that Leica
-                   publishes in its L-Log reference manual (verified below
-                   against the manual's own LSR/DV table)
-  baseline         BT.709 OETF of LSR clamped to diffuse white
+  scene            LSR, linear scene reflection in the primaries L-Log uses,
+                   from the L-Log curve that Leica publishes in its L-Log
+                   reference manual (verified below against the manual's own
+                   LSR/DV table)
+  baseline         BT.2020 -> BT.709 primaries, then the BT.709 OETF, clamped
+                   at diffuse white
 
 Which display encoding sits under the LUT was not assumed: BT.709 OETF, gamma
 2.4, gamma 2.2 and plain linear were each tested as the baseline, and the
@@ -71,9 +73,27 @@ def bt709_oetf(x):
     return np.where(x < 0.018, 4.5 * x, 1.099 * x ** 0.45 - 0.099)
 
 
-def baseline(v):
-    """This project's constructed neutral: BT.709 tone curve of scene light."""
-    return bt709_oetf(np.clip(code_to_lsr(v), 0, 1))
+# L-Log carries ITU-R BT.2020 primaries and the LUTs used here are their Rec.709
+# variants, so the LUT output is BT.709. The baseline has to make the same
+# conversion before its transfer curve; skipping it fitted the chromatic samples
+# against primaries the LUT never used, which cost half the accuracy and left a
+# systematic red bias. The matrix rows sum to one, so a neutral input is
+# unaffected and the grey axis - and with it the fitted tone curve - is
+# unchanged.
+G2020_TO_709 = np.array([
+    [1.6605, -0.5876, -0.0729],
+    [-0.1246, 1.1329, -0.0083],
+    [-0.0182, -0.1006, 1.1187]])
+
+
+def baseline(rgb):
+    """This project's constructed neutral: BT.709 tone curve of scene light.
+
+    `rgb` is L-Log code, so the primaries are converted before the transfer
+    curve. Accepts an (..., 3) array.
+    """
+    lsr = np.clip(code_to_lsr(np.asarray(rgb, dtype=np.float64)), 0, 1)
+    return bt709_oetf(np.reshape(lsr, (-1, 3)) @ G2020_TO_709.T)
 
 
 def verify_curve():
@@ -89,9 +109,10 @@ def fit(lut, base_x, target):
     """Curve first, then the matrix, exactly as the Fujifilm family is fitted."""
     q = np.linspace(0, 1, 1024)
     grey_v = np.linspace(0.1380, 0.6320, 4096)
-    grey_base = baseline(grey_v)
+    grey_rgb = np.repeat(grey_v[:, None], 3, axis=1)
+    grey_base = baseline(grey_rgb)[:, 0]
     keep = np.r_[True, np.diff(grey_base) > 1e-9]
-    grey_y = np.maximum.accumulate(sample(lut, np.repeat(grey_v[:, None], 3, axis=1)).mean(1))[keep]
+    grey_y = np.maximum.accumulate(sample(lut, grey_rgb).mean(1))[keep]
     curve = np.clip(np.interp(q, grey_base[keep], grey_y), 0, 1)
     cy, ids = np.unique(curve, return_index=True)
     linear_target = np.interp(target, cy, q[ids])
@@ -177,7 +198,7 @@ def main():
         family='leica',
         source='Leica SL2-S Leica Look Up Tables (LUT), Rec709 variant',
         log_curve='L-Log, Leica L-Log Reference Manual V1.6 sections 3.1 and 3.2',
-        baseline='constructed: BT.709 OETF of L-Log-decoded scene reflection, clamped at LSR 1',
+        baseline='constructed: L-Log decoded to scene reflection, BT.2020 -> BT.709 primaries, then the BT.709 OETF, clamped at LSR 1',
         baseline_is_leica_reference=False,
         source_colour_space='ITU-R BT.2020 (L-Log) -> ITU-R BT.709 (LUT output)',
         limitations=[

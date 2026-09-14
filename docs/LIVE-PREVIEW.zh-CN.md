@@ -10,11 +10,24 @@ caps before-sets  matrix=false gamma=false
 caps before-matrix matrix=false gamma=false
 ```
 
-写入本身不会报错（`write()` 返回 2048 字节、`setExtendedGammaTable()` 无异常、钩子还打印 "applied successfully"），
-但机身会**静默丢弃**这些写入 —— 结果就是取景器/EVF 看起来完全没有效果，而日志看起来一切正常。
-这正是“滤镜缩略图和参数都对了，但实时画面没有滤镜”的根本原因。
+写入本身不会报错（`write()` 返回 2048 字节、`setExtendedGammaTable()` 无异常、钩子还打印 "applied successfully"）。
 
-相机自己会实时渲染的只有两样东西：
+**2026-09-14 订正：早前“机身静默丢弃”的判断是错的。** 那个结论只来自实时取景，没有对照过拍出来的照片。
+实机对照证实：a7R II 确实**会执行** RGB 矩阵写入 —— **徕卡 自然**（矩阵 + `standard` + 无效果）
+明显偏蓝绿，而**理光 GR 正片**（同一组机身风格/效果、不同的矩阵）正常；两者在机身风格这一层完全相同，
+所以差异只能来自矩阵。退出应用后颜色恢复正常，也说明写入确实生效了。
+
+根因是：**矩阵只有配上它拟合时所依据的那条曲线，才是那个 look。**模型是 `out = curve(matrix · in)`，
+而这类机身对扩展 Gamma 表的查询返回 `false`，曲线会被跳过，**只剩下半个 look 的矩阵被单独应用**。
+单独应用的矩阵不会渲染 look，只会让饱和色发生色相旋转（天空偏青、阳光下的暖色墙面偏绿）。
+上游理光的曲线本来就接近恒等（相对恒等的 rms 只有 0.011–0.033），少掉它几乎没损失；
+富士/徕卡家族的曲线偏差是它的 2–10 倍，少掉曲线就只剩失衡的矩阵。
+
+所以现在的规则是：**矩阵与曲线要么一起写，要么都不写。**
+机身报告不支持 RGB 矩阵时，只使用相机自己的 Creative Style + Picture Effect（即本页接下来的内容），
+不再写入矩阵；支持矩阵的机身（如 a5100）行为完全不变。
+
+在这类机身上，相机自己能渲染的只有两样东西：
 
 1. **Creative Style**（`ParametersModifier.setColorMode`，如 `standard` / `vivid` / `mono`）
 2. **原生 Picture Effect**（`ParametersModifier.setPictureEffect`，如 `retro-photo` / `richtone-mono`）
@@ -33,6 +46,11 @@ caps before-matrix matrix=false gamma=false
   if-eqz v4, :skip_native      # needsNative()==0：机身报告支持矩阵 → 保持硬件色
   invoke-static {v2, p2}, ...RicohHook;->applyNative(...)V
   :skip_native
+  invoke-static {v2}, ...RicohHook;->needsNative(...)Z
+  move-result v4
+  if-eqz v4, :skip_native_matrix   # same answer: no matrix without its curve
+  invoke-virtual {v2, v3}, ...ParametersModifier;->setRGBMatrix([I)V
+  :skip_native_matrix
   ```
 
   即**默认自动降级**：支持矩阵的机身（如 a5100）行为完全不变；不支持矩阵的机身自动走原生近似。
@@ -40,6 +58,8 @@ caps before-matrix matrix=false gamma=false
   `needsNative()` 自身带 try/catch：能力查询抛异常时返回 false，宁可保留硬件色，也不会因为一个未知 HAL 就把画面切走。
   `--native-preview` 用于机身“报告支持但实际不显示”的情况，强制走原生近似（产物名带 `-native-forced`）。
 * `applyNative()` 的名称对照表是**内联**生成的，不调用同类辅助方法：辅助调用一旦失败会被外层 catch 吞掉，取景器就会静默地什么都不变。
+* `applyNative()` 的**每个**分支都会写入 Picture Effect，包含 `"off"`：只写风格的分支会把上一个滤镜的
+  效果留在屏幕上，而那个效果自带的色偏会被当成新选中滤镜的颜色。
 * `resetHook` 现在会额外写入 `setPictureEffect("off")`，否则退出应用后机身会保留那个原生效果。
 * 映射表在 `tools/film_profiles.py:NATIVE_LOOK`，只使用**这一代机身**的取值：
   * 风格 token 取自 base APK 的 `CreativeStyleController` 常量；

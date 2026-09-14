@@ -66,27 +66,33 @@ English: F-Log2 coordinates are used to sample paired LUTs, not to apply a log t
 **Leica SL2-S Leica Look Up Tables (LUT)** — `Classic_Rec709.cube`、`Natural_Rec709.cube`，以及定义 L-Log
 曲线与色域的 **L-Log Reference Manual V1.6**（`pm-118912`）。
 
-中文：徕卡只提供 look LUT，**不提供中性参照渲染**，因此拟合基准由本项目按手册的 L-Log 规范构造：场景反射率经
-BT.709 传输函数（漫反射白处截断）。这个选择有实测依据：gamma 2.4、gamma 2.2 与线性三种候选会让 look 相对中性
-的偏差随亮度摆动 3.6–5.1 倍，而 BT.709 OETF 只有 1.34 倍——偏差平缓才是基准正确的特征。**它不是徕卡的参考渲染。**
-L-Log 使用 ITU-R BT.2020 色域，`Rec709` 变体已包含 BT.2020→BT.709 转换。手册明确说明这批 LUT 不适用于
-SL (Typ 601)。**原始 LUT 与手册不随本仓库分发**；拟合参数编入发行 APK。许可与商标见[许可范围](../LICENSING.md)。
+中文：徕卡只提供 look LUT，**不提供中性参照渲染**，因此拟合基准由本项目按手册的 L-Log 规范构造：先按
+**BT.2020→BT.709** 转换色域，再经 BT.709 传输函数（漫反射白处截断）。传输函数的选择有实测依据：gamma 2.4、
+gamma 2.2 与线性三种候选会让 look 相对中性的偏差随亮度摆动 3.6–5.1 倍，而 BT.709 OETF 只有 1.34 倍。
+L-Log 使用 ITU-R BT.2020 色域，`Rec709` 变体已包含 BT.2020→BT.709 转换，所以基准必须做同一步：
+漏掉它会让所有带彩度的样本按 LUT 从未用过的色域拟合，拟合误差翻倍（经典 MAE 0.0315→0.0157，自然 0.0218→0.0136）。
+**它不是徕卡的参考渲染。**手册明确说明这批 LUT 不适用于 SL (Typ 601)。**原始 LUT 与手册不随本仓库分发**；
+拟合参数编入发行 APK。许可与商标见[许可范围](../LICENSING.md)。
 
 English: Leica ships the look LUTs only and **no neutral reference rendering**, so the baseline used for
-fitting is constructed here from the L-Log curve in Leica's own manual: scene reflection through the BT.709
-transfer function, clamped at diffuse white. The choice is evidence-based — gamma 2.4, gamma 2.2 and plain
-linear each make the look's deviation from neutral swing 3.6-5.1x with level, against 1.34x for BT.709 OETF,
-and a flat deviation is what a correct baseline looks like. **It is not Leica's reference rendering.** L-Log
-is ITU-R BT.2020, and the Rec709 variant already contains the BT.2020 to BT.709 conversion. The manual states
-these LUTs do not apply to the SL (Typ 601). **Neither the original LUTs nor the manual are redistributed
-here**; the fitted parameters are compiled into the release APK. See [license scope](../LICENSING.md).
+fitting is constructed here from the L-Log curve in Leica's own manual: the **BT.2020 to BT.709** primaries
+conversion first, then the BT.709 transfer function, clamped at diffuse white. The transfer function is
+evidence-based — gamma 2.4, gamma 2.2 and plain linear each make the look's deviation from neutral swing
+3.6-5.1x with level, against 1.34x for BT.709 OETF. L-Log is ITU-R BT.2020 and the Rec709 variant already
+contains the BT.2020 to BT.709 conversion, so the baseline has to take the same step: leaving it out fitted
+every chromatic sample against primaries the LUT never used and doubled the error (Classic MAE 0.0315 to
+0.0157, Natural 0.0218 to 0.0136). **It is not Leica's reference rendering.** The manual states these LUTs
+do not apply to the SL (Typ 601). **Neither the original LUTs nor the manual are redistributed here**;
+the fitted parameters are compiled into the release APK. See [license scope](../LICENSING.md).
 
 日本語：ライカは look LUT のみで、**中性参照レンダリングは提供していません**。そのためフィッティング基準は、
-ライカ自身のマニュアルにある L-Log 曲線から本プロジェクトが構成します（シーン反射率→BT.709 伝達関数、
-拡散白でクリップ）。根拠は実測です — gamma 2.4／2.2／リニアでは look の中性からの偏差が明度により 3.6–5.1 倍
-振れますが、BT.709 OETF は 1.34 倍に収まります。偏差が平坦であることが正しい基準の特徴です。
-**これはライカの参照レンダリングではありません。** L-Log は ITU-R BT.2020 で、Rec709 版には
-BT.2020→BT.709 変換が含まれます。マニュアルは本 LUT を SL (Typ 601) に適用できないと明記しています。
+ライカ自身のマニュアルにある L-Log 曲線から本プロジェクトが構成します（まず **BT.2020→BT.709** の色域変換、
+次に BT.709 伝達関数、拡散白でクリップ）。伝達関数の根拠は実測です — gamma 2.4／2.2／リニアでは look の
+中性からの偏差が明度により 3.6–5.1 倍振れますが、BT.709 OETF は 1.34 倍に収まります。
+L-Log は ITU-R BT.2020 で、Rec709 版には BT.2020→BT.709 変換が含まれるため、基準も同じ手順が必要です。
+省くと彩度のあるサンプルが LUT の使わない色域でフィッティングされ、誤差が倍増します
+（Classic MAE 0.0315→0.0157、Natural 0.0218→0.0136）。**これはライカの参照レンダリングではありません。**
+マニュアルは本 LUT を SL (Typ 601) に適用できないと明記しています。
 **原本 LUT とマニュアルは再配布しません**。近似パラメータは公開 APK に内蔵されます。
 
 ## 安装与开发资料 / Tools and references / 導入・開発資料

@@ -20,7 +20,7 @@ An unofficial film-look experiment for the **Sony a5100 / ILCE-5100 and a7R II /
 | --- | --- |
 | **a5100 / ILCE-5100, firmware 1.10** | Tested within the feature/version limits documented below |
 | a6000, a6300, a6500 | PMCA candidates listed upstream; this version is untested |
-| **a7R II / ILCE-7RM2, Android 4.1.2 / API 16** | Install, startup and the "center button opens the chooser → MENU returns to shooting" round trip were tested (2026-09-14). **This body reports no support for the RGB matrix or the extended gamma table**, so imaging falls back to the camera's own Creative Style + native Picture Effect approximation (see [live-preview notes](docs/LIVE-PREVIEW.zh-CN.md)) rather than this project's fitted Fujifilm/Ricoh parameters. Photograph/video saving and colour were not verified on this model |
+| **a7R II / ILCE-7RM2, Android 4.1.2 / API 16** | Install, startup and the "center button opens the chooser → MENU returns to shooting" round trip were tested (2026-09-14). **This body reports no support for the RGB matrix or the extended gamma table**, so imaging falls back to the camera's own Creative Style + native Picture Effect approximation (see [live-preview notes](docs/LIVE-PREVIEW.zh-CN.md)) rather than this project's fitted Fujifilm/Ricoh parameters. Photograph/video saving and colour were not verified on this model. Fixed 2026-09-14: this body no longer receives the RGB matrix at all when it reports no support - earlier builds wrote the matrix without the curve it belongs to, which tinted the image cyan-green (a blue-green sky, a green cast on a sunlit wall, gone again after leaving the app); it now uses only the camera's own style and effect |
 | a7, a7R, a7S, a7 II, a7S II | PMCA candidates listed upstream; this version is untested |
 | RX100 III/IV/V, RX10 II/III, RX1R II, HX90 | PMCA candidates listed upstream; this version is untested |
 | a6400, a6700, a7 III, a7C | Do not support the PlayMemories Camera Apps installation platform required here |
@@ -34,9 +34,9 @@ Candidates come from the [upstream model list](https://github.com/bonyback1/sony
 
 **[Download APK: 0.2.2-alpha (adds the Leica styles)](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)** · [Release notes](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha)
 
-- File: `FilmStudio-0.2.2-alpha-movie.apk` (3,789,374 bytes) - the default `faithful` tone treatment
-- SHA-256: `72fa73e3a3010a59b841fde15a3f664f5272e826aedd51b1cc280fff7cd5b265`
-- A **white-anchored** companion, `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk` (3,790,410 bytes, SHA-256 `0cff1053a42b08330121ff4ce3be801bb761893b61e8914a0072f0bb6b60c89d`), keeps white at white instead of darkening globally. **The two differ only in the Leica tone output**; they share one matrix, so which to use is a judgement on real footage.
+- File: `FilmStudio-0.2.2-alpha-movie.apk` (3,789,927 bytes) - the default `faithful` tone treatment
+- SHA-256: `54172822fe09af00e6900960f9730c5c58552331bd9cc9d981cb0fc796e5b50f`
+- A **white-anchored** companion, `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk` (3,790,960 bytes, SHA-256 `d8719da1de06782d08065524ffa6c7a847521f233a011d53c168071583ff10bf`), keeps white at white instead of darkening globally. **The two differ only in the Leica tone output**; they share one matrix, so which to use is a judgement on real footage.
 
 Then follow the [English installation guide](docs/INSTALL.en.md) to install it; no local compilation is required. **If you only want to install and shoot, take "Method A"**: set the camera's USB mode to MTP and install the APK with pmca-gui — no developer mode and no command line. **Code → Download ZIP contains source, not the installer.**
 

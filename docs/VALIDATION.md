@@ -141,13 +141,13 @@ English: Independent training and validation use the unclipped region of the neu
 `FilmStudio-0.2.2-alpha-movie.apk`（faithful，默认）— SHA-256:
 
 ```text
-72fa73e3a3010a59b841fde15a3f664f5272e826aedd51b1cc280fff7cd5b265
+54172822fe09af00e6900960f9730c5c58552331bd9cc9d981cb0fc796e5b50f
 ```
 
 `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`（anchor）— SHA-256:
 
 ```text
-0cff1053a42b08330121ff4ce3be801bb761893b61e8914a0072f0bb6b60c89d
+d8719da1de06782d08065524ffa6c7a847521f233a011d53c168071583ff10bf
 ```
 
 中文：本版新增 2 个徕卡 Look 参考风格（经典 Classic、自然 Natural），预设总数 15 → 17。新增内容只影响新预设：
@@ -155,16 +155,18 @@ English: Independent training and validation use the unclipped region of the neu
 可 `install -r` 覆盖；相机内版本名 `0.2.2`（anchor 变体为 `0.2.2a`，因此两个变体在机内可区分）。
 
 **基准渲染是本项目构造的，不是徕卡的。** 徕卡只发布 look LUT，没有中性参照；拟合基准按徕卡 L-Log 参考手册 V1.6
-的曲线构造（场景反射率 → BT.709 传输函数，漫反射白处截断）。手册自带的 LSR/DV 对照表被用作实现的验收依据，
-6 个点全部吻合（最大偏差 0.33 DV）。显示编码不是猜的：四个候选里只有 BT.709 OETF 让 look 相对中性的偏差保持平缓
-（全程 1.34 倍），gamma 2.4／2.2 与线性分别摆动 5.05／4.13／5.02 倍，而偏差剧烈摆动正是基准取错的特征。
+的曲线构造（场景反射率 → **BT.2020→BT.709 色域转换** → BT.709 传输函数，漫反射白处截断）。手册自带的 LSR/DV 对照表
+被用作实现的验收依据，6 个点全部吻合（最大偏差 0.33 DV）。显示编码不是猜的：四个候选里只有 BT.709 OETF 让 look
+相对中性的偏差保持平缓（全程 1.34 倍），gamma 2.4／2.2 与线性分别摆动 5.05／4.13／5.02 倍。
+色域这一步同样有实测依据：L-Log 使用 BT.2020，而 `Rec709` 变体已包含 BT.2020→BT.709 转换，基准漏掉这一步
+会让每个带彩度的样本都按 LUT 从未用过的色域拟合。（2026-09-14 修正，见下文。）
 
-拟合精度（独立验证集 24,000 点，0–1 尺度上的 RGB 绝对误差，**不是 ΔE 或相似度**）：
+拟合精度（独立验证集 9,378 点，0–1 尺度上的 RGB 绝对误差，**不是 ΔE 或相似度**）：
 
 | Look | 平均绝对误差 | 95 分位 |
 | --- | ---: | ---: |
-| 徕卡 经典 | 0.0315 | 0.0878 |
-| 徕卡 自然 | 0.0219 | 0.0689 |
+| 徕卡 经典 | 0.0157 | 0.0435 |
+| 徕卡 自然 | 0.0136 | 0.0447 |
 
 **两个变体只差一件事：光影调输出是否归一化。** 徕卡 LUT 把漫反射白渲染在约 0.75，为 log 高光预留约 25% 余量。
 `faithful` 保留该行为，整张照片会偏暗约 25%；`anchor` 把同一条曲线的输出按约 1.30/1.34 缩放，使 `输入 1.0 → 输出 1.0`，
@@ -172,8 +174,35 @@ English: Independent training and validation use the unclipped region of the neu
 重拟合，精度会掉约 3 倍（已实测）。那 25% 余量既无法在已被截断的相机信号上复现，也不属于"look"本身，因此采用哪种
 处理取决于实拍观感——这正是同时提供两个变体的原因。
 
-尚未验证：本版照片／录像保存、全部强度、两个变体在实机上的观感对比，以及 a7R II 上的降级表现（徕卡两个风格会与
-既有风格合并：自然→`standard`，经典→`neutral` + `retro-photo`）。
+尚未验证：本版照片／录像保存、全部强度、两个变体在实机上的观感对比。
+
+## 2026-09-14 修复：矩阵与曲线必须成对 / a half-written look
+
+**本条含实机依据（a7R II / ILCE-7RM2，Android 4.1.2 / API 16）。** 用户报告在 a7R II 上
+「徕卡明显偏蓝绿、理光正常」。在该机身上，**徕卡 自然**与**理光 GR 正片**的 Creative Style 与 Picture Effect
+完全相同（`standard`、无效果），唯一差别是写入的 RGB 矩阵——所以偏色只能来自矩阵本身。
+
+根因：模型是 `out = curve(matrix · in)`，**矩阵只有配上它拟合时所依据的那条曲线，才是那个 look**。
+这类机身对扩展 Gamma 表的查询返回 `false`，曲线会被跳过，于是**半个 look 的矩阵被单独应用**。
+单独应用的矩阵不渲染 look，只会让饱和色发生色相旋转（天空偏青、阳光下的暖色墙面偏绿）。
+上游理光的曲线本身接近恒等（相对恒等的 rms 仅 0.011–0.033），少掉它几乎没损失；富士／徕卡家族的曲线
+偏差是它的 2–10 倍，少掉曲线就只剩失衡的矩阵——这正是用户观察到的「理光正常、富士／徕卡偏色」。
+同时这也更正了[实时取景说明](LIVE-PREVIEW.zh-CN.md)里「机身静默丢弃矩阵写入」的旧结论：那个结论只来自
+实时取景，a7R II 实际上**会执行**矩阵写入（否则退出应用后颜色不会恢复正常）。
+
+**修复：`applyHook` 在机身报告不支持 RGB 矩阵时不再写入矩阵**，该机身只使用相机自己的
+Creative Style + Picture Effect；支持矩阵的机身（a5100）行为完全不变。`applyNative()` 的每个分支
+现在都写入 Picture Effect（含 `"off"`），避免上一个滤镜的效果残留。
+
+同版修复的第二个缺陷：`tools/fit_leica.py` 的拟合基准漏掉了 L-Log 的 **BT.2020→BT.709** 色域转换。
+补上后平均误差从 0.0315／0.0218 降到 **0.0157／0.0136**，系统性红色偏差从 +0.0255 降到 −0.0094。
+
+本地校验（两次构建均 rc=0）：17 个滤镜的 136 组编译数组与 `profiles/film_studio.json` 逐位一致、
+上游理光 5 组 100% 端点逐字节未变、缩略图 17 个、占位图 0 个、清单版本名 `0.2.2` / `0.2.2a`。
+
+尚未验证：**本次修复尚未在实机上确认**（修改时相机不在 adb 上）；a5100 不受影响是依据它报告支持
+RGB 矩阵，本版未在 a5100 上重测。若 a5100 出现相同偏色，则说明它的扩展 Gamma 表也不被采信，
+需要把同样的规则扩展到两个能力查询。
 
 English: This version adds two Leica Look reference styles (Classic, Natural), taking the preset count from 15 to
 17. Only the new presets are affected: comparing against the decompiled 0.2.1 build field by field, **all 80
