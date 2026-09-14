@@ -4,7 +4,7 @@
 
 面向 **Sony a5100 / ILCE-5100 与 a7R II / ILCE-7RM2** 的非官方胶片风格实验工具。参考 [bonyback1 的 Ricoh 模组](https://github.com/bonyback1/sony-pmca-ricoh-mod) 的硬件色彩处理方法，并以 [富士公开的 GFX ETERNA 55 LUT](https://www.fujifilm-x.com/global/support/download/lut/) 为色彩研究参考，提供照片与实验性录像效果。
 
-**当前版本：0.2.0-alpha；相机内版本名：0.2a；应用名称：胶片工坊。** 文档提供三种语言，当前相机应用界面主要为中文。
+**当前版本：0.2.1-alpha（发行标签 `v0.2.1-alpha`；相机内版本名仍为 0.2a）；应用名称：胶片工坊。** 文档提供三种语言，当前相机应用界面主要为中文。
 
 **本版更名为「胶片工坊」，合并 10 个富士参考风格与 5 个上游理光／街头风格，共 15 个。** 相机菜单以「富士」「理光」前缀区分。包名与签名沿用旧版「富士风格」，可覆盖更新；新合并版已在 a5100 上安装、启动，并观察到部分滤镜参数应用成功；本版照片／录像保存尚待验证。更早的 [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha)（上游仓库）仍保留供回退。
 
@@ -32,7 +32,7 @@
 
 ## 下载与安装
 
-**[直接下载 APK：0.2.0-alpha（含 2026-09-14 修复）](https://github.com/Chai-Yu/sony-a5100-film-studio/releases/download/apk/FilmStudio-0.2.0-alpha-movie.apk)** · [发行说明](https://github.com/Chai-Yu/sony-a5100-film-studio/releases/tag/apk)
+**[直接下载 APK：0.2.1-alpha（含 2026-09-14 修复）](https://github.com/Chai-Yu/sony-a5100-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.0-alpha-movie.apk)** · [发行说明](https://github.com/Chai-Yu/sony-a5100-film-studio/releases/tag/v0.2.1-alpha)
 
 - 文件：`FilmStudio-0.2.0-alpha-movie.apk`（3,785,488 字节）
 - SHA-256：`2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120`

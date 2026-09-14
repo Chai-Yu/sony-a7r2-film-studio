@@ -4,7 +4,7 @@
 
 An unofficial film-look experiment for the **Sony a5100 / ILCE-5100 and a7R II / ILCE-7RM2**. It references the hardware color-processing approach in [bonyback1's Ricoh mod](https://github.com/bonyback1/sony-pmca-ricoh-mod) and uses [Fujifilm's publicly available GFX ETERNA 55 LUTs](https://www.fujifilm-x.com/global/support/download/lut/) as color-research references for photographs and experimental video.
 
-**Version: 0.2.0-alpha; on-camera version: 0.2a; app name: 胶片工坊.** Documentation is available in three languages; the camera UI is currently primarily Chinese.
+**Version: 0.2.1-alpha (release tag `v0.2.1-alpha`; the on-camera version string is still 0.2a); app name: 胶片工坊.** Documentation is available in three languages; the camera UI is currently primarily Chinese.
 
 **Renamed to Film Studio (胶片工坊), combining ten Fujifilm-reference and five upstream Ricoh/street-style presets, fifteen in total.** Menu labels use 富士 / 理光 prefixes. The package and signing certificate are retained for an in-place update from 富士风格. The combined build installed and launched on the a5100, with successful parameter-application logs for selected presets; saved photographs/video from this version remain unverified. The earlier [0.1.3-alpha](https://github.com/ukiki0718-netizen/sony-a5100-film-studio/releases/tag/v0.1.3-alpha) (upstream repository) remains available for rollback.
 
@@ -32,7 +32,7 @@ Candidates come from the [upstream model list](https://github.com/bonyback1/sony
 
 ## Download and installation
 
-**[Download APK: 0.2.0-alpha (includes the 2026-09-14 fix)](https://github.com/Chai-Yu/sony-a5100-film-studio/releases/download/apk/FilmStudio-0.2.0-alpha-movie.apk)** · [Release notes](https://github.com/Chai-Yu/sony-a5100-film-studio/releases/tag/apk)
+**[Download APK: 0.2.1-alpha (includes the 2026-09-14 fix)](https://github.com/Chai-Yu/sony-a5100-film-studio/releases/download/v0.2.1-alpha/FilmStudio-0.2.0-alpha-movie.apk)** · [Release notes](https://github.com/Chai-Yu/sony-a5100-film-studio/releases/tag/v0.2.1-alpha)
 
 - File: `FilmStudio-0.2.0-alpha-movie.apk` (3,785,488 bytes)
 - SHA-256: `2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120`

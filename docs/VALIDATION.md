@@ -4,7 +4,7 @@
 
 ## 实机记录 / Device evidence / 実機記録
 
-Device: one Sony a5100 / ILCE-5100, firmware 1.10, Android 2.3.7 / API 10. These observations do not establish compatibility with other bodies or firmware.
+Devices: one Sony a5100 / ILCE-5100 (firmware 1.10, Android 2.3.7 / API 10) and one Sony a7R II / ILCE-7RM2 (Android 4.1.2 / API 16). The a7R II reports no support for the RGB matrix or the extended gamma table, so its imaging runs on the Creative Style + native Picture Effect fallback instead of the fitted parameters. These observations do not establish compatibility with other bodies or firmware.
 
 | Version | 中文 | English | 日本語 |
 | --- | --- | --- | --- |
@@ -41,7 +41,7 @@ English: The clip demonstrates that monochrome processing reached saved video, n
 
 ## 2026-09-14 修订 / 2026-09-14 revision / 2026-09-14 改訂
 
-`FilmStudio-0.2.0-alpha-movie.apk` — SHA-256:
+`FilmStudio-0.2.0-alpha-movie.apk` (release tag `v0.2.1-alpha`) — SHA-256:
 
 ```text
 2b42cf90b4a5cba1458b1e8865d88c509779a46bb1d4a876c66ab41e049fb120
