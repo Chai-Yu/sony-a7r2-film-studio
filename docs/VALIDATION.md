@@ -141,13 +141,13 @@ English: Independent training and validation use the unclipped region of the neu
 `FilmStudio-0.2.2-alpha-movie.apk`（faithful，默认）— SHA-256:
 
 ```text
-54172822fe09af00e6900960f9730c5c58552331bd9cc9d981cb0fc796e5b50f
+e03d9c1132e72c54c74dd829783b48c12ebb390e8feb904cb829d833a7ea68b9
 ```
 
 `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`（anchor）— SHA-256:
 
 ```text
-d8719da1de06782d08065524ffa6c7a847521f233a011d53c168071583ff10bf
+4bdcab263a7050d6f6c2bc1d1b5d6fcd3bdc5b7139832b01e292e802eb2254c3
 ```
 
 中文：本版新增 2 个徕卡 Look 参考风格（经典 Classic、自然 Natural），预设总数 15 → 17。新增内容只影响新预设：
@@ -190,9 +190,17 @@ d8719da1de06782d08065524ffa6c7a847521f233a011d53c168071583ff10bf
 同时这也更正了[实时取景说明](LIVE-PREVIEW.zh-CN.md)里「机身静默丢弃矩阵写入」的旧结论：那个结论只来自
 实时取景，a7R II 实际上**会执行**矩阵写入（否则退出应用后颜色不会恢复正常）。
 
-**修复：`applyHook` 在机身报告不支持 RGB 矩阵时不再写入矩阵**，该机身只使用相机自己的
-Creative Style + Picture Effect；支持矩阵的机身（a5100）行为完全不变。`applyNative()` 的每个分支
-现在都写入 Picture Effect（含 `"off"`），避免上一个滤镜的效果残留。
+**修复（最终版）：矩阵与扩展 Gamma 表一起无条件写入**，与上游一致，不再按能力查询跳过 Gamma 表。
+`applyNative()` 保留，但不再影响矩阵（实测该机身不采纳风格／效果写入，所以它只是尽力而为）。
+要复现旧的「按能力查询跳过 Gamma 表」行为做对比，用 `--gate-extended-gamma` 构建。
+
+**第二轮实机反馈（同日，已安装上一版修复）：** 偏色消失，但**所有滤镜画面完全相同，连 ACROS 黑白都是彩色的**。
+这说明该机身**不采纳 `setColorMode()` / `setPictureEffect()` 的写入**（矩阵被移除后什么都剩不下），
+所以上一轮「改用机身自己的风格／效果」在这类机身上行不通，已回退。
+当前版本把矩阵与曲线一起写回，**待本轮实机确认**：若曲线生效，徒卡（faithful）应明显比其他滤镜暗约 25%
+（LUT 把漫反射白渲染在 0.75）；若徒卡不比别人暗，说明该机身连扩展 Gamma 表也不采纳，
+下一步改用「只用矩阵拟合」的参数集（把整条曲线折进矩阵）。
+a5100 未受影响是依据它报告支持矩阵，本版未在 a5100 上重测。
 
 同版修复的第二个缺陷：`tools/fit_leica.py` 的拟合基准漏掉了 L-Log 的 **BT.2020→BT.709** 色域转换。
 补上后平均误差从 0.0315／0.0218 降到 **0.0157／0.0136**，系统性红色偏差从 +0.0255 降到 −0.0094。
@@ -200,9 +208,7 @@ Creative Style + Picture Effect；支持矩阵的机身（a5100）行为完全�
 本地校验（两次构建均 rc=0）：17 个滤镜的 136 组编译数组与 `profiles/film_studio.json` 逐位一致、
 上游理光 5 组 100% 端点逐字节未变、缩略图 17 个、占位图 0 个、清单版本名 `0.2.2` / `0.2.2a`。
 
-尚未验证：**本次修复尚未在实机上确认**（修改时相机不在 adb 上）；a5100 不受影响是依据它报告支持
-RGB 矩阵，本版未在 a5100 上重测。若 a5100 出现相同偏色，则说明它的扩展 Gamma 表也不被采信，
-需要把同样的规则扩展到两个能力查询。
+尚未验证：本版照片／录像保存、全部强度、两个变体在实机上的观感对比。
 
 English: This version adds two Leica Look reference styles (Classic, Natural), taking the preset count from 15 to
 17. Only the new presets are affected: comparing against the decompiled 0.2.1 build field by field, **all 80

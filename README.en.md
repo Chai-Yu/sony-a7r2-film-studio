@@ -20,7 +20,7 @@ An unofficial film-look experiment for the **Sony a5100 / ILCE-5100 and a7R II /
 | --- | --- |
 | **a5100 / ILCE-5100, firmware 1.10** | Tested within the feature/version limits documented below |
 | a6000, a6300, a6500 | PMCA candidates listed upstream; this version is untested |
-| **a7R II / ILCE-7RM2, Android 4.1.2 / API 16** | Install, startup and the "center button opens the chooser → MENU returns to shooting" round trip were tested (2026-09-14). **This body reports no support for the RGB matrix or the extended gamma table**, so imaging falls back to the camera's own Creative Style + native Picture Effect approximation (see [live-preview notes](docs/LIVE-PREVIEW.zh-CN.md)) rather than this project's fitted Fujifilm/Ricoh parameters. Photograph/video saving and colour were not verified on this model. Fixed 2026-09-14: this body no longer receives the RGB matrix at all when it reports no support - earlier builds wrote the matrix without the curve it belongs to, which tinted the image cyan-green (a blue-green sky, a green cast on a sunlit wall, gone again after leaving the app); it now uses only the camera's own style and effect |
+| **a7R II / ILCE-7RM2, Android 4.1.2 / API 16** | Install, startup and the "center button opens the chooser → MENU returns to shooting" round trip were tested (2026-09-14). **This body reports no support for the RGB matrix or the extended gamma table**, so imaging falls back to the camera's own Creative Style + native Picture Effect approximation (see [live-preview notes](docs/LIVE-PREVIEW.zh-CN.md)) rather than this project's fitted Fujifilm/Ricoh parameters. Photograph/video saving and colour were not verified on this model. Measured 2026-09-14: this body **does apply** the RGB matrix but **ignores** every Creative Style and Picture Effect write; an earlier build skipped the extended gamma table on the capability query alone, which left the matrix applied on its own and tinted the image cyan-green (a blue-green sky, a green cast on a sunlit wall, gone again after leaving the app). The matrix and its curve are now written together, unconditionally |
 | a7, a7R, a7S, a7 II, a7S II | PMCA candidates listed upstream; this version is untested |
 | RX100 III/IV/V, RX10 II/III, RX1R II, HX90 | PMCA candidates listed upstream; this version is untested |
 | a6400, a6700, a7 III, a7C | Do not support the PlayMemories Camera Apps installation platform required here |
@@ -34,9 +34,9 @@ Candidates come from the [upstream model list](https://github.com/bonyback1/sony
 
 **[Download APK: 0.2.2-alpha (adds the Leica styles)](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)** · [Release notes](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha)
 
-- File: `FilmStudio-0.2.2-alpha-movie.apk` (3,789,927 bytes) - the default `faithful` tone treatment
-- SHA-256: `54172822fe09af00e6900960f9730c5c58552331bd9cc9d981cb0fc796e5b50f`
-- A **white-anchored** companion, `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk` (3,790,960 bytes, SHA-256 `d8719da1de06782d08065524ffa6c7a847521f233a011d53c168071583ff10bf`), keeps white at white instead of darkening globally. **The two differ only in the Leica tone output**; they share one matrix, so which to use is a judgement on real footage.
+- File: `FilmStudio-0.2.2-alpha-movie.apk` (3,789,810 bytes) - the default `faithful` tone treatment
+- SHA-256: `e03d9c1132e72c54c74dd829783b48c12ebb390e8feb904cb829d833a7ea68b9`
+- A **white-anchored** companion, `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk` (3,790,920 bytes, SHA-256 `4bdcab263a7050d6f6c2bc1d1b5d6fcd3bdc5b7139832b01e292e802eb2254c3`), keeps white at white instead of darkening globally. **The two differ only in the Leica tone output**; they share one matrix, so which to use is a judgement on real footage.
 
 Then follow the [English installation guide](docs/INSTALL.en.md) to install it; no local compilation is required. **If you only want to install and shoot, take "Method A"**: set the camera's USB mode to MTP and install the APK with pmca-gui — no developer mode and no command line. **Code → Download ZIP contains source, not the installer.**
 

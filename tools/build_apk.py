@@ -565,7 +565,7 @@ def annotate_icons(layout,hook,debug):
 
 
 def patch_hook(path,profiles,upstream_hook,movie=False,debug=False,native_preview=False,
-               force_gamma=False):
+               gate_gamma=False):
     text=path.read_text(encoding='utf-8')
     fields='\n'.join(f'.field private static sFuji{k}{i}_{strength}:{t}' for i in range(len(profiles))
                      for strength in STRENGTHS
@@ -605,31 +605,23 @@ def patch_hook(path,profiles,upstream_hook,movie=False,debug=False,native_previe
           f'    invoke-static {{v5}}, {HOOK}->diag(Ljava/lang/String;)V\n\n') if debug else ''
     apply_native=(f'    invoke-static {{v2, p2}}, {HOOK}->applyNative({MODIFIER_DESC}'
                   'Ljava/lang/String;)V\n')
-    # The RGB matrix and the extended gamma table are one look: the matrix is
-    # only defined together with the curve it was fitted against. A body that
-    # reports no RGB-matrix support also answers the extended-gamma query with
-    # false, so half of the pair would be dropped and the other half applied on
-    # its own - and a matrix applied without its curve rotates hue on saturated
-    # colour (a cyan sky, a green cast on a sunlit wall). Those bodies get the
-    # camera's own Creative Style + Picture Effect instead, which is what this
-    # fallback already promised; a body that reports support keeps the hardware
-    # look untouched. --native-preview is the case where the matrix does work
-    # and only the live view needs the style, so it keeps writing the matrix.
-    matrix_block=MATRIX_CALL if native_preview else (
-        f'    invoke-static {{v2}}, {HOOK}->needsNative({MODIFIER_DESC})Z\n'
-        '    move-result v4\n'
-        '    if-eqz v4, :skip_native_matrix\n\n'
-        +MATRIX_CALL+
-        '    :skip_native_matrix\n')
-    apply=apply.replace(MATRIX_CALL,
-        gate+apply_native+release+mark+matrix_block,1)
-    # The extended gamma table is optional hardware: a body that reports no
-    # support drops the write and the look never changes, yet creating and
-    # clearing the table still enters the native camera path on every apply and
-    # every reset - and resetHook runs from the shooting state's onPause, i.e.
-    # on every MENU press. Ask the body first and leave the table alone when it
-    # says no; --force-extended-gamma restores the unconditional write.
-    if not force_gamma:
+    # The matrix is written on every body. A body that reports no RGB-matrix
+    # support still applies it - measured on an a7R II, where the fitted matrices
+    # changed the stills while the same body ignored every Creative Style and
+    # Picture Effect write - so applyNative is advisory only and must never
+    # suppress the matrix that carries the look. Keep it, but write the matrix
+    # in the same commit either way.
+    apply=apply.replace(MATRIX_CALL, gate+apply_native+release+mark+MATRIX_CALL,1)
+    # The extended gamma table is written together with the matrix, without
+    # asking the body first, exactly as upstream does. The matrix is only the
+    # look together with the curve it was fitted against, and the capability
+    # queries cannot be trusted to decide either half: an a7R II answers false
+    # to both and still applies the matrix. Gating the table on that answer
+    # leaves a matrix writing on its own, which does not render the look and
+    # instead shifts hue on saturated colour (a cyan sky, a green cast on a
+    # sunlit wall) - measured on an a7R II. --gate-extended-gamma restores the
+    # probe for comparison.
+    if gate_gamma:
         assert apply.count(GAMMA_CALL) == 1, 'gamma anchor'
         probe=('    const/4 v5, 0x0\n'
                '    :try_start_gamma_probe\n'
@@ -655,7 +647,7 @@ def patch_hook(path,profiles,upstream_hook,movie=False,debug=False,native_previe
         apply=apply.replace(gamma_commit,gamma_commit
             +f'    const/4 v4, 0x1\n    sput-boolean v4, {HOOK}->sExtendedGammaActive:Z\n',1)
     text=replace_method(text,'applyHook('+CTRL+'Landroid/util/Pair;Ljava/lang/String;)Z',apply)
-    if not force_gamma:
+    if gate_gamma:
         # Apktool separates the decoded instructions with blank lines, so this
         # three-line upstream pattern has to be located line by line instead of
         # as one literal string.
@@ -1177,9 +1169,10 @@ def main():
     ap.add_argument('--native-preview',action='store_true',
                     help='Force the camera\'s own Creative Style even on bodies that report '
                          'RGB-matrix support (default: only when the body reports none)')
-    ap.add_argument('--force-extended-gamma',action='store_true',
-                    help='Write the extended gamma table even to bodies that report no support '
-                         '(default: skip it, so the camera is not reconfigured for a look it drops)')
+    ap.add_argument('--gate-extended-gamma',action='store_true',
+                    help='Ask the body before writing the extended gamma table and skip it '
+                         'when it reports no support. Off by default: the capability answers '
+                         'are unreliable, and skipping the curve leaves the matrix alone')
     ap.add_argument('--probe-look',metavar='MODE[:EFFECT]',
                     help='Diagnostic build: give the first preset this live-view look so a '
                          'style/effect token can be checked on the camera at app start')
@@ -1236,7 +1229,7 @@ def main():
         probe='-probe-'+mode+('-'+effect if effect else '')
         print('Probe look:',profiles[0]['id'],'->',mode,effect)
     subprocess.run(['java','-jar',str(args.apktool),'d','-r','-f',str(args.input),'-o',str(args.work)],check=True)
-    patch_hook(args.work/'smali'/OLD.replace('.','/')/'shooting/camera/RicohHook.smali',build_profiles,args.upstream_hook,args.movie,args.debug,args.native_preview,args.force_extended_gamma)
+    patch_hook(args.work/'smali'/OLD.replace('.','/')/'shooting/camera/RicohHook.smali',build_profiles,args.upstream_hook,args.movie,args.debug,args.native_preview,args.gate_extended_gamma)
     patch_menu(args.work,build_profiles,args.debug,not args.keep_sample_image,args.menu_scrim)
     if args.movie:patch_movie(args.work,args.debug)
     restore_stub_drawables(args.work)
@@ -1262,7 +1255,7 @@ def main():
     output=root/'output'/('FilmStudio-'+VERSION+('-movie' if args.movie else '-photo')
                           +leica_suffix
                           +('-native-forced' if args.native_preview else '')
-                          +('-gamma-forced' if args.force_extended_gamma else '')
+                          +('-gamma-gated' if args.gate_extended_gamma else '')
                           +probe+('-debug' if args.debug else '')+'.apk')
     sign_apk(str(unsigned),str(output),str(key))
     with zipfile.ZipFile(output) as z:
@@ -1271,7 +1264,7 @@ def main():
     metadata=dict(file=output.name,package=NEW,sha256=hashlib.sha256(output.read_bytes()).hexdigest(),
                   version=VERSION,movie_enabled=args.movie,debug_build=args.debug,
                   native_style_fallback=('forced' if args.native_preview else 'auto'),
-                  extended_gamma=('forced' if args.force_extended_gamma else 'capability-gated'),
+                  extended_gamma=('capability-gated' if args.gate_extended_gamma else 'always'),
                   probe_look=args.probe_look,
                   live_filter_chooser=not args.keep_sample_image,
                   menu_scrim_alpha=args.menu_scrim,

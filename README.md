@@ -20,7 +20,7 @@
 | --- | --- |
 | **a5100 / ILCE-5100，固件 1.10** | 已实测；具体功能和版本范围见下方验证记录 |
 | a6000、a6300、a6500 | 上游列出的 PMCA 候选机型；本版本未实测 |
-| **a7R II / ILCE-7RM2，Android 4.1.2 / API 16** | 已实测安装、启动，以及「确认键打开滤镜菜单 → 按 MENU 返回拍摄」的往返操作（2026-09-14）。**该机型报告不支持 RGB 矩阵与扩展 Gamma 表**，成像自动降级为机身 Creative Style + 原生 Picture Effect 的近似（见[实时取景说明](docs/LIVE-PREVIEW.zh-CN.md)），**不是本项目拟合的富士／理光参数**；照片／录像保存与色彩未在该机型验证。2026-09-14 修复：该机型报告不支持矩阵时**不再写入矩阵**——早期版本只写入矩阵却拿不到配对的曲线，会让画面偏青绿（天空偏蓝绿、阳光下的墙面偏绿，退出应用后恢复）；现在它只使用机身自己的风格与效果 |
+| **a7R II / ILCE-7RM2，Android 4.1.2 / API 16** | 已实测安装、启动，以及「确认键打开滤镜菜单 → 按 MENU 返回拍摄」的往返操作（2026-09-14）。**该机型报告不支持 RGB 矩阵与扩展 Gamma 表**，成像自动降级为机身 Creative Style + 原生 Picture Effect 的近似（见[实时取景说明](docs/LIVE-PREVIEW.zh-CN.md)），**不是本项目拟合的富士／理光参数**；照片／录像保存与色彩未在该机型验证。2026-09-14 实机结论：该机型**会执行** RGB 矩阵写入，但**不采纳** Creative Style 与 Picture Effect 的写入；早期版本按能力查询单独跳过了扩展 Gamma 表，使矩阵被单独应用而偏青绿（天空偏蓝绿、阳光下的墙面偏绿，退出应用后恢复）。现在矩阵与曲线无条件一起写入 |
 | a7、a7R、a7S、a7 II、a7S II | 上游列出的 PMCA 候选机型；本版本未实测 |
 | RX100 III／IV／V、RX10 II／III、RX1R II、HX90 | 上游列出的 PMCA 候选机型；本版本未实测 |
 | a6400、a6700、a7 III、a7C | 不支持本应用依赖的 PlayMemories Camera Apps 安装方式 |
@@ -34,9 +34,9 @@
 
 **[直接下载 APK：0.2.2-alpha（含徕卡风格）](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/download/v0.2.2-alpha/FilmStudio-0.2.2-alpha-movie.apk)** · [发行说明](https://github.com/Chai-Yu/sony-a7r2-film-studio/releases/tag/v0.2.2-alpha)
 
-- 文件：`FilmStudio-0.2.2-alpha-movie.apk`（3,789,927 字节）——默认的 faithful 影调处理
-- SHA-256：`54172822fe09af00e6900960f9730c5c58552331bd9cc9d981cb0fc796e5b50f`
-- 另有**白点锚定**变体 `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`（3,790,960 字节，SHA-256 `d8719da1de06782d08065524ffa6c7a847521f233a011d53c168071583ff10bf`）：保留白点、不做全局压暗。**两者只差徕卡风格的影调输出**，矩阵相同；选哪个看实拍观感。
+- 文件：`FilmStudio-0.2.2-alpha-movie.apk`（3,789,810 字节）——默认的 faithful 影调处理
+- SHA-256：`e03d9c1132e72c54c74dd829783b48c12ebb390e8feb904cb829d833a7ea68b9`
+- 另有**白点锚定**变体 `FilmStudio-0.2.2-alpha-movie-leica-anchor.apk`（3,790,920 字节，SHA-256 `4bdcab263a7050d6f6c2bc1d1b5d6fcd3bdc5b7139832b01e292e802eb2254c3`）：保留白点、不做全局压暗。**两者只差徕卡风格的影调输出**，矩阵相同；选哪个看实拍观感。
 
 下载后按照[中文安装教程](docs/INSTALL.zh-CN.md)安装，无需自己编译。**只想装来用的走「方法 A」**：相机 USB 模式设为 MTP，用 pmca-gui 选中 APK 直接安装，不需要开发者模式，也不需命令行。**Code → Download ZIP 是源码，不是安装包。**
 

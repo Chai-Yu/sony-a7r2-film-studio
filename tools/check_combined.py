@@ -74,9 +74,10 @@ def main():
     ap.add_argument('--native-fallback', choices=('auto', 'forced'), default='auto',
                     help='auto: the hook only applies the camera style when the body '
                          'reports no RGB-matrix support; forced: it always applies it')
-    ap.add_argument('--extended-gamma', choices=('auto', 'forced'), default='auto',
-                    help='auto: the hook only builds the extended gamma table on bodies '
-                         'that report support; forced: it always builds it')
+    ap.add_argument('--extended-gamma', choices=('always', 'gated'), default='always',
+                    help='always (default): the hook writes the extended gamma table with the '
+                         'matrix on every body, as upstream does; gated: it asks the body first '
+                         'and skips the table when the body reports no support')
     ap.add_argument('--live-menu', choices=('on', 'off'), default='on',
                     help='on: the filter chooser clears the static effect illustration so '
                          'the running preview stays visible')
@@ -226,19 +227,15 @@ def main():
                          r'if-eqz v\1, :\w+\s*\n\s*invoke-static \{[^}]*\}, [^\n]*->applyNative\(',
                          apply_hook.group()), \
             'applyHook must apply the camera style only when needsNative() answered true'
-        # The matrix and the curve are one look: a body that reports no support
-        # cannot be given the curve, so it must not be given the matrix either.
-        # Half of the pair rotates hue on saturated colour instead of rendering
-        # the look.
-        assert re.search(r'needsNative\([^)]*\)Z\s*\n\s*move-result v(\d+)\s*\n\s*'
-                         r'if-eqz v\1, :(\w+)[\s\S]{0,200}?'
-                         r'invoke-virtual \{[^}]*\}, [^\n]*->setRGBMatrix\(\[I\)V',
-                         apply_hook.group()), \
-            'applyHook must not write the RGB matrix on a body that reports no support'
+        # ...but the matrix is written whatever that answer was. A body that
+        # reports no support still applies it, and suppressing it would suppress
+        # the look: the capability answers are not trustworthy.
+        assert '->setRGBMatrix([I)V' in apply_hook.group(), \
+            'applyHook must always write the RGB matrix'
     # The extended gamma table is hardware the body may not have: creating and
     # clearing it still enters the native camera path, and resetHook runs from
     # the shooting state's onPause, i.e. on every MENU press.
-    if args.extended_gamma == 'auto':
+    if args.extended_gamma == 'gated':
         assert re.search(r'isExtendedGammaTableSupported\(\)Z\s*\n\s*move-result v(\d+)'
                          r'[\s\S]{0,600}?if-eqz v\1, :\w+\s*\n\s*'
                          r'invoke-static \{p0\}[^\n]*->getCameraEx\(', apply_hook.group()), \
@@ -258,8 +255,16 @@ def main():
         assert re.search(r'sput-boolean v\d+, [^\n]*->sExtendedGammaActive:Z', reset.group()), \
             'resetHook must clear the committed-gamma flag'
     else:
+        # Default: the table is committed with the matrix on every body, exactly
+        # as upstream does. The capability answers cannot decide it - an a7R II
+        # reports no support for both and still applies the matrix - and gating
+        # only the curve would leave a bare matrix that shifts hue on saturated
+        # colour instead of rendering the look.
         assert 'isExtendedGammaTableSupported()Z' not in apply_hook.group(), \
-            '--extended-gamma forced must not gate the table on the capability query'
+            'the gamma table must not be gated on a capability answer the body gets wrong'
+        assert re.search(r'setExtendedGammaTable\(Lcom/sony/scalar/hardware/CameraEx\$GammaTable;\)V',
+                         apply_hook.group()), \
+            'applyHook must commit the extended gamma table with the matrix'
     # The chooser must not paint the static illustration over the live preview:
     # both setBackgroundResource() sites have to be fed a cleared value.
     chooser = (args.decoded/LAYOUT_PATH).read_text(encoding='utf-8')
@@ -361,7 +366,7 @@ def main():
         native_picture_effects=sorted({p['native']['picture_effect'] for p in profiles
                                        if p['native']['picture_effect']}),
         native_style_fallback=('runtime capability gate' if auto_gate else 'forced'),
-        extended_gamma_table=('capability-gated' if args.extended_gamma == 'auto' else 'forced'),
+        extended_gamma_table=('capability-gated' if args.extended_gamma == 'gated' else 'always'),
         native_effect_ids_checked_against_input=bool(effect_ids),
         manifest_version=expected_version,
         live_filter_chooser=(args.live_menu == 'on'),
