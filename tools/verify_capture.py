@@ -74,7 +74,7 @@ def main():
     result={'provia_jpeg':inspect_jpeg(a.provia),'acros_jpeg':inspect_jpeg(a.acros),
             'acros_movie':inspect_movie(a.movie,a.ffmpeg,a.ffprobe,a.preview_dir),
             'scope':'Output persistence and achromatic ACROS check; not a colorimetric Fuji matching test.'}
-    a.output.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+    a.output.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     print(json.dumps(result,ensure_ascii=False,indent=2))
 
 

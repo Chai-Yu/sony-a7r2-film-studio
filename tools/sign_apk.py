@@ -10,7 +10,6 @@ that cause INSTALL_PARSE_FAILED_NO_CERTIFICATES on legacy Android camera runtime
 """
 
 import os
-import sys
 import shutil
 import zipfile
 import hashlib
@@ -141,15 +140,22 @@ def sign_apk(input_apk_path, output_apk_path, pem_path=None):
             if os.path.exists(rsa_tmp_path):
                 os.remove(rsa_tmp_path)
 
-        # 5. Write output APK
+        # 5. Write output APK. Keep the input entry order and restore the
+        # alignment that plain zipfile output loses: Android reads
+        # resources.arsc in place, and the tested base APK has it stored and
+        # 4-byte aligned. This is what zipalign would do.
         os.makedirs(os.path.dirname(os.path.abspath(output_apk_path)), exist_ok=True)
         with zipfile.ZipFile(output_apk_path, 'w', compression=zipfile.ZIP_DEFLATED) as zout:
             zout.writestr('META-INF/MANIFEST.MF', manifest_bytes)
             zout.writestr('META-INF/CERT.SF', sf_bytes)
             zout.writestr('META-INF/CERT.RSA', rsa_bytes)
 
-            for name in sorted(entries.keys()):
+            for name in entries:
                 item, data = entries[name]
+                if item.compress_type == zipfile.ZIP_STORED:
+                    block = 4096 if name.startswith('lib/') else 4
+                    offset = zout.fp.tell() + 30 + len(item.filename.encode('utf-8')) + len(item.extra)
+                    item.extra += b'\x00' * (-offset % block)
                 zout.writestr(item, data)
 
         print(f"Successfully signed APK -> {output_apk_path}")

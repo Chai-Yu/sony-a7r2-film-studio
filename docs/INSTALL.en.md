@@ -138,10 +138,10 @@ pmca-gui also offers **Select an apk → Open apk... → Install selected app** 
 ## 6. Controls and first test
 
 1. In still preview or movie standby, press the **center button** to select a look. MENU page 1 also has the「胶片风格」entry. The fifteen choices use 富士 (Fujifilm) and 理光 (Ricoh) prefixes.
-2. MENU page 1 →「滤镜强度」sets 30/50/70/100%. Default 100%; a normal exit saves it. For portraits, compare 30% and 50%.
+2. MENU page 1 →「滤镜强度」sets 30/50/70/100%. Default 70%; a normal exit saves it. For portraits, compare 30% and 70%.
 3. For video, select「拍照／录像模式」→ movie P/A/S/M, then「录像文件格式」and「录像帧率／画质」. Enter movie standby first if these are gray in still mode. MOVIE starts and stops recording.
 4. White balance is「白平衡」on MENU page 4. Native Creative Style is fixed to STD in the app; white balance is not forced by the look.
-5. Use a disposable test scene. Compare ACROS 100% with 30%: monochrome versus partially retained color. Try PROVIA, save a JPEG, and record a few seconds. Do not switch looks during recording.
+5. Use a disposable test scene. Compare ACROS 100% with 30%: both are monochrome (the black-and-white looks never carry colour at any strength), 100% with more contrast and 30% flatter. Try PROVIA, save a JPEG, and record a few seconds. Do not switch looks during recording.
 6. **In-app playback lists only photographs.** Exit the app and use native playback with the matching XAVC S, AVCHD or MP4 view. Absence from in-app playback does not mean a movie was lost.
 
 ## 7. Updates, rollback and troubleshooting
@@ -154,7 +154,7 @@ pmca-gui also offers **Select an apk → Open apk... → Install selected app** 
 | Certificate parse / DEXOPT failure | Use the documented build tools. API 10 needs compatible DEX 035 and v1 signing; do not casually re-sign with a modern default signer |
 | `INSTALL_FAILED_UPDATE_INCOMPATIBLE` | Signing key differs. Rebuild with the original key, or back up and uninstall the old same-package app using camera app management before installing. Uninstalling clears app settings |
 | Gray video settings | Select movie P/A/S/M standby; available profiles still depend on format, PAL/NTSC and camera conditions |
-| ACROS retains color | Set strength to 100% |
+| ACROS carries colour | ACROS, High Contrast B&W and Moriyama are neutral grey at every strength; colour means the installed build is not the fixed one |
 | Unexpected color | Exit normally and restart the camera, then inspect native settings; firmware modifications and factory resets are not troubleshooting steps for this app |
 
 Before rolling back to 0.1.3, select Fujifilm PROVIA and exit normally so the old app does not encounter an unsupported Ricoh preset ID.

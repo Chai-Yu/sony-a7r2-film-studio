@@ -57,13 +57,13 @@ First-time users also need the preparation steps in the guide.
 - Ten Fujifilm official-LUT reference looks: PROVIA, Velvia, ASTIA, CLASSIC CHROME, REALA ACE, PRO Neg. Std, CLASSIC Neg., ETERNA, ETERNA BLEACH BYPASS and ACROS.
 - Five upstream Ricoh/street styles: GR Positive Film, Negative Film, High Contrast B&W, Moriyama Daido Style and Cross Process. Community presets, not official Ricoh LUTs.
 - Press the center button to select a look in still preview or movie standby.
-- MENU page 1 →「滤镜强度」(filter strength): **30%, 50%, 70%, 100%**. Starts at 100%; shared by stills and video and saved through normal app exit.
+- MENU page 1 「滤镜强度」(filter strength): **30%, 50%, 70%, 100%**. Starts at 70%; shared by stills and video and saved through normal app exit.
 - MENU page 1 →「拍照／录像模式」(still/movie mode) → movie P/A/S/M, then「录像文件格式」(format) and「录像帧率／画质」(frame rate/quality). Choices follow the camera's supported XAVC S, AVCHD and MP4 profiles and current PAL/NTSC system.
 - MOVIE starts/stops recording. Look and strength stay fixed during recording.
 - White balance remains available on MENU page 4. The app uses STD/Standard with contrast, saturation and sharpness at zero as its baseline; native Portrait/Vivid Creative Styles are not stacked in this app.
 - Separate package `com.yuki.imaging.app.pictureeffectplus`, allowing coexistence with the original Ricoh mod.
 
-For portraits, compare 30% and 50% first. Strength reduces both the color matrix and tone curve; it does not detect faces or automatically repair skin tones. **ACROS, Ricoh High Contrast B&W and Moriyama style retain some color below 100%. Use 100% for monochrome.**
+For portraits, compare 30% and 70% first. On colour looks the strength reduces both the colour matrix and the tone curve; it does not detect faces or automatically repair skin tones. **ACROS, Ricoh High Contrast B&W and Moriyama style never carry colour at any strength: the strength only lowers contrast, and 100% is the look's own contrast.**
 
 ## Evidence and limits
 

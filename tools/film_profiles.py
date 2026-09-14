@@ -56,6 +56,50 @@ def ricoh_profiles(path):
     return profiles
 
 
+# The live view is rendered by the camera itself, and the camera renders two
+# things live: its Creative Style and its own Picture Effect. The RGB matrix
+# plus extended gamma table *is* the film look, but some bodies answer both
+# capability queries with false and then drop those writes silently, leaving
+# the viewfinder untouched. On those bodies applyNative falls back to the two
+# looks the camera owns, so every preset needs a pair here.
+#
+# Both halves are the tokens this app generation already ships:
+#   * modes  -> CreativeStyleController constants in the base APK
+#   * effects-> picture-effect ItemIds in the base APK's assets/MenuData.xml
+# Only the styles and effects of this camera generation are used, so a body
+# that predates the newer Creative Look names still accepts them. The result is
+# an approximation by construction: it is what the camera can draw live.
+NATIVE_LOOK = {
+    'pop-color': ('standard', None),
+    'fuji-velvia': ('vivid', 'pop-color'),
+    'fuji-astia': ('portrait', None),
+    'fuji-chrome': ('neutral', None),
+    'fuji-reala': ('standard', None),
+    'fuji-proneg': ('neutral', None),
+    'fuji-negative': ('neutral', 'retro-photo'),
+    'fuji-eterna': ('neutral', None),
+    'fuji-bleach': ('neutral', 'retro-photo'),
+    'fuji-acros': ('mono', 'richtone-mono'),
+    'ricoh-positive': ('standard', None),
+    'ricoh-negative': ('portrait', 'retro-photo'),
+    'ricoh-hcbw': ('mono', 'richtone-mono'),
+    'ricoh-daido': ('mono', 'rough-mono'),
+    'ricoh-cross': ('vivid', 'pop-color'),
+}
+NATIVE_MODES = {'standard', 'vivid', 'neutral', 'portrait', 'mono'}
+NATIVE_EFFECTS = {'pop-color', 'retro-photo', 'richtone-mono', 'rough-mono'}
+
+
+def native_look(preset_id):
+    """(Creative Style token, Picture Effect token or None) for one preset."""
+    mode, effect = NATIVE_LOOK[preset_id]
+    if mode not in NATIVE_MODES:
+        raise ValueError('Unsupported creative style token: ' + mode)
+    if effect is not None and effect not in NATIVE_EFFECTS:
+        raise ValueError('Unsupported picture effect token: ' + str(effect))
+    return mode, effect
+
+
 def combined_profiles(fuji, upstream_hook):
     if len(fuji) != 10:
         raise ValueError('Expected the existing ten Fujifilm-reference profiles')
@@ -67,4 +111,9 @@ def combined_profiles(fuji, upstream_hook):
     profiles += ricoh_profiles(upstream_hook)
     if len({p['id'] for p in profiles}) != 15:
         raise ValueError('Preset IDs must be unique; keep existing Fujifilm IDs for upgrades')
+    if {p['id'] for p in profiles} != set(NATIVE_LOOK):
+        raise ValueError('Every preset needs a live-view fallback look')
+    for p in profiles:
+        mode, effect = native_look(p['id'])
+        p['native'] = {'mode': mode, 'picture_effect': effect}
     return profiles
